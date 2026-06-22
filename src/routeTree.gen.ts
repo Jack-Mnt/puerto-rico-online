@@ -22,6 +22,7 @@ import { Route as CajeroIndexRouteImport } from './routes/cajero.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoSlugRouteImport } from './routes/producto.$slug'
 import { Route as ModeradorReportesRouteImport } from './routes/moderador.reportes'
+import { Route as ApiStaffUsersRouteImport } from './routes/api.staff-users'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
 import { Route as AdminProductosRouteImport } from './routes/admin.productos'
@@ -95,6 +96,11 @@ const ModeradorReportesRoute = ModeradorReportesRouteImport.update({
   path: '/reportes',
   getParentRoute: () => ModeradorRoute,
 } as any)
+const ApiStaffUsersRoute = ApiStaffUsersRouteImport.update({
+  id: '/api/staff-users',
+  path: '/api/staff-users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   id: '/usuarios',
   path: '/usuarios',
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
+  '/api/staff-users': typeof ApiStaffUsersRoute
   '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
+  '/api/staff-users': typeof ApiStaffUsersRoute
   '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/admin/productos': typeof AdminProductosRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
+  '/api/staff-users': typeof ApiStaffUsersRoute
   '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/sedes'
     | '/admin/usuarios'
+    | '/api/staff-users'
     | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/sedes'
     | '/admin/usuarios'
+    | '/api/staff-users'
     | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/sedes'
     | '/admin/usuarios'
+    | '/api/staff-users'
     | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ModeradorRoute: typeof ModeradorRouteWithChildren
   ProductosRoute: typeof ProductosRoute
+  ApiStaffUsersRoute: typeof ApiStaffUsersRoute
   ProductoSlugRoute: typeof ProductoSlugRoute
 }
 
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/moderador/reportes'
       preLoaderRoute: typeof ModeradorReportesRouteImport
       parentRoute: typeof ModeradorRoute
+    }
+    '/api/staff-users': {
+      id: '/api/staff-users'
+      path: '/api/staff-users'
+      fullPath: '/api/staff-users'
+      preLoaderRoute: typeof ApiStaffUsersRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/usuarios': {
       id: '/admin/usuarios'
@@ -476,6 +496,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ModeradorRoute: ModeradorRouteWithChildren,
   ProductosRoute: ProductosRoute,
+  ApiStaffUsersRoute: ApiStaffUsersRoute,
   ProductoSlugRoute: ProductoSlugRoute,
 }
 export const routeTree = rootRouteImport

@@ -252,11 +252,11 @@ function PedidoCajeroModal({
                   <div className="flex-1">
                     <div className="font-medium">{d.productos?.nombre || d.producto_id}</div>
                     <div className="text-xs text-muted-foreground">
-                      {d.cantidad} × {formatMoney(d.precio_unitario)}
+                      {d.cantidad} × {formatMoney(Number(d.precio_venta))}
                     </div>
                   </div>
                   <div className="font-semibold">
-                    {formatMoney(Number(d.cantidad) * Number(d.precio_unitario))}
+                    {formatMoney(Number(d.subtotal))}
                   </div>
                 </div>
               ))}

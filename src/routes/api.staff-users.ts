@@ -16,9 +16,9 @@ async function getAdminContext(request: Request) {
   const token = auth.replace(/^Bearer\s+/i, "");
   if (!token) return { error: "Missing bearer token", status: 401 as const };
 
-  const url = process.env.SUPABASE_URL!;
-  const serviceKey = process.env.PRO_SERVICE_ROLE_KEY!;
-  if (!url || !serviceKey) return { error: "Server not configured", status: 500 as const };
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "https://fvtohxvcvsflzmftgfzs.supabase.co";
+  const serviceKey = process.env.PRO_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return { error: "Server not configured (missing PRO_SERVICE_ROLE_KEY)", status: 500 as const };
 
   const admin = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },

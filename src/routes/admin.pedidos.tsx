@@ -33,7 +33,8 @@ type PedidoRow = {
   detalle_pedidos: {
     id: string;
     cantidad: number;
-    precio_unitario: number;
+    precio_venta: number;
+    subtotal: number;
     producto_id: string;
     productos?: { nombre: string | null } | null;
   }[];
@@ -233,7 +234,7 @@ function AdminPedidos() {
                       {d.cantidad} × {d.productos?.nombre ?? d.producto_id}
                     </span>
                     <span className="font-medium">
-                      {formatMoney(Number(d.cantidad) * Number(d.precio_unitario))}
+                      {formatMoney(Number(d.subtotal))}
                     </span>
                   </li>
                 ))}

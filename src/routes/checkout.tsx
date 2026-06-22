@@ -77,7 +77,7 @@ function CheckoutPage() {
       const { data: pedido, error: pErr } = await supabase
         .from("pedidos")
         .insert(pedidoPayload)
-        .select("id")
+        .select("id, numero_pedido")
         .single();
       if (pErr) throw pErr;
 
@@ -97,7 +97,7 @@ function CheckoutPage() {
       const msg = [
         "Hola, acabo de realizar un pedido en Puerto Rico.",
         "",
-        `Pedido: ${pedido.id}`,
+        `Pedido #${pedido.numero_pedido}`,
         `Nombre: ${nombre.trim()}`,
         `Sede: ${sede.nombre}`,
         `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Pick Up"}`,
@@ -108,10 +108,20 @@ function CheckoutPage() {
         productosTxt,
       ].join("\n");
       const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`;
+
+      const resumen = {
+        numero_pedido: pedido.numero_pedido,
+        items: items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, subtotal: i.precio_venta * i.cantidad })),
+        tipo_entrega: tipo,
+        total,
+        whatsapp_url: url,
+      };
+      try { sessionStorage.setItem("ultimo_pedido", JSON.stringify(resumen)); } catch { /* ignore */ }
+
       clear();
-      toast.success("¡Pedido creado! Redirigiendo a WhatsApp...");
-      window.location.href = url;
-      setTimeout(() => navigate({ to: "/" }), 1500);
+      toast.success("¡Pedido confirmado!");
+      window.open(url, "_blank");
+      navigate({ to: "/pedido-confirmado" });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al crear pedido";
       toast.error(message);

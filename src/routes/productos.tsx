@@ -38,7 +38,7 @@ function Catalogo() {
   }, [productos, categoria, marca, search]);
 
   const setParam = (k: keyof Search, v?: string) =>
-    navigate({ search: (prev) => ({ ...prev, [k]: v || undefined }) });
+    navigate({ search: (prev: Search) => ({ ...prev, [k]: v || undefined }) });
 
   const activeCat = categorias.find((c) => c.slug === categoria);
   const activeMarca = marcas.find((m) => m.id === marca);

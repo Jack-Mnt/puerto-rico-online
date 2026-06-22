@@ -23,13 +23,12 @@ export const Route = createFileRoute("/cajero/")({
 type Pedido = {
   id: string;
   cliente_nombre: string;
-  cliente_telefono: string | null;
-  direccion: string | null;
   sede_id: string | null;
   estado: EstadoPedido;
   metodo_pago: string | null;
   tipo_entrega: string | null;
   total: number;
+  observaciones: string | null;
   created_at: string;
 };
 
@@ -227,11 +226,15 @@ function PedidoCajeroModal({
 
         <div className="grid grid-cols-2 gap-3">
           <Info label="Cliente" value={pedido.cliente_nombre} />
-          <Info label="Teléfono" value={pedido.cliente_telefono ?? "—"} />
           <Info label="Método pago" value={pedido.metodo_pago ?? "—"} />
           <Info label="Tipo entrega" value={pedido.tipo_entrega ?? "—"} />
         </div>
-        {pedido.direccion && <Info label="Dirección" value={pedido.direccion} />}
+        {pedido.observaciones && (
+          <div className="p-2 border border-border rounded bg-muted/30">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Observaciones</div>
+            <div className="text-sm whitespace-pre-wrap">{pedido.observaciones}</div>
+          </div>
+        )}
 
         <div>
           <div className="font-semibold mb-2">Productos</div>

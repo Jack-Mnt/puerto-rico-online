@@ -107,4 +107,6 @@
   .premium-gradient { background: linear-gradient(135deg, var(--color-premium), var(--color-accent)); }
   .text-premium { color: var(--color-premium); }
   .hairline { height: 1px; background: linear-gradient(90deg, transparent, var(--color-border), transparent); }
+  .input { @apply w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition; border-color: var(--color-border); }
+  .input:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 18%, transparent); }
 }

@@ -10,17 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProductosRouteImport } from './routes/productos'
+import { Route as ModeradorRouteImport } from './routes/moderador'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CarritoRouteImport } from './routes/carrito'
+import { Route as CajeroRouteImport } from './routes/cajero'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ModeradorIndexRouteImport } from './routes/moderador.index'
+import { Route as CajeroIndexRouteImport } from './routes/cajero.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoSlugRouteImport } from './routes/producto.$slug'
+import { Route as ModeradorReportesRouteImport } from './routes/moderador.reportes'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
+import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
+import { Route as AdminProductosRouteImport } from './routes/admin.productos'
+import { Route as AdminMarcasRouteImport } from './routes/admin.marcas'
+import { Route as AdminConfiguracionRouteImport } from './routes/admin.configuracion'
+import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
+import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 
 const ProductosRoute = ProductosRouteImport.update({
   id: '/productos',
   path: '/productos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModeradorRoute = ModeradorRouteImport.update({
+  id: '/moderador',
+  path: '/moderador',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -38,6 +55,11 @@ const CarritoRoute = CarritoRouteImport.update({
   path: '/carrito',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CajeroRoute = CajeroRouteImport.update({
+  id: '/cajero',
+  path: '/cajero',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -47,6 +69,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ModeradorIndexRoute = ModeradorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ModeradorRoute,
+} as any)
+const CajeroIndexRoute = CajeroIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CajeroRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -58,16 +90,68 @@ const ProductoSlugRoute = ProductoSlugRouteImport.update({
   path: '/producto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModeradorReportesRoute = ModeradorReportesRouteImport.update({
+  id: '/reportes',
+  path: '/reportes',
+  getParentRoute: () => ModeradorRoute,
+} as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSedesRoute = AdminSedesRouteImport.update({
+  id: '/sedes',
+  path: '/sedes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductosRoute = AdminProductosRouteImport.update({
+  id: '/productos',
+  path: '/productos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMarcasRoute = AdminMarcasRouteImport.update({
+  id: '/marcas',
+  path: '/marcas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConfiguracionRoute = AdminConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBannersRoute = AdminBannersRouteImport.update({
+  id: '/banners',
+  path: '/banners',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/moderador': typeof ModeradorRouteWithChildren
   '/productos': typeof ProductosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/sedes': typeof AdminSedesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/cajero/': typeof CajeroIndexRoute
+  '/moderador/': typeof ModeradorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,31 +159,65 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/productos': typeof ProductosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/sedes': typeof AdminSedesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/cajero': typeof CajeroIndexRoute
+  '/moderador': typeof ModeradorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/moderador': typeof ModeradorRouteWithChildren
   '/productos': typeof ProductosRoute
+  '/admin/banners': typeof AdminBannersRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/configuracion': typeof AdminConfiguracionRoute
+  '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/productos': typeof AdminProductosRoute
+  '/admin/sedes': typeof AdminSedesRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
+  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/cajero/': typeof CajeroIndexRoute
+  '/moderador/': typeof ModeradorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
+    | '/cajero'
     | '/carrito'
     | '/checkout'
     | '/login'
+    | '/moderador'
     | '/productos'
+    | '/admin/banners'
+    | '/admin/categorias'
+    | '/admin/configuracion'
+    | '/admin/marcas'
+    | '/admin/productos'
+    | '/admin/sedes'
+    | '/admin/usuarios'
+    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
+    | '/cajero/'
+    | '/moderador/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -107,26 +225,50 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/productos'
+    | '/admin/banners'
+    | '/admin/categorias'
+    | '/admin/configuracion'
+    | '/admin/marcas'
+    | '/admin/productos'
+    | '/admin/sedes'
+    | '/admin/usuarios'
+    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin'
+    | '/cajero'
+    | '/moderador'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/cajero'
     | '/carrito'
     | '/checkout'
     | '/login'
+    | '/moderador'
     | '/productos'
+    | '/admin/banners'
+    | '/admin/categorias'
+    | '/admin/configuracion'
+    | '/admin/marcas'
+    | '/admin/productos'
+    | '/admin/sedes'
+    | '/admin/usuarios'
+    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
+    | '/cajero/'
+    | '/moderador/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  CajeroRoute: typeof CajeroRouteWithChildren
   CarritoRoute: typeof CarritoRoute
   CheckoutRoute: typeof CheckoutRoute
   LoginRoute: typeof LoginRoute
+  ModeradorRoute: typeof ModeradorRouteWithChildren
   ProductosRoute: typeof ProductosRoute
   ProductoSlugRoute: typeof ProductoSlugRoute
 }
@@ -138,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/productos'
       fullPath: '/productos'
       preLoaderRoute: typeof ProductosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/moderador': {
+      id: '/moderador'
+      path: '/moderador'
+      fullPath: '/moderador'
+      preLoaderRoute: typeof ModeradorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -161,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CarritoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cajero': {
+      id: '/cajero'
+      path: '/cajero'
+      fullPath: '/cajero'
+      preLoaderRoute: typeof CajeroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -174,6 +330,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/moderador/': {
+      id: '/moderador/'
+      path: '/'
+      fullPath: '/moderador/'
+      preLoaderRoute: typeof ModeradorIndexRouteImport
+      parentRoute: typeof ModeradorRoute
+    }
+    '/cajero/': {
+      id: '/cajero/'
+      path: '/'
+      fullPath: '/cajero/'
+      preLoaderRoute: typeof CajeroIndexRouteImport
+      parentRoute: typeof CajeroRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -189,25 +359,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moderador/reportes': {
+      id: '/moderador/reportes'
+      path: '/reportes'
+      fullPath: '/moderador/reportes'
+      preLoaderRoute: typeof ModeradorReportesRouteImport
+      parentRoute: typeof ModeradorRoute
+    }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sedes': {
+      id: '/admin/sedes'
+      path: '/sedes'
+      fullPath: '/admin/sedes'
+      preLoaderRoute: typeof AdminSedesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/productos': {
+      id: '/admin/productos'
+      path: '/productos'
+      fullPath: '/admin/productos'
+      preLoaderRoute: typeof AdminProductosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/marcas': {
+      id: '/admin/marcas'
+      path: '/marcas'
+      fullPath: '/admin/marcas'
+      preLoaderRoute: typeof AdminMarcasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/configuracion': {
+      id: '/admin/configuracion'
+      path: '/configuracion'
+      fullPath: '/admin/configuracion'
+      preLoaderRoute: typeof AdminConfiguracionRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categorias': {
+      id: '/admin/categorias'
+      path: '/categorias'
+      fullPath: '/admin/categorias'
+      preLoaderRoute: typeof AdminCategoriasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/banners': {
+      id: '/admin/banners'
+      path: '/banners'
+      fullPath: '/admin/banners'
+      preLoaderRoute: typeof AdminBannersRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminBannersRoute: typeof AdminBannersRoute
+  AdminCategoriasRoute: typeof AdminCategoriasRoute
+  AdminConfiguracionRoute: typeof AdminConfiguracionRoute
+  AdminMarcasRoute: typeof AdminMarcasRoute
+  AdminProductosRoute: typeof AdminProductosRoute
+  AdminSedesRoute: typeof AdminSedesRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBannersRoute: AdminBannersRoute,
+  AdminCategoriasRoute: AdminCategoriasRoute,
+  AdminConfiguracionRoute: AdminConfiguracionRoute,
+  AdminMarcasRoute: AdminMarcasRoute,
+  AdminProductosRoute: AdminProductosRoute,
+  AdminSedesRoute: AdminSedesRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface CajeroRouteChildren {
+  CajeroIndexRoute: typeof CajeroIndexRoute
+}
+
+const CajeroRouteChildren: CajeroRouteChildren = {
+  CajeroIndexRoute: CajeroIndexRoute,
+}
+
+const CajeroRouteWithChildren =
+  CajeroRoute._addFileChildren(CajeroRouteChildren)
+
+interface ModeradorRouteChildren {
+  ModeradorReportesRoute: typeof ModeradorReportesRoute
+  ModeradorIndexRoute: typeof ModeradorIndexRoute
+}
+
+const ModeradorRouteChildren: ModeradorRouteChildren = {
+  ModeradorReportesRoute: ModeradorReportesRoute,
+  ModeradorIndexRoute: ModeradorIndexRoute,
+}
+
+const ModeradorRouteWithChildren = ModeradorRoute._addFileChildren(
+  ModeradorRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  CajeroRoute: CajeroRouteWithChildren,
   CarritoRoute: CarritoRoute,
   CheckoutRoute: CheckoutRoute,
   LoginRoute: LoginRoute,
+  ModeradorRoute: ModeradorRouteWithChildren,
   ProductosRoute: ProductosRoute,
   ProductoSlugRoute: ProductoSlugRoute,
 }

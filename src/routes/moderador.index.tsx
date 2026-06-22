@@ -23,6 +23,7 @@ export const Route = createFileRoute("/moderador/")({
 
 type Pedido = {
   id: string;
+  numero_pedido: number;
   cliente_nombre: string;
   cliente_telefono: string | null;
   direccion: string | null;
@@ -34,8 +35,6 @@ type Pedido = {
   tipo_entrega: string | null;
   total: number;
   created_at: string;
-  motivo_rechazo?: string | null;
-  nota_rechazo?: string | null;
 };
 
 const COLUMNAS: EstadoPedido[] = [
@@ -175,7 +174,7 @@ function ModeradorKanban() {
                       className="w-full text-left p-3 rounded-lg border border-border bg-background hover:shadow-sm transition-shadow"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono text-muted-foreground">#{p.id.slice(0, 8)}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground">Pedido #{p.numero_pedido}</span>
                         <span className="text-[10px] text-muted-foreground">{formatDate(p.created_at)}</span>
                       </div>
                       <div className="font-medium mt-1 truncate text-sm">{p.cliente_nombre}</div>
@@ -260,12 +259,12 @@ function PedidoModeradorModal({
 
   const whatsappHref = pedido.cliente_telefono
     ? `https://wa.me/${pedido.cliente_telefono.replace(/\D/g, "")}?text=${encodeURIComponent(
-        `Hola ${pedido.cliente_nombre}, te escribo de Puerto Rico sobre tu pedido #${pedido.id.slice(0, 8)}.`,
+        `Hola ${pedido.cliente_nombre}, te escribo de Puerto Rico sobre tu pedido #${pedido.numero_pedido}.`,
       )}`
     : null;
 
   return (
-    <Modal open onClose={onClose} title={`Pedido #${pedido.id.slice(0, 8)}`} size="xl">
+    <Modal open onClose={onClose} title={`Pedido #${pedido.numero_pedido}`} size="xl">
       <div className="grid lg:grid-cols-3 gap-5 text-sm">
         {/* IZQUIERDA: cliente + productos */}
         <div className="lg:col-span-2 space-y-4">
@@ -287,13 +286,6 @@ function PedidoModeradorModal({
           {pedido.direccion && <Info label="Dirección" value={pedido.direccion} />}
           {pedido.referencia && <Info label="Referencia" value={pedido.referencia} />}
           {pedido.notas && <Info label="Notas" value={pedido.notas} />}
-          {pedido.motivo_rechazo && (
-            <div className="rounded-md border border-rose-200 bg-rose-50 p-3 text-rose-800 text-xs">
-              <div className="font-semibold mb-0.5">Motivo de rechazo</div>
-              <div>{pedido.motivo_rechazo}</div>
-              {pedido.nota_rechazo && <div className="mt-1 italic">{pedido.nota_rechazo}</div>}
-            </div>
-          )}
 
           <div>
             <div className="font-semibold mb-2">Productos</div>

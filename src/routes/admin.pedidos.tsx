@@ -19,6 +19,7 @@ export const Route = createFileRoute("/admin/pedidos")({
 
 type PedidoRow = {
   id: string;
+  numero_pedido: number;
   cliente_nombre: string;
   cliente_telefono: string | null;
   direccion: string | null;
@@ -90,7 +91,7 @@ function AdminPedidos() {
     if (!s) return data;
     return data.filter(
       (p) =>
-        p.id.toLowerCase().includes(s) ||
+        String(p.numero_pedido).includes(s) ||
         p.cliente_nombre?.toLowerCase().includes(s) ||
         (p.cliente_telefono || "").toLowerCase().includes(s),
     );
@@ -183,7 +184,7 @@ function AdminPedidos() {
               {filtered.map((p) => (
                 <tr key={p.id} className="border-t border-border">
                   <td className="p-3 whitespace-nowrap">{formatDate(p.created_at)}</td>
-                  <td className="p-3 font-mono text-xs">#{p.id.slice(0, 8)}</td>
+                  <td className="p-3 font-mono text-xs">Pedido #{p.numero_pedido}</td>
                   <td className="p-3">
                     <div className="font-medium">{p.cliente_nombre}</div>
                     <div className="text-xs text-muted-foreground">{p.cliente_telefono}</div>
@@ -208,7 +209,7 @@ function AdminPedidos() {
       )}
 
       {viewing && (
-        <Modal open onClose={() => setViewing(null)} title={`Pedido #${viewing.id.slice(0, 8)}`} size="lg">
+        <Modal open onClose={() => setViewing(null)} title={`Pedido #${viewing.numero_pedido}`} size="lg">
           <div className="space-y-3 text-sm">
             <div className="grid grid-cols-2 gap-3">
               <Info label="Cliente" value={viewing.cliente_nombre} />

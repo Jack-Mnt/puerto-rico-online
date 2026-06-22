@@ -15,6 +15,7 @@ export const Route = createFileRoute("/admin/reportes")({
 
 type PedidoRich = {
   id: string;
+  numero_pedido: number;
   total: number;
   sede_id: string | null;
   estado: EstadoPedido;
@@ -54,7 +55,7 @@ function ReportesPage() {
     queryFn: async () => {
       let q = supabase
         .from("pedidos")
-        .select("id,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_venta,subtotal,producto_id,productos(nombre,precio_costo))")
+        .select("id,numero_pedido,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_venta,subtotal,producto_id,productos(nombre,precio_costo))")
         .gte("created_at", desde + "T00:00:00")
         .lte("created_at", hasta + "T23:59:59")
         .order("created_at", { ascending: false })
@@ -97,7 +98,7 @@ function ReportesPage() {
     if (!enriched.length) return toast.error("No hay pedidos para exportar");
     const rows = enriched.map((p) => ({
       "Fecha pedido": formatDate(p.created_at),
-      "ID pedido": p.id,
+      "ID pedido": p.numero_pedido,
       Cliente: p.cliente_nombre,
       Teléfono: p.cliente_telefono ?? "",
       Sede: sedeNombre(p.sede_id),

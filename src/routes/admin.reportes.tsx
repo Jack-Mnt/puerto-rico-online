@@ -64,7 +64,7 @@ function ReportesPage() {
       if (tipoEntrega) q = q.eq("tipo_entrega", tipoEntrega);
       const { data, error } = await q;
       if (error) throw error;
-      return (data || []) as PedidoRich[];
+      return (data || []) as unknown as PedidoRich[];
     },
   });
 

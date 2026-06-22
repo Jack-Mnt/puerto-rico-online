@@ -21,11 +21,12 @@ import { Route as ModeradorIndexRouteImport } from './routes/moderador.index'
 import { Route as CajeroIndexRouteImport } from './routes/cajero.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoSlugRouteImport } from './routes/producto.$slug'
-import { Route as ModeradorReportesRouteImport } from './routes/moderador.reportes'
 import { Route as ApiStaffUsersRouteImport } from './routes/api.staff-users'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
+import { Route as AdminReportesRouteImport } from './routes/admin.reportes'
 import { Route as AdminProductosRouteImport } from './routes/admin.productos'
+import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
 import { Route as AdminMarcasRouteImport } from './routes/admin.marcas'
 import { Route as AdminConfiguracionRouteImport } from './routes/admin.configuracion'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
@@ -91,11 +92,6 @@ const ProductoSlugRoute = ProductoSlugRouteImport.update({
   path: '/producto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ModeradorReportesRoute = ModeradorReportesRouteImport.update({
-  id: '/reportes',
-  path: '/reportes',
-  getParentRoute: () => ModeradorRoute,
-} as any)
 const ApiStaffUsersRoute = ApiStaffUsersRouteImport.update({
   id: '/api/staff-users',
   path: '/api/staff-users',
@@ -111,9 +107,19 @@ const AdminSedesRoute = AdminSedesRouteImport.update({
   path: '/sedes',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminReportesRoute = AdminReportesRouteImport.update({
+  id: '/reportes',
+  path: '/reportes',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductosRoute = AdminProductosRouteImport.update({
   id: '/productos',
   path: '/productos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPedidosRoute = AdminPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminMarcasRoute = AdminMarcasRouteImport.update({
@@ -150,11 +156,12 @@ export interface FileRoutesByFullPath {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
+  '/admin/reportes': typeof AdminReportesRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
-  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/cajero/': typeof CajeroIndexRoute
@@ -170,11 +177,12 @@ export interface FileRoutesByTo {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
+  '/admin/reportes': typeof AdminReportesRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
-  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin': typeof AdminIndexRoute
   '/cajero': typeof CajeroIndexRoute
@@ -194,11 +202,12 @@ export interface FileRoutesById {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
+  '/admin/reportes': typeof AdminReportesRoute
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
-  '/moderador/reportes': typeof ModeradorReportesRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/cajero/': typeof CajeroIndexRoute
@@ -219,11 +228,12 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/pedidos'
     | '/admin/productos'
+    | '/admin/reportes'
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
-    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
     | '/cajero/'
@@ -239,11 +249,12 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/pedidos'
     | '/admin/productos'
+    | '/admin/reportes'
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
-    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin'
     | '/cajero'
@@ -262,11 +273,12 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/pedidos'
     | '/admin/productos'
+    | '/admin/reportes'
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
-    | '/moderador/reportes'
     | '/producto/$slug'
     | '/admin/'
     | '/cajero/'
@@ -372,13 +384,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/moderador/reportes': {
-      id: '/moderador/reportes'
-      path: '/reportes'
-      fullPath: '/moderador/reportes'
-      preLoaderRoute: typeof ModeradorReportesRouteImport
-      parentRoute: typeof ModeradorRoute
-    }
     '/api/staff-users': {
       id: '/api/staff-users'
       path: '/api/staff-users'
@@ -400,11 +405,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSedesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/reportes': {
+      id: '/admin/reportes'
+      path: '/reportes'
+      fullPath: '/admin/reportes'
+      preLoaderRoute: typeof AdminReportesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/productos': {
       id: '/admin/productos'
       path: '/productos'
       fullPath: '/admin/productos'
       preLoaderRoute: typeof AdminProductosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pedidos': {
+      id: '/admin/pedidos'
+      path: '/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/marcas': {
@@ -443,7 +462,9 @@ interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminConfiguracionRoute: typeof AdminConfiguracionRoute
   AdminMarcasRoute: typeof AdminMarcasRoute
+  AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProductosRoute: typeof AdminProductosRoute
+  AdminReportesRoute: typeof AdminReportesRoute
   AdminSedesRoute: typeof AdminSedesRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -454,7 +475,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminConfiguracionRoute: AdminConfiguracionRoute,
   AdminMarcasRoute: AdminMarcasRoute,
+  AdminPedidosRoute: AdminPedidosRoute,
   AdminProductosRoute: AdminProductosRoute,
+  AdminReportesRoute: AdminReportesRoute,
   AdminSedesRoute: AdminSedesRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -474,12 +497,10 @@ const CajeroRouteWithChildren =
   CajeroRoute._addFileChildren(CajeroRouteChildren)
 
 interface ModeradorRouteChildren {
-  ModeradorReportesRoute: typeof ModeradorReportesRoute
   ModeradorIndexRoute: typeof ModeradorIndexRoute
 }
 
 const ModeradorRouteChildren: ModeradorRouteChildren = {
-  ModeradorReportesRoute: ModeradorReportesRoute,
   ModeradorIndexRoute: ModeradorIndexRoute,
 }
 

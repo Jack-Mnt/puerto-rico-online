@@ -8,11 +8,15 @@ import {
   Building2,
   Users,
   Settings,
+  ListOrdered,
+  BarChart3,
 } from "lucide-react";
 import { PanelLayout, type NavItem } from "@/components/PanelLayout";
 
 const nav: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/pedidos", label: "Pedidos", icon: ListOrdered },
+  { to: "/admin/reportes", label: "Reportes", icon: BarChart3 },
   { to: "/admin/productos", label: "Productos", icon: Package },
   { to: "/admin/categorias", label: "Categorías", icon: Tags },
   { to: "/admin/marcas", label: "Marcas", icon: Award },

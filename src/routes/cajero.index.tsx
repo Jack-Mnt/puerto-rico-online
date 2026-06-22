@@ -180,9 +180,7 @@ function CajeroPanel() {
       {rejectingId && (
         <RechazoModal
           onClose={() => setRejectingId(null)}
-          onSubmit={(motivo, nota) =>
-            rechazar.mutate({ id: rejectingId, motivo, nota })
-          }
+          onSubmit={(observaciones) => rechazar.mutate({ id: rejectingId, observaciones })}
           busy={rechazar.isPending}
         />
       )}

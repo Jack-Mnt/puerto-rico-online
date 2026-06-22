@@ -90,24 +90,17 @@ function CajeroPanel() {
   const rechazar = useMutation({
     mutationFn: async ({
       id,
-      motivo,
-      nota,
+      observaciones,
     }: {
       id: string;
-      motivo: MotivoRechazo;
-      nota: string | null;
+      observaciones: string;
     }) => {
       const { error } = await supabase
         .from("pedidos")
-        .update({
-          estado: "pedido_rechazado",
-          motivo_rechazo: motivo,
-          nota_rechazo: nota,
-        })
+        .update({ estado: "pedido_rechazado", observaciones })
         .eq("id", id);
       if (error) throw error;
-      const descripcion = nota ? `${motivo} - ${nota}` : motivo;
-      await logHistorial(id, "pedido_rechazado", descripcion);
+      await logHistorial(id, "pedido_rechazado", observaciones);
     },
     onSuccess: () => {
       toast.success("Pedido rechazado");
@@ -187,9 +180,7 @@ function CajeroPanel() {
       {rejectingId && (
         <RechazoModal
           onClose={() => setRejectingId(null)}
-          onSubmit={(motivo, nota) =>
-            rechazar.mutate({ id: rejectingId, motivo, nota })
-          }
+          onSubmit={(observaciones) => rechazar.mutate({ id: rejectingId, observaciones })}
           busy={rechazar.isPending}
         />
       )}
@@ -318,12 +309,13 @@ function RechazoModal({
   busy,
 }: {
   onClose: () => void;
-  onSubmit: (motivo: MotivoRechazo, nota: string | null) => void;
+  onSubmit: (observaciones: string) => void;
   busy: boolean;
 }) {
   const [motivo, setMotivo] = useState<MotivoRechazo>(MOTIVOS_RECHAZO[0]);
   const [nota, setNota] = useState("");
   const requiereNota = motivo === "Algunos productos sin stock";
+  const observaciones = requiereNota ? nota.trim() : motivo;
 
   return (
     <Modal open onClose={onClose} title="Rechazar pedido" size="md">
@@ -351,7 +343,7 @@ function RechazoModal({
         {requiereNota && (
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">
-              Indica qué productos no hay en stock
+              Indica qué productos no hay en stock (obligatorio)
             </label>
             <textarea
               value={nota}
@@ -369,7 +361,7 @@ function RechazoModal({
           </button>
           <button
             disabled={busy || (requiereNota && !nota.trim())}
-            onClick={() => onSubmit(motivo, requiereNota ? nota.trim() : null)}
+            onClick={() => onSubmit(observaciones)}
             className="rounded-md bg-rose-600 text-white px-4 py-2 text-sm font-medium hover:bg-rose-700 disabled:opacity-50"
           >
             Confirmar rechazo

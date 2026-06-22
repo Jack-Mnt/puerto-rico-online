@@ -26,7 +26,8 @@ type PedidoRich = {
   fecha_entrega: string | null;
   detalle_pedidos: {
     cantidad: number;
-    precio_unitario: number;
+    precio_venta: number;
+    subtotal: number;
     producto_id: string;
     productos?: { nombre: string | null; precio_costo: number | null } | null;
   }[];
@@ -53,7 +54,7 @@ function ReportesPage() {
     queryFn: async () => {
       let q = supabase
         .from("pedidos")
-        .select("id,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_unitario,producto_id,productos(nombre,precio_costo))")
+        .select("id,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_venta,subtotal,producto_id,productos(nombre,precio_costo))")
         .gte("created_at", desde + "T00:00:00")
         .lte("created_at", hasta + "T23:59:59")
         .order("created_at", { ascending: false })
@@ -72,7 +73,7 @@ function ReportesPage() {
     return data.map((p) => {
       const utilidad = (p.detalle_pedidos || []).reduce((s, d) => {
         const costo = Number(d.productos?.precio_costo ?? 0);
-        return s + (Number(d.precio_unitario) - costo) * Number(d.cantidad);
+        return s + (Number(d.precio_venta) - costo) * Number(d.cantidad);
       }, 0);
       const productosStr = (p.detalle_pedidos || [])
         .map((d) => `${d.cantidad}x ${d.productos?.nombre ?? d.producto_id}`)

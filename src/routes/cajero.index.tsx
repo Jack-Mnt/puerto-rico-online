@@ -90,24 +90,17 @@ function CajeroPanel() {
   const rechazar = useMutation({
     mutationFn: async ({
       id,
-      motivo,
-      nota,
+      observaciones,
     }: {
       id: string;
-      motivo: MotivoRechazo;
-      nota: string | null;
+      observaciones: string;
     }) => {
       const { error } = await supabase
         .from("pedidos")
-        .update({
-          estado: "pedido_rechazado",
-          motivo_rechazo: motivo,
-          nota_rechazo: nota,
-        })
+        .update({ estado: "pedido_rechazado", observaciones })
         .eq("id", id);
       if (error) throw error;
-      const descripcion = nota ? `${motivo} - ${nota}` : motivo;
-      await logHistorial(id, "pedido_rechazado", descripcion);
+      await logHistorial(id, "pedido_rechazado", observaciones);
     },
     onSuccess: () => {
       toast.success("Pedido rechazado");

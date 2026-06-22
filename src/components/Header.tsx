@@ -21,7 +21,7 @@ export function Header() {
             className="h-9 w-auto"
             onError={(e) => ((e.currentTarget.style.display = "none"))}
           />
-          <span className="font-display text-base tracking-[0.18em] text-white">PUERTO RICO</span>
+          
         </Link>
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>

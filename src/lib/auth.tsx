@@ -59,19 +59,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ userId: null, perfil: null });
   },
   async init() {
-    if (get().initialized) return;
-    set({ initialized: true });
-    const { data } = await supabase.auth.getSession();
-    const uid = data.session?.user.id ?? null;
-    const perfil = uid ? await fetchPerfil(uid) : null;
-    set({ userId: uid, perfil });
+    if (get().initialized || (get() as any)._initializing) return;
+    (set as any)({ _initializing: true });
 
+    // Subscribe BEFORE getSession so we never miss an event.
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       const newUid = session?.user.id ?? null;
-      const newPerfil = newUid ? await fetchPerfil(newUid) : null;
-      set({ userId: newUid, perfil: newPerfil });
+      // Defer the perfil fetch to avoid deadlocks inside the callback.
+      setTimeout(async () => {
+        const newPerfil = newUid ? await fetchPerfil(newUid) : null;
+        set({ userId: newUid, perfil: newPerfil });
+      }, 0);
     });
+
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session?.user.id ?? null;
+    const perfil = uid ? await fetchPerfil(uid) : null;
+    set({ userId: uid, perfil, initialized: true });
   },
 }));
 

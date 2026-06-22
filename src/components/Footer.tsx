@@ -6,9 +6,8 @@ export function Footer() {
     <footer style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}>
       <div className="container-pro py-14 grid gap-10 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <img src={storageUrl("branding/logo-light.PNG")} alt="" className="h-9 w-auto" onError={(e) => (e.currentTarget.style.display = "none")} />
-            <span className="font-display tracking-[0.18em]">PUERTO RICO</span>
+          <div className="mb-3">
+            <img src={storageUrl("branding/logo-light.PNG")} alt="Puerto Rico Online" className="h-9 w-auto" onError={(e) => (e.currentTarget.style.display = "none")} />
           </div>
           <p className="text-sm text-white/70 leading-relaxed">
             Tu licorería premium online. Selección curada, entrega rápida y atención personalizada en todas nuestras sedes.

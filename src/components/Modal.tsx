@@ -12,15 +12,14 @@ export function Modal({
   onClose: () => void;
   title: string;
   children: ReactNode;
-  size?: "md" | "lg";
+  size?: "md" | "lg" | "xl";
 }) {
   if (!open) return null;
+  const maxW = size === "xl" ? "max-w-4xl" : size === "lg" ? "max-w-2xl" : "max-w-md";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
       <div
-        className={`bg-card border border-border rounded-xl shadow-xl w-full ${
-          size === "lg" ? "max-w-2xl" : "max-w-md"
-        } max-h-[90vh] overflow-y-auto`}
+        className={`bg-card border border-border rounded-xl shadow-xl w-full ${maxW} max-h-[90vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-10">

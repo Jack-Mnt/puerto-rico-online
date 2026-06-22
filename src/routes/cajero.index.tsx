@@ -22,6 +22,7 @@ export const Route = createFileRoute("/cajero/")({
 
 type Pedido = {
   id: string;
+  numero_pedido: number;
   cliente_nombre: string;
   sede_id: string | null;
   estado: EstadoPedido;
@@ -149,7 +150,7 @@ function CajeroPanel() {
                     className="w-full text-left p-3 rounded-lg border border-border bg-background hover:bg-muted/40 transition-colors"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-mono text-muted-foreground">#{p.id.slice(0, 8)}</span>
+                      <span className="text-xs font-mono text-muted-foreground">Pedido #{p.numero_pedido}</span>
                       <span className="text-xs">{formatDate(p.created_at)}</span>
                     </div>
                     <div className="font-medium mt-1 truncate">{p.cliente_nombre}</div>
@@ -215,7 +216,7 @@ function PedidoCajeroModal({
   });
 
   return (
-    <Modal open onClose={onClose} title={`Pedido #${pedido.id.slice(0, 8)}`} size="lg">
+    <Modal open onClose={onClose} title={`Pedido #${pedido.numero_pedido}`} size="lg">
       <div className="space-y-4 text-sm">
         <div className="flex flex-wrap items-center gap-2">
           <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs ${ESTADO_COLOR[pedido.estado]}`}>

@@ -55,14 +55,12 @@ function CartPage() {
             </div>
             <aside className="card-pro p-6 h-fit sticky top-24">
               <h3 className="font-display text-lg">Resumen</h3>
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="price font-semibold">S/ {total.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Envío</span><span className="text-muted-foreground">A coordinar</span></div>
-              </div>
-              <div className="hairline my-4" />
-              <div className="flex justify-between text-base">
-                <span className="font-semibold">Total</span>
-                <span className="price font-bold text-xl">S/ {total.toFixed(2)}</span>
+              <div className="mt-4">
+                <div className="flex justify-between items-baseline">
+                  <span className="font-semibold">Total del pedido</span>
+                  <span className="price font-bold text-xl">S/ {total.toFixed(2)}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">El costo de entrega se coordinará por WhatsApp.</p>
               </div>
               <Link to="/checkout" className="btn btn-accent w-full mt-6">Continuar al checkout</Link>
               <Link to="/productos" className="btn btn-ghost w-full mt-2">Seguir comprando</Link>

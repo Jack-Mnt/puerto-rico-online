@@ -23,13 +23,12 @@ export const Route = createFileRoute("/cajero/")({
 type Pedido = {
   id: string;
   cliente_nombre: string;
-  cliente_telefono: string | null;
-  direccion: string | null;
   sede_id: string | null;
   estado: EstadoPedido;
   metodo_pago: string | null;
   tipo_entrega: string | null;
   total: number;
+  observaciones: string | null;
   created_at: string;
 };
 

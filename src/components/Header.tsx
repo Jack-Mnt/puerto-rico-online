@@ -14,14 +14,13 @@ export function Header() {
         </div>
       </div>
       <div className="container-pro flex items-center justify-between py-4">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3 mr-6 md:mr-12 lg:mr-[72px]">
           <img
             src={storageUrl("branding/logo-light.PNG")}
             alt="Puerto Rico Online"
             className="h-auto w-auto object-contain max-h-10 md:max-h-14"
             onError={(e) => ((e.currentTarget.style.display = "none"))}
           />
-          
         </Link>
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>

@@ -92,7 +92,7 @@ export const sedesQuery = queryOptions({
   queryFn: async (): Promise<Sede[]> => {
     const { data, error } = await supabase
       .from("sedes")
-      .select("id,nombre,activo")
+      .select("*")
       .eq("activo", true)
       .order("nombre");
     if (error) throw error;

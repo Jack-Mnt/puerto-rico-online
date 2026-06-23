@@ -18,7 +18,7 @@ export function Header() {
           <img
             src={storageUrl("branding/logo-light.PNG")}
             alt="Puerto Rico Online"
-            className="h-9 w-auto"
+            className="h-auto w-auto object-contain max-h-10 md:max-h-14"
             onError={(e) => ((e.currentTarget.style.display = "none"))}
           />
           

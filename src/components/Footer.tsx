@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container-pro py-14 grid gap-10 md:grid-cols-4">
         <div>
           <div className="mb-3">
-            <img src={storageUrl("branding/logo-light.PNG")} alt="Puerto Rico Online" className="h-9 w-auto" onError={(e) => (e.currentTarget.style.display = "none")} />
+            <img src={storageUrl("branding/logo-light.PNG")} alt="Puerto Rico Online" className="h-auto w-auto object-contain max-h-10 md:max-h-14" onError={(e) => (e.currentTarget.style.display = "none")} />
           </div>
           <p className="text-sm text-white/70 leading-relaxed">
             Tu licorería premium online. Selección curada, entrega rápida y atención personalizada en todas nuestras sedes.

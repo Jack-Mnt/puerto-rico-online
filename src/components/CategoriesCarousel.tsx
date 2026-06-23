@@ -62,8 +62,7 @@ export function CategoriesCarousel({ categorias, activeSlug }: CategoriesCarouse
                 transition-all duration-300 ease-out
                 cursor-pointer
                 select-none
-                min-w-[130px] sm:min-w-[150px] md:min-w-[190px] lg:min-w-[200px]
-                h-[100px] sm:h-[110px] md:h-[190px] lg:h-[220px]
+                w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[190px] md:h-[190px] lg:w-[200px] lg:h-[200px]
                 px-3 md:px-5
                 ${
                   isActive

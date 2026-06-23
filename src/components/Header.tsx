@@ -27,7 +27,7 @@ export function Header() {
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>
           <Link to="/productos" className="text-white/80 hover:text-white">Catálogo</Link>
           <a href="#categorias" className="text-white/80 hover:text-white">Categorías</a>
-          <a href="#beneficios" className="text-white/80 hover:text-white">Beneficios</a>
+          <Link to="/nosotros" className="text-white/80 hover:text-white">Nosotros</Link>
         </nav>
         <div className="flex items-center gap-2">
           <Link to="/productos" className="hidden sm:inline-flex btn btn-ghost text-white/90 hover:bg-white/10">

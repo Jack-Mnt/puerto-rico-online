@@ -26,7 +26,6 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>
           <Link to="/productos" className="text-white/80 hover:text-white">Catálogo</Link>
-          <a href="#categorias" className="text-white/80 hover:text-white">Categorías</a>
           <Link to="/nosotros" className="text-white/80 hover:text-white">Nosotros</Link>
         </nav>
         <div className="flex items-center gap-2">

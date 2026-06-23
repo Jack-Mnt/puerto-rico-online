@@ -47,6 +47,88 @@ function NosotrosPage() {
           </div>
         </section>
 
+        {/* Nuestras Sedes */}
+        <section className="container-pro py-16 md:py-24">
+          <div className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.22em] font-display mb-3" style={{ color: "var(--color-accent)" }}>Nuestras Sedes</p>
+            <h2 className="font-display text-2xl md:text-4xl">Nuestras Sedes</h2>
+            <p className="mt-3 mx-auto max-w-xl text-muted-foreground leading-relaxed">
+              Estamos cerca de ti para acompañar cada celebración.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sedes.map((sede) => (
+              <div
+                key={sede.id}
+                className="rounded-2xl p-6 md:p-7 transition"
+                style={{
+                  background: "var(--color-primary)",
+                  color: "var(--color-primary-foreground)",
+                  border: "1px solid color-mix(in oklab, white 10%, transparent)",
+                }}
+              >
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, white 10%, transparent)" }}>
+                    <MapPin className="h-5 w-5" style={{ color: "var(--color-premium)" }} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg">{sede.nombre}</h3>
+                    {sede.direccion ? (
+                      <p className="text-sm text-white/60 mt-1 leading-relaxed">{sede.direccion}</p>
+                    ) : (
+                      <p className="text-sm text-white/40 mt-1 leading-relaxed">Dirección por confirmar</p>
+                    )}
+                  </div>
+                </div>
+                {sede.google_maps_url ? (
+                  <a
+                    href={sede.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline w-full text-sm"
+                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
+                  >
+                    <ExternalLink className="h-4 w-4" /> Ver ubicación
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className="btn btn-outline w-full text-sm opacity-50 cursor-not-allowed"
+                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
+                  >
+                    <ExternalLink className="h-4 w-4" /> Ver ubicación
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA bloque */}
+          <div
+            className="mt-12 rounded-2xl p-8 md:p-10 text-center"
+            style={{
+              background: "linear-gradient(135deg, color-mix(in oklab, var(--color-accent) 18%, transparent), color-mix(in oklab, var(--color-accent) 6%, transparent))",
+              border: "1px solid color-mix(in oklab, var(--color-accent) 30%, transparent)",
+            }}
+          >
+            <h3 className="font-display text-xl md:text-2xl mb-2">
+              ¿Necesitas ayuda o deseas realizar un pedido?
+            </h3>
+            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-6">
+              Nuestro equipo está listo para ayudarte y coordinar tu pedido.
+            </p>
+            <a
+              href={whatsappGeneralUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-accent inline-flex"
+            >
+              <MessageCircle className="h-4 w-4" /> WhatsApp Puerto Rico
+            </a>
+          </div>
+        </section>
+
         {/* Nuestra Historia */}
         <section className="container-pro py-16 md:py-24">
           <div className="mx-auto max-w-4xl text-center">

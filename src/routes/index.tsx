@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { ProductCard } from "@/components/ProductCard";
+import { CategoriesCarousel } from "@/components/CategoriesCarousel";
 import { categoriasQuery, destacadosQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/")({
@@ -62,21 +63,7 @@ function Home() {
             <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Explora</p>
             <h2 className="font-display text-2xl md:text-4xl mt-2">Categorías</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {categorias.map((c) => (
-              <Link
-                key={c.id}
-                to="/productos"
-                search={{ categoria: c.slug } as never}
-                className="card-pro p-5 text-center hover:border-[color:var(--color-accent)]"
-              >
-                <div className="mx-auto h-12 w-12 rounded-full premium-gradient grid place-items-center text-[#120E0E] font-display text-sm">
-                  {c.nombre.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="mt-3 text-sm font-semibold">{c.nombre}</div>
-              </Link>
-            ))}
-          </div>
+          <CategoriesCarousel categorias={categorias} />
         </section>
 
       </main>

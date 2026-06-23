@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Truck, ShieldCheck, Sparkles, Clock } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BannerCarousel } from "@/components/BannerCarousel";
@@ -80,27 +79,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Beneficios */}
-        <section id="beneficios" className="bg-[color:var(--color-surface)] border-y border-[color:var(--color-border)]">
-          <div className="container-pro py-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { i: Truck, t: "Delivery rápido", d: "Entrega en el día en nuestras sedes." },
-              { i: ShieldCheck, t: "Productos originales", d: "100% garantía de autenticidad." },
-              { i: Sparkles, t: "Selección premium", d: "Marcas y ediciones limitadas." },
-              { i: Clock, t: "Atención todos los días", d: "Pedidos vía WhatsApp y online." },
-            ].map(({ i: I, t, d }) => (
-              <div key={t} className="flex gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-[color:var(--color-primary)] text-white">
-                  <I className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">{t}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{d}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </main>
       <Footer />
     </div>

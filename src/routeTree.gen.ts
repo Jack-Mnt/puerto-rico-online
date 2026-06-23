@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProductosRouteImport } from './routes/productos'
 import { Route as PedidoConfirmadoRouteImport } from './routes/pedido-confirmado'
+import { Route as NosotrosRouteImport } from './routes/nosotros'
 import { Route as ModeradorRouteImport } from './routes/moderador'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -41,6 +42,11 @@ const ProductosRoute = ProductosRouteImport.update({
 const PedidoConfirmadoRoute = PedidoConfirmadoRouteImport.update({
   id: '/pedido-confirmado',
   path: '/pedido-confirmado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NosotrosRoute = NosotrosRouteImport.update({
+  id: '/nosotros',
+  path: '/nosotros',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModeradorRoute = ModeradorRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/moderador': typeof ModeradorRouteWithChildren
+  '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/moderador': typeof ModeradorRouteWithChildren
+  '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/moderador'
+    | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
     | '/admin/banners'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
     | '/carrito'
     | '/checkout'
     | '/login'
+    | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
     | '/admin/banners'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/moderador'
+    | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
     | '/admin/banners'
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   LoginRoute: typeof LoginRoute
   ModeradorRoute: typeof ModeradorRouteWithChildren
+  NosotrosRoute: typeof NosotrosRoute
   PedidoConfirmadoRoute: typeof PedidoConfirmadoRoute
   ProductosRoute: typeof ProductosRoute
   ApiStaffUsersRoute: typeof ApiStaffUsersRoute
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/pedido-confirmado'
       fullPath: '/pedido-confirmado'
       preLoaderRoute: typeof PedidoConfirmadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nosotros': {
+      id: '/nosotros'
+      path: '/nosotros'
+      fullPath: '/nosotros'
+      preLoaderRoute: typeof NosotrosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/moderador': {
@@ -536,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   LoginRoute: LoginRoute,
   ModeradorRoute: ModeradorRouteWithChildren,
+  NosotrosRoute: NosotrosRoute,
   PedidoConfirmadoRoute: PedidoConfirmadoRoute,
   ProductosRoute: ProductosRoute,
   ApiStaffUsersRoute: ApiStaffUsersRoute,

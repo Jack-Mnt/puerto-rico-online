@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Award, Clock, HeartHandshake, Sparkles, Wine } from "lucide-react";
+import { Award, Clock, HeartHandshake, Sparkles, Wine, MapPin, ExternalLink, MessageCircle } from "lucide-react";
+import { sedesQuery, configQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/nosotros")({
   head: () => ({

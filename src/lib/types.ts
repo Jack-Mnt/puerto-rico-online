@@ -31,7 +31,7 @@ export type Banner = {
   texto_color?: string | null;
 };
 
-export type Sede = { id: string; nombre: string; activo: boolean };
+export type Sede = { id: string; nombre: string; activo: boolean; direccion?: string | null; google_maps_url?: string | null };
 
 export type CartItem = {
   id: string;

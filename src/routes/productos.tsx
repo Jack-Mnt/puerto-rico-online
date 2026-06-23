@@ -30,11 +30,11 @@ function Catalogo() {
   const [search, setSearch] = useState(q ?? "");
   const [showAllBrands, setShowAllBrands] = useState(false);
 
-  const filtered = useMemo(() => {
+  // Products filtered by category + search (used to compute available brands)
+  const productsForBrandScope = useMemo(() => {
     const term = search.trim().toLowerCase();
     return productos.filter((p) => {
       if (categoria && p.categoria?.slug !== categoria) return false;
-      if (marca && p.marca_id !== marca) return false;
       if (term) {
         const hay =
           p.nombre.toLowerCase().includes(term) ||
@@ -44,7 +44,34 @@ function Catalogo() {
       }
       return true;
     });
-  }, [productos, categoria, marca, search]);
+  }, [productos, categoria, search]);
+
+  // Brand IDs available within current category (ignoring search so brand list stays stable while typing)
+  const availableBrandIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const p of productos) {
+      if (categoria && p.categoria?.slug !== categoria) continue;
+      if (p.marca_id) ids.add(p.marca_id);
+    }
+    return ids;
+  }, [productos, categoria]);
+
+  const availableMarcas = useMemo(
+    () => marcas.filter((m) => availableBrandIds.has(m.id)),
+    [marcas, availableBrandIds],
+  );
+
+  // Auto-clear brand filter if the selected brand isn't in the current category
+  useEffect(() => {
+    if (marca && !availableBrandIds.has(marca)) {
+      navigate({ search: (prev: Search) => ({ ...prev, marca: undefined }) });
+    }
+  }, [marca, availableBrandIds, navigate]);
+
+  const filtered = useMemo(
+    () => (marca ? productsForBrandScope.filter((p) => p.marca_id === marca) : productsForBrandScope),
+    [productsForBrandScope, marca],
+  );
 
   const setParam = (k: keyof Search, v?: string) =>
     navigate({ search: (prev: Search) => ({ ...prev, [k]: v || undefined }) });
@@ -52,8 +79,8 @@ function Catalogo() {
   const activeCat = categorias.find((c) => c.slug === categoria);
   const activeMarca = marcas.find((m) => m.id === marca);
 
-  const visibleMarcas = showAllBrands ? marcas : marcas.slice(0, INITIAL_BRANDS);
-  const hiddenCount = Math.max(0, marcas.length - INITIAL_BRANDS);
+  const visibleMarcas = showAllBrands ? availableMarcas : availableMarcas.slice(0, INITIAL_BRANDS);
+  const hiddenCount = Math.max(0, availableMarcas.length - INITIAL_BRANDS);
 
   return (
     <div className="min-h-screen flex flex-col">

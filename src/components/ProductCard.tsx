@@ -17,7 +17,7 @@ export function ProductCard({ p }: { p: Producto }) {
           <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">Sin imagen</div>
         )}
         {p.destacado && (
-          <span className="absolute left-3 top-3 chip premium-gradient !text-[#120E0E] !border-transparent text-[10px] uppercase tracking-wider">Premium</span>
+          <span className="absolute left-3 top-3 chip premium-gradient !text-[#120E0E] !border-transparent text-[10px] uppercase tracking-wider">Más vendido</span>
         )}
       </Link>
       <div className="flex flex-1 flex-col p-4">

@@ -67,7 +67,7 @@ function Detail() {
             <h1 className="font-display text-3xl md:text-4xl mt-2">{p.nombre}</h1>
             <div className="mt-4 flex items-baseline gap-3">
               <span className="price text-4xl font-bold">S/ {Number(p.precio_venta).toFixed(2)}</span>
-              {p.destacado && <span className="chip premium-gradient !text-[#120E0E] !border-transparent">Premium</span>}
+              {p.destacado && <span className="chip premium-gradient !text-[#120E0E] !border-transparent">Más vendido</span>}
             </div>
             {p.descripcion && <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{p.descripcion}</p>}
 

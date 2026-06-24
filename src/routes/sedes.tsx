@@ -48,7 +48,7 @@ function SedesPage() {
         {/* Lista de Sedes */}
         <section className="container-pro py-16 md:py-24">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sedes.map((sede: { id: string; nombre: string; direccion?: string; google_maps_url?: string }) => (
+            {sedes.map((sede) => (
               <div
                 key={sede.id}
                 className="rounded-2xl p-6 md:p-7 transition"

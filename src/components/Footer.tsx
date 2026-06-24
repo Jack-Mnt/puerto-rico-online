@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Briefcase, Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { storageUrl } from "@/lib/supabase";
 import { configQuery, sedesQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 
@@ -111,7 +111,7 @@ export function Footer() {
                 </a>
               </li>
             )}
-            <li className="pt-1"><Link to="/unete" className="hover:text-white transition-colors">Únete a la familia PR</Link></li>
+            <li className="pt-1"><Link to="/unete" className="inline-flex items-center gap-2 hover:text-white transition-colors"><Briefcase className="h-4 w-4" /> Trabaja con nosotros</Link></li>
             <li className="text-white/50 text-xs pt-1">Atención todos los días.</li>
           </ul>
         </div>

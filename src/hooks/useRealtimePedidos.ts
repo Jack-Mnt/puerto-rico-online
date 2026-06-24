@@ -13,11 +13,11 @@ export function useRealtimePedidos(invalidateKeys: ReadonlyArray<ReadonlyArray<u
   const keysSerialized = JSON.stringify(invalidateKeys);
 
   useEffect(() => {
-    const keys = JSON.parse(keysSerialized) as (string | (string | undefined)[])[];
+    const keys = JSON.parse(keysSerialized) as unknown[][];
 
     const invalidateAll = () => {
       for (const k of keys) {
-        qc.invalidateQueries({ queryKey: Array.isArray(k) ? k : [k] });
+        qc.invalidateQueries({ queryKey: k });
       }
     };
 

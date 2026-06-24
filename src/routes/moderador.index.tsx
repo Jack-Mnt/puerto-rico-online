@@ -169,10 +169,10 @@ function ModeradorKanban() {
 
   function variantOf(p: Pedido): Variant {
     if (p.estado === "pedido_despachado") return "despachado";
+    // Reasignado tiene prioridad sobre cualquier estado activo no-despachado.
+    if (reasignadosIds.has(p.id)) return "reasignado";
     if (p.estado === "pedido_rechazado") return "rechazado";
     if (p.estado === "pedido_aceptado") return "aceptado";
-    // pedido_creado: si fue reasignado, lo mostramos como reasignado
-    if (p.estado === "pedido_creado" && reasignadosIds.has(p.id)) return "reasignado";
     return "creado";
   }
 

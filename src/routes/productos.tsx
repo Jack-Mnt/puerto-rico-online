@@ -196,34 +196,43 @@ function Catalogo() {
                 {categoriasDelGrupo.length === 0 ? (
                   <p className="text-xs text-muted-foreground italic">No hay familias para este grupo.</p>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+                  <HorizontalCarousel>
                     <PillButton active={!categoria} onClick={() => setParam({ categoria: undefined, marca: undefined })}>Todas</PillButton>
                     {categoriasDelGrupo.map((c) => (
                       <PillButton key={c.id} active={categoria === c.slug} onClick={() => setParam({ categoria: c.slug, marca: undefined })}>
                         {c.nombre}
                       </PillButton>
                     ))}
-                  </div>
+                  </HorizontalCarousel>
                 )}
               </FilterRow>
             )}
 
-            {/* Marcas */}
-            {grupo && (
-              <FilterRow label="Marcas">
-                {availableMarcas.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">No hay marcas disponibles.</p>
-                ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+            {/* Marcas (colapsable) */}
+            {grupo && availableMarcas.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70">
+                    Marcas
+                  </h3>
+                  <button
+                    onClick={() => setShowMarcas((s) => !s)}
+                    className="text-xs uppercase tracking-[0.16em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                  >
+                    {showMarcas ? "Ocultar marcas" : `Ver marcas (${availableMarcas.length})`}
+                  </button>
+                </div>
+                {showMarcas && (
+                  <HorizontalCarousel>
                     <PillButton active={!marca} onClick={() => setParam({ marca: undefined })}>Todas</PillButton>
                     {availableMarcas.map((m) => (
                       <PillButton key={m.id} active={marca === m.id} onClick={() => setParam({ marca: m.id })}>
                         {m.nombre}
                       </PillButton>
                     ))}
-                  </div>
+                  </HorizontalCarousel>
                 )}
-              </FilterRow>
+              </div>
             )}
 
             {/* Limpiar filtros */}

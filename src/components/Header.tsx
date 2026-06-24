@@ -149,7 +149,7 @@ export function Header() {
               <Search className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">Buscar productos</span>
             </button>
-            <MobileLink to="/nosotros" icon={MapPin} label="Nuestras sedes" onClick={close} hash="sedes" />
+            <MobileLink to="/sedes" icon={MapPin} label="Nuestras sedes" onClick={close} />
 
             <div className="my-3 border-t border-white/10" />
 

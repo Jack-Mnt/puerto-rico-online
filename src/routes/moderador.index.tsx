@@ -79,6 +79,7 @@ function ModeradorKanban() {
   });
 
   const queryKey = ["mod-pedidos-activos"];
+  useRealtimePedidos([queryKey, ["mod-reasignados-ids"], ["mod-historial"], ["pedido-historial"], ["mod-pedido-items"]]);
   const { data = [], isLoading } = useQuery({
     queryKey,
     queryFn: async () => {

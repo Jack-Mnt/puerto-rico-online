@@ -134,11 +134,6 @@ const CajeroHistorialRoute = CajeroHistorialRouteImport.update({
   path: '/historial',
   getParentRoute: () => CajeroRoute,
 } as any)
-const CajeroHistorialRoute = CajeroHistorialRouteImport.update({
-  id: '/historial',
-  path: '/historial',
-  getParentRoute: () => CajeroRoute,
-} as any)
 const ApiStaffUsersRoute = ApiStaffUsersRouteImport.update({
   id: '/api/staff-users',
   path: '/api/staff-users',

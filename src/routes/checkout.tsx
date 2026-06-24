@@ -245,7 +245,7 @@ function CheckoutPage() {
               {tipo === "delivery" && (
                 <div className="grid sm:grid-cols-2 gap-4 mt-5">
                   <div>
-                    <label className="label">Dirección</label>
+                    <label className="label">DIRECCIÓN *</label>
                     <input className="field" value={direccion} onChange={(e) => setDireccion(e.target.value)} maxLength={200} required={tipo === "delivery"} />
                   </div>
                   <div>

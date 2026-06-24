@@ -97,11 +97,66 @@ export type ProductosPageFilters = {
 
 export type ProductosPage = { rows: Producto[]; total: number; from: number; to: number };
 
+async function searchProductoIdsFallback(term: string): Promise<string[]> {
+  const like = `%${term}%`;
+  const [marcasRes, catsRes] = await Promise.all([
+    supabase.from("marcas").select("id").ilike("nombre", like),
+    supabase.from("categorias").select("id").ilike("nombre", like),
+  ]);
+  const marcaIds = (marcasRes.data ?? []).map((m: { id: string }) => m.id);
+  const catIds = (catsRes.data ?? []).map((c: { id: string }) => c.id);
+  const orParts = [`nombre.ilike.${like}`];
+  if (marcaIds.length > 0) orParts.push(`marca_id.in.(${marcaIds.join(",")})`);
+  if (catIds.length > 0) orParts.push(`categoria_id.in.(${catIds.join(",")})`);
+  const { data, error } = await supabase
+    .from("productos")
+    .select("id")
+    .eq("activo", true)
+    .or(orParts.join(","));
+  if (error) throw error;
+  return ((data ?? []) as Array<{ id: string }>).map((r) => r.id);
+}
+
 export async function fetchProductosPage(
   filters: ProductosPageFilters,
   from: number,
   to: number,
 ): Promise<ProductosPage> {
+  // Caso con búsqueda: usar RPC pg_trgm (ilike + similarity) para ranking flexible
+  if (filters.search && filters.search.trim()) {
+    const term = filters.search.trim();
+    let orderedIds: string[] = [];
+    const rpc = await supabase.rpc("buscar_productos", { termino: term });
+    if (rpc.error) {
+      // Fallback: ilike sobre productos / marcas / categorías
+      orderedIds = await searchProductoIdsFallback(term);
+    } else {
+      orderedIds = ((rpc.data ?? []) as Array<{ id: string; score: number }>).map((r) => r.id);
+    }
+    if (orderedIds.length === 0) {
+      return { rows: [], total: 0, from, to };
+    }
+    // Aplicar filtros adicionales (categoría / marca) sobre los IDs encontrados
+    let q2 = supabase
+      .from("productos")
+      .select(PRODUCTO_SELECT)
+      .eq("activo", true)
+      .in("id", orderedIds);
+    if (filters.categoriaIds && filters.categoriaIds.length > 0) {
+      q2 = q2.in("categoria_id", filters.categoriaIds);
+    }
+    if (filters.marcaId) q2 = q2.eq("marca_id", filters.marcaId);
+    const { data, error } = await q2;
+    if (error) throw error;
+    const rank = new Map(orderedIds.map((id, i) => [id, i] as const));
+    const sorted = ((data ?? []) as unknown as Producto[]).sort(
+      (a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9),
+    );
+    const total = sorted.length;
+    return { rows: sorted.slice(from, to + 1), total, from, to };
+  }
+
+  // Caso sin búsqueda: paginación normal en servidor
   let q = supabase
     .from("productos")
     .select(PRODUCTO_SELECT, { count: "exact" })
@@ -110,21 +165,6 @@ export async function fetchProductosPage(
     q = q.in("categoria_id", filters.categoriaIds);
   }
   if (filters.marcaId) q = q.eq("marca_id", filters.marcaId);
-  if (filters.search && filters.search.trim()) {
-    const term = filters.search.trim();
-    const like = `%${term}%`;
-    // Buscar marcas y categorías que coincidan por nombre
-    const [marcasRes, catsRes] = await Promise.all([
-      supabase.from("marcas").select("id").ilike("nombre", like),
-      supabase.from("categorias").select("id").ilike("nombre", like),
-    ]);
-    const marcaIds = (marcasRes.data ?? []).map((m: { id: string }) => m.id);
-    const catIds = (catsRes.data ?? []).map((c: { id: string }) => c.id);
-    const orParts = [`nombre.ilike.${like}`];
-    if (marcaIds.length > 0) orParts.push(`marca_id.in.(${marcaIds.join(",")})`);
-    if (catIds.length > 0) orParts.push(`categoria_id.in.(${catIds.join(",")})`);
-    q = q.or(orParts.join(","));
-  }
   const { data, error, count } = await q.order("nombre").range(from, to);
   if (error) throw error;
   return {

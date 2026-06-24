@@ -92,7 +92,7 @@ function CheckoutPage() {
       const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalle);
       if (dErr) throw dErr;
 
-      const whatsapp = (config.whatsapp_moderador || "51955618119").replace(/\D/g, "");
+      const whatsapp = (config.whatsapp_principal || config.whatsapp_moderador || "").replace(/\D/g, "");
       const productosTxt = items.map((i) => `- ${i.nombre} x${i.cantidad}`).join("\n");
       const msg = [
         "Hola, acabo de realizar un pedido en Puerto Rico.",

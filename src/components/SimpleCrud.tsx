@@ -190,7 +190,18 @@ function CrudForm({
         {fields.map((f) => (
           <label key={f.name} className="block text-sm">
             <span className="block mb-1 font-medium">{f.label}</span>
-            {f.type === "boolean" ? (
+            {f.type === "select" ? (
+              <select
+                className="input"
+                value={form[f.name] ?? ""}
+                onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+              >
+                <option value="">Seleccionar...</option>
+                {f.options?.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            ) : f.type === "boolean" ? (
               <input
                 type="checkbox"
                 checked={!!form[f.name]}

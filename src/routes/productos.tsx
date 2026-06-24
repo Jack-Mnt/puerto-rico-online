@@ -5,12 +5,15 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { categoriasQuery, marcasQuery, productosQuery } from "@/lib/queries";
-import { Search, X, ChevronDown } from "lucide-react";
+import { Search, X, RotateCcw } from "lucide-react";
 
-type Search = { categoria?: string; marca?: string; q?: string };
+type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };
+
+const GRUPOS = ["Licores", "Bebidas", "Cigarros y Vapes", "Complementos"] as const;
 
 export const Route = createFileRoute("/productos")({
   validateSearch: (s: Record<string, unknown>): Search => ({
+    grupo: typeof s.grupo === "string" ? s.grupo : undefined,
     categoria: typeof s.categoria === "string" ? s.categoria : undefined,
     marca: typeof s.marca === "string" ? s.marca : undefined,
     q: typeof s.q === "string" ? s.q : undefined,
@@ -19,22 +22,59 @@ export const Route = createFileRoute("/productos")({
   component: Catalogo,
 });
 
-const INITIAL_BRANDS = 8;
-
 function Catalogo() {
-  const { categoria, marca, q } = Route.useSearch();
+  const { grupo, categoria, marca, q } = Route.useSearch();
   const navigate = useNavigate({ from: "/productos" });
   const { data: productos = [], isLoading } = useQuery(productosQuery);
   const { data: categorias = [] } = useQuery(categoriasQuery);
   const { data: marcas = [] } = useQuery(marcasQuery);
   const [search, setSearch] = useState(q ?? "");
-  const [showAllBrands, setShowAllBrands] = useState(false);
 
-  // Products filtered by category + search (used to compute available brands)
-  const productsForBrandScope = useMemo(() => {
-    const term = search.trim().toLowerCase();
+  // Categorías filtradas por grupo
+  const categoriasDelGrupo = useMemo(
+    () => (grupo ? categorias.filter((c) => c.grupo === grupo) : []),
+    [categorias, grupo],
+  );
+
+  // Productos dentro del scope grupo/categoría (sin marca, sin búsqueda) para calcular marcas disponibles
+  const productosScope = useMemo(() => {
+    const catsDelGrupoSlugs = new Set(categoriasDelGrupo.map((c) => c.slug));
     return productos.filter((p) => {
+      if (grupo && !catsDelGrupoSlugs.has(p.categoria?.slug ?? "")) return false;
       if (categoria && p.categoria?.slug !== categoria) return false;
+      return true;
+    });
+  }, [productos, grupo, categoria, categoriasDelGrupo]);
+
+  const availableBrandIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const p of productosScope) if (p.marca_id) ids.add(p.marca_id);
+    return ids;
+  }, [productosScope]);
+
+  const availableMarcas = useMemo(
+    () => marcas.filter((m) => availableBrandIds.has(m.id)),
+    [marcas, availableBrandIds],
+  );
+
+  // Auto-limpiar categoría si no pertenece al grupo
+  useEffect(() => {
+    if (categoria && grupo && !categoriasDelGrupo.some((c) => c.slug === categoria)) {
+      navigate({ search: (prev: Search) => ({ ...prev, categoria: undefined }) });
+    }
+  }, [categoria, grupo, categoriasDelGrupo, navigate]);
+
+  // Auto-limpiar marca si no está disponible
+  useEffect(() => {
+    if (marca && !availableBrandIds.has(marca)) {
+      navigate({ search: (prev: Search) => ({ ...prev, marca: undefined }) });
+    }
+  }, [marca, availableBrandIds, navigate]);
+
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return productosScope.filter((p) => {
+      if (marca && p.marca_id !== marca) return false;
       if (term) {
         const hay =
           p.nombre.toLowerCase().includes(term) ||
@@ -44,43 +84,28 @@ function Catalogo() {
       }
       return true;
     });
-  }, [productos, categoria, search]);
+  }, [productosScope, marca, search]);
 
-  // Brand IDs available within current category (ignoring search so brand list stays stable while typing)
-  const availableBrandIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const p of productos) {
-      if (categoria && p.categoria?.slug !== categoria) continue;
-      if (p.marca_id) ids.add(p.marca_id);
-    }
-    return ids;
-  }, [productos, categoria]);
+  const setParam = (patch: Partial<Search>) =>
+    navigate({
+      search: (prev: Search) => {
+        const next: Search = { ...prev };
+        for (const k of Object.keys(patch) as (keyof Search)[]) {
+          const v = patch[k];
+          next[k] = v ? v : undefined;
+        }
+        return next;
+      },
+    });
 
-  const availableMarcas = useMemo(
-    () => marcas.filter((m) => availableBrandIds.has(m.id)),
-    [marcas, availableBrandIds],
-  );
-
-  // Auto-clear brand filter if the selected brand isn't in the current category
-  useEffect(() => {
-    if (marca && !availableBrandIds.has(marca)) {
-      navigate({ search: (prev: Search) => ({ ...prev, marca: undefined }) });
-    }
-  }, [marca, availableBrandIds, navigate]);
-
-  const filtered = useMemo(
-    () => (marca ? productsForBrandScope.filter((p) => p.marca_id === marca) : productsForBrandScope),
-    [productsForBrandScope, marca],
-  );
-
-  const setParam = (k: keyof Search, v?: string) =>
-    navigate({ search: (prev: Search) => ({ ...prev, [k]: v || undefined }) });
+  const clearAll = () => {
+    setSearch("");
+    navigate({ search: () => ({}) });
+  };
 
   const activeCat = categorias.find((c) => c.slug === categoria);
   const activeMarca = marcas.find((m) => m.id === marca);
-
-  const visibleMarcas = showAllBrands ? availableMarcas : availableMarcas.slice(0, INITIAL_BRANDS);
-  const hiddenCount = Math.max(0, availableMarcas.length - INITIAL_BRANDS);
+  const hasFilters = !!(grupo || categoria || marca || search);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -104,13 +129,21 @@ function Catalogo() {
         </div>
 
         {/* Active filters */}
-        {(activeCat || activeMarca) && (
+        {(grupo || activeCat || activeMarca) && (
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground mr-1">Filtros activos:</span>
+            {grupo && (
+              <button
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#120E0E] text-white text-xs px-3 py-1.5 hover:opacity-90 transition"
+                onClick={() => setParam({ grupo: undefined, categoria: undefined, marca: undefined })}
+              >
+                {grupo} <X className="h-3 w-3" />
+              </button>
+            )}
             {activeCat && (
               <button
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#120E0E] text-white text-xs px-3 py-1.5 hover:opacity-90 transition"
-                onClick={() => setParam("categoria", undefined)}
+                onClick={() => setParam({ categoria: undefined, marca: undefined })}
               >
                 {activeCat.nombre} <X className="h-3 w-3" />
               </button>
@@ -118,7 +151,7 @@ function Catalogo() {
             {activeMarca && (
               <button
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#120E0E] text-white text-xs px-3 py-1.5 hover:opacity-90 transition"
-                onClick={() => setParam("marca", undefined)}
+                onClick={() => setParam({ marca: undefined })}
               >
                 {activeMarca.nombre} <X className="h-3 w-3" />
               </button>
@@ -126,70 +159,99 @@ function Catalogo() {
           </div>
         )}
 
-        {/* Premium filter block */}
-        <section
-          className="mb-8 rounded-2xl border border-[color:var(--color-border)] bg-[#FBF8F2] shadow-[0_1px_2px_rgba(18,14,14,0.04)] overflow-hidden"
-        >
-          {/* Categorías */}
-          <div className="px-4 md:px-6 pt-5 pb-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70">
-                Categorías
-              </h3>
-            </div>
-            <div className="-mx-4 md:-mx-6 px-4 md:px-6 overflow-x-auto no-scrollbar">
-              <div className="flex items-center gap-2 min-w-min pb-1">
-                <PillButton active={!categoria} onClick={() => setParam("categoria", undefined)}>
-                  Todas
-                </PillButton>
-                {categorias.map((c) => (
-                  <PillButton
-                    key={c.id}
-                    active={categoria === c.slug}
-                    onClick={() => setParam("categoria", c.slug)}
-                  >
-                    {c.nombre}
+        {/* Filter block */}
+        <section className="mb-8 rounded-2xl border border-[color:var(--color-border)] bg-[#FBF8F2] shadow-[0_1px_2px_rgba(18,14,14,0.04)] overflow-hidden">
+          {/* Desktop: pills, Mobile: selects */}
+          <div className="px-4 md:px-6 py-5 space-y-5">
+            {/* 1. Grupo */}
+            <FilterRow label="1. Grupo">
+              {/* Mobile select */}
+              <select
+                className="field md:hidden"
+                value={grupo ?? ""}
+                onChange={(e) => setParam({ grupo: e.target.value || undefined, categoria: undefined, marca: undefined })}
+              >
+                <option value="">Selecciona un grupo</option>
+                {GRUPOS.map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
+              {/* Desktop pills */}
+              <div className="hidden md:flex flex-wrap items-center gap-2">
+                {GRUPOS.map((g) => (
+                  <PillButton key={g} active={grupo === g} onClick={() => setParam({ grupo: grupo === g ? undefined : g, categoria: undefined, marca: undefined })}>
+                    {g}
                   </PillButton>
                 ))}
               </div>
-            </div>
-          </div>
+            </FilterRow>
 
-          {/* Divider */}
-          <div className="mx-4 md:mx-6 h-px bg-gradient-to-r from-transparent via-[color:var(--color-border)] to-transparent" />
-
-          {/* Marcas */}
-          <div className="px-4 md:px-6 pt-4 pb-5">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70">
-                Marcas
-              </h3>
-              {hiddenCount > 0 && (
-                <button
-                  onClick={() => setShowAllBrands((v) => !v)}
-                  className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
-                >
-                  {showAllBrands ? "Ver menos" : `Ver más marcas (${hiddenCount})`}
-                  <ChevronDown className={`h-3 w-3 transition-transform ${showAllBrands ? "rotate-180" : ""}`} />
-                </button>
+            {/* 2. Categoría */}
+            <FilterRow label="2. Categoría">
+              {!grupo ? (
+                <p className="text-xs text-muted-foreground italic">Selecciona un grupo para ver las categorías.</p>
+              ) : categoriasDelGrupo.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">No hay categorías para este grupo.</p>
+              ) : (
+                <>
+                  <select
+                    className="field md:hidden"
+                    value={categoria ?? ""}
+                    onChange={(e) => setParam({ categoria: e.target.value || undefined, marca: undefined })}
+                  >
+                    <option value="">Todas las categorías</option>
+                    {categoriasDelGrupo.map((c) => <option key={c.id} value={c.slug}>{c.nombre}</option>)}
+                  </select>
+                  <div className="hidden md:flex flex-wrap items-center gap-2">
+                    <PillButton active={!categoria} onClick={() => setParam({ categoria: undefined, marca: undefined })}>Todas</PillButton>
+                    {categoriasDelGrupo.map((c) => (
+                      <PillButton key={c.id} active={categoria === c.slug} onClick={() => setParam({ categoria: c.slug, marca: undefined })}>
+                        {c.nombre}
+                      </PillButton>
+                    ))}
+                  </div>
+                </>
               )}
-            </div>
-            <div className="-mx-4 md:-mx-6 px-4 md:px-6 overflow-x-auto no-scrollbar">
-              <div className={`flex items-center gap-2 pb-1 ${showAllBrands ? "flex-wrap" : "min-w-min"}`}>
-                <PillButton active={!marca} onClick={() => setParam("marca", undefined)}>
-                  Todas
-                </PillButton>
-                {visibleMarcas.map((m) => (
-                  <PillButton
-                    key={m.id}
-                    active={marca === m.id}
-                    onClick={() => setParam("marca", m.id)}
+            </FilterRow>
+
+            {/* 3. Marca */}
+            <FilterRow label="3. Marca">
+              {!grupo ? (
+                <p className="text-xs text-muted-foreground italic">Selecciona un grupo primero.</p>
+              ) : availableMarcas.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">No hay marcas disponibles.</p>
+              ) : (
+                <>
+                  <select
+                    className="field md:hidden"
+                    value={marca ?? ""}
+                    onChange={(e) => setParam({ marca: e.target.value || undefined })}
                   >
-                    {m.nombre}
-                  </PillButton>
-                ))}
+                    <option value="">Todas las marcas</option>
+                    {availableMarcas.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}
+                  </select>
+                  <div className="hidden md:flex flex-wrap items-center gap-2">
+                    <PillButton active={!marca} onClick={() => setParam({ marca: undefined })}>Todas</PillButton>
+                    {availableMarcas.map((m) => (
+                      <PillButton key={m.id} active={marca === m.id} onClick={() => setParam({ marca: m.id })}>
+                        {m.nombre}
+                      </PillButton>
+                    ))}
+                  </div>
+                </>
+              )}
+            </FilterRow>
+
+            {/* Limpiar filtros */}
+            {hasFilters && (
+              <div className="pt-2 border-t border-[color:var(--color-border)]/60">
+                <button
+                  onClick={clearAll}
+                  className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Limpiar filtros
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
@@ -220,6 +282,17 @@ function Catalogo() {
   );
 }
 
+function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70 mb-2">
+        {label}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
 function PillButton({
   active,
   onClick,
@@ -243,6 +316,3 @@ function PillButton({
     </button>
   );
 }
-
-function _placeholder() {}
-void _placeholder;

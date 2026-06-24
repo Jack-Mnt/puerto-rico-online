@@ -110,3 +110,11 @@ export const configQuery = queryOptions({
     return out;
   },
 });
+
+export function whatsappUrl(num?: string | null, text?: string) {
+  const clean = (num || "").replace(/\D/g, "");
+  if (!clean) return "";
+  const base = `https://wa.me/${clean}`;
+  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+

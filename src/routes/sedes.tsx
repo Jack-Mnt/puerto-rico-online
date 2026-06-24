@@ -21,8 +21,8 @@ function SedesPage() {
   const { data: sedes = [], isLoading } = useQuery(sedesQuery);
   const { data: config = {} } = useQuery(configQuery);
 
-  const whatsappGeneral = (config.whatsapp_moderador || "51955618119").replace(/\D/g, "");
-  const whatsappGeneralUrl = `https://wa.me/${whatsappGeneral}`;
+  const whatsappGeneral = (config.whatsapp_principal || config.whatsapp_moderador || "").replace(/\D/g, "");
+  const whatsappGeneralUrl = whatsappGeneral ? `https://wa.me/${whatsappGeneral}` : "";
 
   return (
     <div className="min-h-screen flex flex-col">

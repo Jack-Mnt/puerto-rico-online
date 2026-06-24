@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
 import { storageUrl } from "@/lib/supabase";
+import { configQuery, whatsappUrl } from "@/lib/queries";
 
 export function Header() {
   const count = useCart((s) => s.count());
@@ -10,8 +12,12 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+  const { data: config = {} } = useQuery(configQuery);
+  const logoSrc = storageUrl(config.logo_light || config.logo_dark || "branding/logo-light.PNG");
+  const waUrl = whatsappUrl(config.whatsapp_principal) || "#";
 
   useEffect(() => setMounted(true), []);
+
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -46,11 +52,12 @@ export function Header() {
       <div className="container-pro flex items-center justify-between py-3 md:py-4">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-12 lg:mr-[72px]">
           <img
-            src={storageUrl("branding/logo-light.PNG")}
-            alt="Puerto Rico Online"
+            src={logoSrc}
+            alt={config.nombre_empresa || "Puerto Rico Online"}
             className="h-auto w-auto object-contain max-h-9 md:max-h-14"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
+
         </Link>
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>
@@ -154,7 +161,7 @@ export function Header() {
             <div className="my-3 border-t border-white/10" />
 
             <a
-              href="https://wa.me/"
+              href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={close}
@@ -163,6 +170,7 @@ export function Header() {
               <MessageCircle className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">WhatsApp</span>
             </a>
+
           </nav>
 
           <div className="px-5 py-4 border-t border-white/10 text-[11px] text-white/50">

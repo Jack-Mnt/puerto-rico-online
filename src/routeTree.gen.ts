@@ -15,6 +15,7 @@ import { Route as PedidoConfirmadoRouteImport } from './routes/pedido-confirmado
 import { Route as NosotrosRouteImport } from './routes/nosotros'
 import { Route as ModeradorRouteImport } from './routes/moderador'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CarritoRouteImport } from './routes/carrito'
 import { Route as CajeroRouteImport } from './routes/cajero'
@@ -63,6 +64,11 @@ const ModeradorRoute = ModeradorRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactoRoute = ContactoRouteImport.update({
+  id: '/contacto',
+  path: '/contacto',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
+  '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
   '/moderador': typeof ModeradorRouteWithChildren
   '/nosotros': typeof NosotrosRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
+  '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
   '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
   '/checkout': typeof CheckoutRoute
+  '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
   '/moderador': typeof ModeradorRouteWithChildren
   '/nosotros': typeof NosotrosRoute
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/cajero'
     | '/carrito'
     | '/checkout'
+    | '/contacto'
     | '/login'
     | '/moderador'
     | '/nosotros'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/'
     | '/carrito'
     | '/checkout'
+    | '/contacto'
     | '/login'
     | '/nosotros'
     | '/pedido-confirmado'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/cajero'
     | '/carrito'
     | '/checkout'
+    | '/contacto'
     | '/login'
     | '/moderador'
     | '/nosotros'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   CajeroRoute: typeof CajeroRouteWithChildren
   CarritoRoute: typeof CarritoRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContactoRoute: typeof ContactoRoute
   LoginRoute: typeof LoginRoute
   ModeradorRoute: typeof ModeradorRouteWithChildren
   NosotrosRoute: typeof NosotrosRoute
@@ -379,6 +392,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacto': {
+      id: '/contacto'
+      path: '/contacto'
+      fullPath: '/contacto'
+      preLoaderRoute: typeof ContactoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -574,6 +594,7 @@ const rootRouteChildren: RootRouteChildren = {
   CajeroRoute: CajeroRouteWithChildren,
   CarritoRoute: CarritoRoute,
   CheckoutRoute: CheckoutRoute,
+  ContactoRoute: ContactoRoute,
   LoginRoute: LoginRoute,
   ModeradorRoute: ModeradorRouteWithChildren,
   NosotrosRoute: NosotrosRoute,

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UneteRouteImport } from './routes/unete'
 import { Route as SedesRouteImport } from './routes/sedes'
 import { Route as ProductosRouteImport } from './routes/productos'
 import { Route as PedidoConfirmadoRouteImport } from './routes/pedido-confirmado'
@@ -36,6 +37,11 @@ import { Route as AdminConfiguracionRouteImport } from './routes/admin.configura
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 
+const UneteRoute = UneteRouteImport.update({
+  id: '/unete',
+  path: '/unete',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SedesRoute = SedesRouteImport.update({
   id: '/sedes',
   path: '/sedes',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/sedes': typeof SedesRoute
+  '/unete': typeof UneteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/sedes': typeof SedesRoute
+  '/unete': typeof UneteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
   '/sedes': typeof SedesRoute
+  '/unete': typeof UneteRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/pedido-confirmado'
     | '/productos'
     | '/sedes'
+    | '/unete'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/pedido-confirmado'
     | '/productos'
     | '/sedes'
+    | '/unete'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/pedido-confirmado'
     | '/productos'
     | '/sedes'
+    | '/unete'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -346,12 +358,20 @@ export interface RootRouteChildren {
   PedidoConfirmadoRoute: typeof PedidoConfirmadoRoute
   ProductosRoute: typeof ProductosRoute
   SedesRoute: typeof SedesRoute
+  UneteRoute: typeof UneteRoute
   ApiStaffUsersRoute: typeof ApiStaffUsersRoute
   ProductoSlugRoute: typeof ProductoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unete': {
+      id: '/unete'
+      path: '/unete'
+      fullPath: '/unete'
+      preLoaderRoute: typeof UneteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sedes': {
       id: '/sedes'
       path: '/sedes'
@@ -601,6 +621,7 @@ const rootRouteChildren: RootRouteChildren = {
   PedidoConfirmadoRoute: PedidoConfirmadoRoute,
   ProductosRoute: ProductosRoute,
   SedesRoute: SedesRoute,
+  UneteRoute: UneteRoute,
   ApiStaffUsersRoute: ApiStaffUsersRoute,
   ProductoSlugRoute: ProductoSlugRoute,
 }

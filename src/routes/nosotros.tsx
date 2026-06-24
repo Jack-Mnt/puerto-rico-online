@@ -104,28 +104,10 @@ function NosotrosPage() {
             ))}
           </div>
 
-          {/* CTA bloque */}
-          <div
-            className="mt-12 rounded-2xl p-8 md:p-10 text-center"
-            style={{
-              background: "linear-gradient(135deg, color-mix(in oklab, var(--color-accent) 18%, transparent), color-mix(in oklab, var(--color-accent) 6%, transparent))",
-              border: "1px solid color-mix(in oklab, var(--color-accent) 30%, transparent)",
-            }}
-          >
-            <h3 className="font-display text-xl md:text-2xl mb-2">
-              ¿Necesitas ayuda o deseas realizar un pedido?
-            </h3>
-            <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto mb-6">
-              Nuestro equipo está listo para ayudarte y coordinar tu pedido.
-            </p>
-            <a
-              href={whatsappGeneralUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-accent inline-flex"
-            >
-              <MessageCircle className="h-4 w-4" /> WhatsApp Puerto Rico
-            </a>
+          <div className="mt-10 text-center">
+            <Link to="/sedes" className="btn btn-accent inline-flex">
+              Ver todas las sedes
+            </Link>
           </div>
         </section>
 

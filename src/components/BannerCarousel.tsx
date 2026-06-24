@@ -43,10 +43,10 @@ export function BannerCarousel() {
                       <div className="container-pro pb-6 md:pb-0">
                         <div className="max-w-xl">
                           {b.titulo && (
-                            <h2 className="font-display text-3xl md:text-5xl text-white drop-shadow" style={{ color: b.texto_color || "#fff" }}>{b.titulo}</h2>
+                            <h2 className="font-display text-3xl md:text-5xl text-white drop-shadow-lg leading-tight" style={{ color: b.texto_color || "#fff" }}>{b.titulo}</h2>
                           )}
                           {b.subtitulo && (
-                            <p className="mt-2 text-white/90 text-sm md:text-lg" style={{ color: b.texto_color || "#fff" }}>{b.subtitulo}</p>
+                            <p className="mt-3 text-white text-base md:text-lg drop-shadow-md leading-relaxed" style={{ color: b.texto_color || "#fff" }}>{b.subtitulo}</p>
                           )}
                         </div>
                       </div>

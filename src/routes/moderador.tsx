@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { ListOrdered } from "lucide-react";
+import { ListOrdered, History } from "lucide-react";
 import { PanelLayout, type NavItem } from "@/components/PanelLayout";
 
 const nav: NavItem[] = [
-  { to: "/moderador", label: "Pedidos", icon: ListOrdered },
+  { to: "/moderador", label: "Operaciones", icon: ListOrdered },
+  { to: "/moderador/historial", label: "Historial", icon: History },
 ];
 
 export const Route = createFileRoute("/moderador")({

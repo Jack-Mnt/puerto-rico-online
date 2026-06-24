@@ -111,7 +111,19 @@ export async function fetchProductosPage(
   }
   if (filters.marcaId) q = q.eq("marca_id", filters.marcaId);
   if (filters.search && filters.search.trim()) {
-    q = q.ilike("nombre", `%${filters.search.trim()}%`);
+    const term = filters.search.trim();
+    const like = `%${term}%`;
+    // Buscar marcas y categorías que coincidan por nombre
+    const [marcasRes, catsRes] = await Promise.all([
+      supabase.from("marcas").select("id").ilike("nombre", like),
+      supabase.from("categorias").select("id").ilike("nombre", like),
+    ]);
+    const marcaIds = (marcasRes.data ?? []).map((m: { id: string }) => m.id);
+    const catIds = (catsRes.data ?? []).map((c: { id: string }) => c.id);
+    const orParts = [`nombre.ilike.${like}`];
+    if (marcaIds.length > 0) orParts.push(`marca_id.in.(${marcaIds.join(",")})`);
+    if (catIds.length > 0) orParts.push(`categoria_id.in.(${catIds.join(",")})`);
+    q = q.or(orParts.join(","));
   }
   const { data, error, count } = await q.order("nombre").range(from, to);
   if (error) throw error;
@@ -122,6 +134,7 @@ export async function fetchProductosPage(
     to,
   };
 }
+
 
 export const productoBySlugQuery = (slug: string) =>
   queryOptions({

@@ -9,9 +9,10 @@ import { Modal, ConfirmDialog } from "./Modal";
 export type CrudField = {
   name: string;
   label: string;
-  type: "text" | "number" | "boolean";
+  type: "text" | "number" | "boolean" | "select";
   required?: boolean;
   defaultValue?: any;
+  options?: { label: string; value: string }[];
 };
 
 export function SimpleCrud({

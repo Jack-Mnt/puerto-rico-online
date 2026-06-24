@@ -15,6 +15,7 @@ import {
   type EstadoPedido,
   type MotivoRechazo,
 } from "@/lib/estados";
+import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
 
 export const Route = createFileRoute("/cajero/")({
   component: CajeroPanel,

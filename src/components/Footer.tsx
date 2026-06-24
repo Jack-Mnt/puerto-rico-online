@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { storageUrl } from "@/lib/supabase";
-import { configQuery, sedesQuery, whatsappUrl } from "@/lib/queries";
+import { configQuery, sedesQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -86,8 +86,17 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">CONTÁCTANOS</h4>
+          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">
+            <Link to="/contacto" className="hover:text-white transition-colors">CONTÁCTANOS</Link>
+          </h4>
           <ul className="space-y-2 text-sm text-white/70">
+            {config.whatsapp_principal && (
+              <li>
+                <a href={`tel:${config.whatsapp_principal.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 hover:text-white transition-colors">
+                  <Phone className="h-4 w-4" /> {formatPhone(config.whatsapp_principal)}
+                </a>
+              </li>
+            )}
             {waUrl && (
               <li>
                 <a href={waUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-white transition-colors">
@@ -102,6 +111,7 @@ export function Footer() {
                 </a>
               </li>
             )}
+            <li className="text-white/50 text-xs pt-1">Únete a la familia PR</li>
             <li className="text-white/50 text-xs pt-1">Atención todos los días.</li>
           </ul>
         </div>

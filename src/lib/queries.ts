@@ -72,6 +72,23 @@ export const productosQuery = queryOptions({
   },
 });
 
+// Lightweight: solo marca_id + categoria_id para calcular marcas disponibles según el scope
+export const productosScopeMarcasQuery = (categoriaIds: string[] | null) =>
+  queryOptions({
+    queryKey: ["productos", "scope-marcas", categoriaIds ?? "all"],
+    queryFn: async (): Promise<string[]> => {
+      let q = supabase.from("productos").select("marca_id").eq("activo", true).not("marca_id", "is", null);
+      if (categoriaIds && categoriaIds.length > 0) q = q.in("categoria_id", categoriaIds);
+      const { data, error } = await q;
+      if (error) throw error;
+      const set = new Set<string>();
+      for (const r of (data ?? []) as Array<{ marca_id: string | null }>) {
+        if (r.marca_id) set.add(r.marca_id);
+      }
+      return Array.from(set);
+    },
+  });
+
 export type ProductosPageFilters = {
   categoriaIds?: string[];
   marcaId?: string;

@@ -228,15 +228,6 @@ function CheckoutPage() {
             </section>
 
             <section className="card-pro p-6">
-              <h2 className="font-display text-lg mb-4">Sede</h2>
-              <div className="seg">
-                {sedeOptions.map((s) => (
-                  <button type="button" key={s.id} className="seg-btn" data-active={sede?.id === s.id} onClick={() => setSede(s)}>{s.nombre}</button>
-                ))}
-              </div>
-            </section>
-
-            <section className="card-pro p-6">
               <h2 className="font-display text-lg mb-4">Tipo de entrega</h2>
               <div className="seg">
                 <button type="button" className="seg-btn" data-active={tipo === "delivery"} onClick={() => setTipo("delivery")}>Delivery</button>
@@ -254,6 +245,15 @@ function CheckoutPage() {
                   </div>
                 </div>
               )}
+            </section>
+
+            <section className="card-pro p-6">
+              <h2 className="font-display text-lg mb-4">Sede</h2>
+              <div className="seg">
+                {sedeOptions.map((s) => (
+                  <button type="button" key={s.id} className="seg-btn" data-active={sede?.id === s.id} onClick={() => setSede(s)}>{s.nombre}</button>
+                ))}
+              </div>
             </section>
 
             <section className="card-pro p-6">

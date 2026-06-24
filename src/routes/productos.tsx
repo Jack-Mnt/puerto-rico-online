@@ -285,19 +285,85 @@ function Catalogo() {
                 <div key={i} className="card-pro h-[360px] animate-pulse" />
               ))}
             </div>
-          ) : filtered.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="card-pro p-12 text-center">
-              <p className="text-muted-foreground">No encontramos productos con esos filtros.</p>
+              <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-[#FBF8F2] border border-[#E5E7EB] flex items-center justify-center">
+                <Search className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <p className="font-display text-lg mb-1">Sin resultados</p>
+              <p className="text-sm text-muted-foreground">No encontramos productos con esos filtros.</p>
+              {hasFilters && (
+                <button
+                  onClick={clearAll}
+                  className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" /> Limpiar filtros
+                </button>
+              )}
             </div>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground mb-3">{filtered.length} productos</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-[color:var(--color-foreground)]">{total}</span> productos encontrados
+                  {items.length < total && (
+                    <span className="text-muted-foreground/70"> · mostrando {items.length}</span>
+                  )}
+                </p>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="hidden sm:inline uppercase tracking-[0.16em]">Por carga</span>
+                  <div className="inline-flex rounded-full border border-[#E5E7EB] bg-white p-0.5">
+                    {([10, 20, 30] as const).map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => setPerPage(n)}
+                        className={[
+                          "px-3 py-1 rounded-full text-xs font-medium transition",
+                          perPage === n
+                            ? "bg-[#120E0E] text-[#D8C18A]"
+                            : "text-[color:var(--color-foreground)] hover:bg-[#FBF8F2]",
+                        ].join(" ")}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </label>
               </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {items.map((p) => <ProductCard key={p.id} p={p} />)}
+              </div>
+              {hasNextPage && (
+                <div className="flex justify-center mt-10">
+                  <button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#120E0E] text-[#D8C18A] px-8 py-3.5 text-sm font-medium tracking-[0.08em] uppercase shadow-[0_10px_30px_-12px_rgba(18,14,14,0.55)] hover:bg-[#1a1414] hover:shadow-[0_14px_36px_-12px_rgba(18,14,14,0.65)] transition disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> Cargando...
+                      </>
+                    ) : (
+                      <>Cargar más productos</>
+                    )}
+                  </button>
+                </div>
+              )}
+              {!hasNextPage && items.length > 0 && items.length === total && total > perPage && (
+                <p className="text-center text-xs text-muted-foreground mt-8 uppercase tracking-[0.18em]">
+                  Has visto todos los productos
+                </p>
+              )}
             </>
           )}
+          {isFetching && !isLoading && !isFetchingNextPage && (
+            <div className="flex justify-center mt-4 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> Actualizando...
+            </div>
+          )}
         </div>
+
       </main>
       <Footer />
     </div>

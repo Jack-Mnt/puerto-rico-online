@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { storageUrl } from "@/lib/supabase";
-import { configQuery, sedesQuery, whatsappUrl } from "@/lib/queries";
+import { configQuery, sedesQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (

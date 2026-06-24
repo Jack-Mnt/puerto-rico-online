@@ -85,6 +85,7 @@ function CheckoutPage() {
       const detalle = items.map((i) => ({
         pedido_id: pedidoId,
         producto_id: i.id,
+        producto_nombre: i.nombre,
         cantidad: i.cantidad,
         precio_venta: i.precio_venta,
         precio_costo: i.precio_costo ?? 0,

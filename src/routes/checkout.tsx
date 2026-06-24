@@ -69,6 +69,7 @@ function CheckoutPage() {
     e.preventDefault();
     if (!nombre.trim() || !telefono.trim()) { toast.error("Ingresa nombre y teléfono"); return; }
     if (!sede) { toast.error("Selecciona una sede"); return; }
+    if (tipo === "delivery" && !direccion.trim()) { toast.error("Ingresa la dirección de entrega"); return; }
     if (items.some((i) => Number(i.cantidad) <= 0)) { toast.error("Revisa las cantidades del carrito"); return; }
     setSubmitting(true);
     let pedidoCreado = false;
@@ -115,7 +116,7 @@ function CheckoutPage() {
         sede_id: sedeIsUuid ? sede.id : null,
         tipo_entrega: tipo,
         metodo_pago: pago,
-        direccion: tipo === "delivery" ? direccion.trim() || null : null,
+        direccion: tipo === "delivery" ? direccion.trim() : null,
         referencia: tipo === "delivery" ? referencia.trim() || null : null,
         total,
         estado: "pedido_creado",
@@ -244,8 +245,8 @@ function CheckoutPage() {
               {tipo === "delivery" && (
                 <div className="grid sm:grid-cols-2 gap-4 mt-5">
                   <div>
-                    <label className="label">Dirección (opcional)</label>
-                    <input className="field" value={direccion} onChange={(e) => setDireccion(e.target.value)} maxLength={200} />
+                    <label className="label">Dirección</label>
+                    <input className="field" value={direccion} onChange={(e) => setDireccion(e.target.value)} maxLength={200} required={tipo === "delivery"} />
                   </div>
                   <div>
                     <label className="label">Referencia (opcional)</label>

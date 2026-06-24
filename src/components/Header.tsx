@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
 import { storageUrl } from "@/lib/supabase";
+import { configQuery, whatsappUrl } from "@/lib/queries";
 
 export function Header() {
   const count = useCart((s) => s.count());
@@ -10,8 +12,12 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+  const { data: config = {} } = useQuery(configQuery);
+  const logoSrc = storageUrl(config.logo_light || config.logo_dark || "branding/logo-light.PNG");
+  const waUrl = whatsappUrl(config.whatsapp_principal) || "#";
 
   useEffect(() => setMounted(true), []);
+
 
   useEffect(() => {
     if (typeof document === "undefined") return;

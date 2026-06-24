@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { categoriasQuery, marcasQuery, productosQuery } from "@/lib/queries";
-import { Search, X, RotateCcw } from "lucide-react";
+import { Search, X, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };
 
@@ -29,6 +29,7 @@ function Catalogo() {
   const { data: categorias = [] } = useQuery(categoriasQuery);
   const { data: marcas = [] } = useQuery(marcasQuery);
   const [search, setSearch] = useState(q ?? "");
+  const [showMarcas, setShowMarcas] = useState(false);
 
   // Categorías filtradas por grupo
   const categoriasDelGrupo = useMemo(
@@ -196,34 +197,43 @@ function Catalogo() {
                 {categoriasDelGrupo.length === 0 ? (
                   <p className="text-xs text-muted-foreground italic">No hay familias para este grupo.</p>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+                  <HorizontalCarousel>
                     <PillButton active={!categoria} onClick={() => setParam({ categoria: undefined, marca: undefined })}>Todas</PillButton>
                     {categoriasDelGrupo.map((c) => (
                       <PillButton key={c.id} active={categoria === c.slug} onClick={() => setParam({ categoria: c.slug, marca: undefined })}>
                         {c.nombre}
                       </PillButton>
                     ))}
-                  </div>
+                  </HorizontalCarousel>
                 )}
               </FilterRow>
             )}
 
-            {/* Marcas */}
-            {grupo && (
-              <FilterRow label="Marcas">
-                {availableMarcas.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">No hay marcas disponibles.</p>
-                ) : (
-                  <div className="flex flex-wrap items-center gap-2">
+            {/* Marcas (colapsable) */}
+            {grupo && availableMarcas.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70">
+                    Marcas
+                  </h3>
+                  <button
+                    onClick={() => setShowMarcas((s) => !s)}
+                    className="text-xs uppercase tracking-[0.16em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                  >
+                    {showMarcas ? "Ocultar marcas" : `Ver marcas (${availableMarcas.length})`}
+                  </button>
+                </div>
+                {showMarcas && (
+                  <HorizontalCarousel>
                     <PillButton active={!marca} onClick={() => setParam({ marca: undefined })}>Todas</PillButton>
                     {availableMarcas.map((m) => (
                       <PillButton key={m.id} active={marca === m.id} onClick={() => setParam({ marca: m.id })}>
                         {m.nombre}
                       </PillButton>
                     ))}
-                  </div>
+                  </HorizontalCarousel>
                 )}
-              </FilterRow>
+              </div>
             )}
 
             {/* Limpiar filtros */}
@@ -295,11 +305,77 @@ function PillButton({
       className={[
         "shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border",
         active
-          ? "bg-[#120E0E] text-white border-[#120E0E] shadow-[0_4px_14px_-6px_rgba(18,14,14,0.45)]"
-          : "bg-white text-[color:var(--color-foreground)] border-[color:var(--color-border)] hover:border-[color:var(--color-accent)] hover:bg-[color:color-mix(in_oklab,var(--color-accent)_8%,white)]",
+          ? "bg-[#120E0E] text-[#D8C18A] border-[#120E0E] shadow-[0_4px_14px_-6px_rgba(18,14,14,0.45)]"
+          : "bg-white text-[color:var(--color-foreground)] border-[#E5E7EB] hover:border-[#C37D45] hover:bg-[color:color-mix(in_oklab,var(--color-accent)_8%,white)]",
       ].join(" ")}
     >
       {children}
     </button>
+  );
+}
+
+function HorizontalCarousel({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [canL, setCanL] = useState(false);
+  const [canR, setCanR] = useState(false);
+
+  const update = () => {
+    const el = ref.current;
+    if (!el) return;
+    setCanL(el.scrollLeft > 4);
+    setCanR(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    update();
+    const el = ref.current;
+    if (!el) return;
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(240, el.clientWidth * 0.7), behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group/car">
+      {canL && (
+        <button
+          type="button"
+          aria-label="Anterior"
+          onClick={() => scrollBy(-1)}
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E5E7EB] shadow-md hover:border-[#C37D45] transition"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
+      {canR && (
+        <button
+          type="button"
+          aria-label="Siguiente"
+          onClick={() => scrollBy(1)}
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E5E7EB] shadow-md hover:border-[#C37D45] transition"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      )}
+      <div
+        ref={ref}
+        className="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 md:px-10 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {Array.isArray(children)
+          ? (children as React.ReactNode[]).map((child, i) => (
+              <div key={i} className="snap-start">{child}</div>
+            ))
+          : <div className="snap-start">{children}</div>}
+      </div>
+    </div>
   );
 }

@@ -43,6 +43,7 @@ function CajeroPanel() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   const queryKey = ["cajero-pedidos", perfil?.sede_id];
+  useRealtimePedidos([queryKey, ["pedido-historial"], ["cajero-pedido-items"]]);
   const { data = [], isLoading } = useQuery({
     queryKey,
     enabled: !!perfil?.sede_id,

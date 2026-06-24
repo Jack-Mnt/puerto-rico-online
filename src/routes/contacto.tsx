@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Mail, MessageCircle, Facebook, Instagram, Building2 } from "lucide-react";
-import { configQuery, whatsappUrl } from "@/lib/queries";
+import { Mail, MessageCircle, Facebook, Instagram, Building2, Phone } from "lucide-react";
+import { configQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (

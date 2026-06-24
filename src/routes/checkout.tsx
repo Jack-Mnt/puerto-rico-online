@@ -19,6 +19,17 @@ const SEDES_FALLBACK = ["Cutervo", "Huaca", "Divino", "Casua", "Unidad"];
 type TipoEntrega = "delivery" | "pickup";
 type MetodoPago = "efectivo" | "yape_plin";
 
+type ProductoDetalleInfo = {
+  id: string;
+  precio_costo: number | null;
+  marca_info?: { nombre: string | null } | null;
+};
+
+function toValidNumber(value: unknown, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
 function CheckoutPage() {
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total());
@@ -58,10 +69,44 @@ function CheckoutPage() {
     e.preventDefault();
     if (!nombre.trim() || !telefono.trim()) { toast.error("Ingresa nombre y teléfono"); return; }
     if (!sede) { toast.error("Selecciona una sede"); return; }
+    if (items.some((i) => Number(i.cantidad) <= 0)) { toast.error("Revisa las cantidades del carrito"); return; }
     setSubmitting(true);
+    let pedidoCreado = false;
+    let pedidoId = "";
     try {
+      const productoIds = Array.from(new Set(items.map((i) => i.id)));
+      const { data: productosDetalle, error: productosErr } = await supabase
+        .from("productos")
+        .select("id,precio_costo,marca_info:marcas(nombre)")
+        .in("id", productoIds);
+      if (productosErr) throw productosErr;
+
+      const productosInfo = new Map(
+        ((productosDetalle ?? []) as unknown as ProductoDetalleInfo[]).map((p) => [p.id, p]),
+      );
+      const detalle = items.map((i) => {
+        const cantidad = Math.max(1, toValidNumber(i.cantidad));
+        const precioVenta = Math.max(0, toValidNumber(i.precio_venta));
+        const productoInfo = productosInfo.get(i.id);
+        const precioCosto = Math.max(0, toValidNumber(i.precio_costo ?? productoInfo?.precio_costo));
+        const subtotal = Math.max(0, precioVenta * cantidad);
+        const utilidad = Math.max(0, subtotal - precioCosto * cantidad);
+
+        return {
+          producto_id: i.id,
+          producto_nombre: i.nombre,
+          producto_marca: productoInfo?.marca_info?.nombre ?? null,
+          cantidad,
+          precio_venta: precioVenta,
+          precio_costo: precioCosto,
+          subtotal,
+          utilidad,
+        };
+      });
+
       // Generate id client-side so we can link detalle without needing SELECT on pedidos
-      const pedidoId = crypto.randomUUID();
+      pedidoId = crypto.randomUUID();
+      const detalleConPedido = detalle.map((d) => ({ ...d, pedido_id: pedidoId }));
       const sedeIsUuid = /^[0-9a-f-]{36}$/i.test(sede.id);
       const pedidoPayload: Record<string, unknown> = {
         id: pedidoId,
@@ -81,17 +126,9 @@ function CheckoutPage() {
         .from("pedidos")
         .insert(pedidoPayload);
       if (pErr) throw pErr;
+      pedidoCreado = true;
 
-      const detalle = items.map((i) => ({
-        pedido_id: pedidoId,
-        producto_id: i.id,
-        producto_nombre: i.nombre,
-        cantidad: i.cantidad,
-        precio_venta: i.precio_venta,
-        precio_costo: i.precio_costo ?? 0,
-        subtotal: i.precio_venta * i.cantidad,
-      }));
-      const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalle);
+      const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalleConPedido);
       if (dErr) throw dErr;
 
       // Reference shown to the customer (local, no DB read)
@@ -128,6 +165,38 @@ function CheckoutPage() {
       window.open(url, "_blank");
       navigate({ to: "/pedido-confirmado" });
     } catch (err) {
+      if (pedidoCreado) {
+        const numeroLocal = pedidoId ? pedidoId.slice(0, 8).toUpperCase() : "PEDIDO";
+        const whatsapp = (config.whatsapp_principal || config.whatsapp_moderador || "").replace(/\D/g, "");
+        const productosTxt = items.map((i) => `- ${i.nombre} x${i.cantidad}`).join("\n");
+        const msg = [
+          "Hola, acabo de realizar un pedido en Puerto Rico.",
+          "",
+          "Pedido creado",
+          `Nombre: ${nombre.trim()}`,
+          `Sede: ${sede.nombre}`,
+          `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Pick Up"}`,
+          `Método de pago: ${pago === "efectivo" ? "Efectivo" : "Yape / Plin"}`,
+          `Total: S/ ${total.toFixed(2)}`,
+          "",
+          "Productos:",
+          productosTxt,
+        ].join("\n");
+        const url = whatsapp ? `https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}` : "";
+        const resumen = {
+          numero_pedido: numeroLocal,
+          items: items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, subtotal: i.precio_venta * i.cantidad })),
+          tipo_entrega: tipo,
+          total,
+          whatsapp_url: url,
+        };
+        try { sessionStorage.setItem("ultimo_pedido", JSON.stringify(resumen)); } catch { /* ignore */ }
+        clear();
+        toast.success("¡Pedido confirmado!");
+        if (url) window.open(url, "_blank");
+        navigate({ to: "/pedido-confirmado" });
+        return;
+      }
       const message = err instanceof Error ? err.message : "Error al crear pedido";
       toast.error(message);
       setSubmitting(false);

@@ -72,6 +72,7 @@ function CheckoutPage() {
     if (items.some((i) => Number(i.cantidad) <= 0)) { toast.error("Revisa las cantidades del carrito"); return; }
     setSubmitting(true);
     let pedidoCreado = false;
+    let pedidoId = "";
     try {
       const productoIds = Array.from(new Set(items.map((i) => i.id)));
       const { data: productosDetalle, error: productosErr } = await supabase
@@ -92,7 +93,6 @@ function CheckoutPage() {
         const utilidad = Math.max(0, subtotal - precioCosto * cantidad);
 
         return {
-          pedido_id: "",
           producto_id: i.id,
           producto_nombre: i.nombre,
           producto_marca: productoInfo?.marca?.nombre ?? null,
@@ -105,7 +105,7 @@ function CheckoutPage() {
       });
 
       // Generate id client-side so we can link detalle without needing SELECT on pedidos
-      const pedidoId = crypto.randomUUID();
+      pedidoId = crypto.randomUUID();
       const detalleConPedido = detalle.map((d) => ({ ...d, pedido_id: pedidoId }));
       const sedeIsUuid = /^[0-9a-f-]{36}$/i.test(sede.id);
       const pedidoPayload: Record<string, unknown> = {
@@ -166,7 +166,7 @@ function CheckoutPage() {
       navigate({ to: "/pedido-confirmado" });
     } catch (err) {
       if (pedidoCreado) {
-        const numeroLocal = "PEDIDO";
+        const numeroLocal = pedidoId ? pedidoId.slice(0, 8).toUpperCase() : "PEDIDO";
         const whatsapp = (config.whatsapp_principal || config.whatsapp_moderador || "").replace(/\D/g, "");
         const productosTxt = items.map((i) => `- ${i.nombre} x${i.cantidad}`).join("\n");
         const msg = [

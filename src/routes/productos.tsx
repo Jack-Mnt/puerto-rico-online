@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { categoriasQuery, fetchProductosPage, marcasQuery, productosQuery } from "@/lib/queries";
+import { categoriasQuery, fetchProductosPage, marcasQuery, productosQuery, productosScopeMarcasQuery } from "@/lib/queries";
 import { Search, X, RotateCcw, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };

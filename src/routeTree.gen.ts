@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SedesRouteImport } from './routes/sedes'
 import { Route as ProductosRouteImport } from './routes/productos'
 import { Route as PedidoConfirmadoRouteImport } from './routes/pedido-confirmado'
 import { Route as NosotrosRouteImport } from './routes/nosotros'
@@ -34,6 +35,11 @@ import { Route as AdminConfiguracionRouteImport } from './routes/admin.configura
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 
+const SedesRoute = SedesRouteImport.update({
+  id: '/sedes',
+  path: '/sedes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductosRoute = ProductosRouteImport.update({
   id: '/productos',
   path: '/productos',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
+  '/sedes': typeof SedesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
+  '/sedes': typeof SedesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/nosotros': typeof NosotrosRoute
   '/pedido-confirmado': typeof PedidoConfirmadoRoute
   '/productos': typeof ProductosRoute
+  '/sedes': typeof SedesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
+    | '/sedes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
+    | '/sedes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/nosotros'
     | '/pedido-confirmado'
     | '/productos'
+    | '/sedes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracion'
@@ -320,12 +332,20 @@ export interface RootRouteChildren {
   NosotrosRoute: typeof NosotrosRoute
   PedidoConfirmadoRoute: typeof PedidoConfirmadoRoute
   ProductosRoute: typeof ProductosRoute
+  SedesRoute: typeof SedesRoute
   ApiStaffUsersRoute: typeof ApiStaffUsersRoute
   ProductoSlugRoute: typeof ProductoSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sedes': {
+      id: '/sedes'
+      path: '/sedes'
+      fullPath: '/sedes'
+      preLoaderRoute: typeof SedesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/productos': {
       id: '/productos'
       path: '/productos'
@@ -559,19 +579,10 @@ const rootRouteChildren: RootRouteChildren = {
   NosotrosRoute: NosotrosRoute,
   PedidoConfirmadoRoute: PedidoConfirmadoRoute,
   ProductosRoute: ProductosRoute,
+  SedesRoute: SedesRoute,
   ApiStaffUsersRoute: ApiStaffUsersRoute,
   ProductoSlugRoute: ProductoSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

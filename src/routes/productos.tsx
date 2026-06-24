@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { categoriasQuery, marcasQuery, productosQuery } from "@/lib/queries";
-import { Search, X, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { categoriasQuery, fetchProductosPage, marcasQuery, productosScopeMarcasQuery } from "@/lib/queries";
+import { Search, X, RotateCcw, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };
+type PerPage = 10 | 20 | 30;
 
 const GRUPOS = ["Licores", "Bebidas", "Cigarros y Vapes", "Complementos"] as const;
 
@@ -25,11 +26,18 @@ export const Route = createFileRoute("/productos")({
 function Catalogo() {
   const { grupo, categoria, marca, q } = Route.useSearch();
   const navigate = useNavigate({ from: "/productos" });
-  const { data: productos = [], isLoading } = useQuery(productosQuery);
   const { data: categorias = [] } = useQuery(categoriasQuery);
   const { data: marcas = [] } = useQuery(marcasQuery);
   const [search, setSearch] = useState(q ?? "");
   const [showMarcas, setShowMarcas] = useState(false);
+  const [perPage, setPerPage] = useState<PerPage>(20);
+
+  // Debounce búsqueda para no spamear Supabase
+  const [searchDebounced, setSearchDebounced] = useState(search);
+  useEffect(() => {
+    const id = setTimeout(() => setSearchDebounced(search), 300);
+    return () => clearTimeout(id);
+  }, [search]);
 
   // Categorías filtradas por grupo
   const categoriasDelGrupo = useMemo(
@@ -37,22 +45,21 @@ function Catalogo() {
     [categorias, grupo],
   );
 
-  // Productos dentro del scope grupo/categoría (sin marca, sin búsqueda) para calcular marcas disponibles
-  const productosScope = useMemo(() => {
-    const catsDelGrupoSlugs = new Set(categoriasDelGrupo.map((c) => c.slug));
-    return productos.filter((p) => {
-      if (grupo && !catsDelGrupoSlugs.has(p.categoria?.slug ?? "")) return false;
-      if (categoria && p.categoria?.slug !== categoria) return false;
-      return true;
-    });
-  }, [productos, grupo, categoria, categoriasDelGrupo]);
+  // IDs de categorías que aplican según grupo/categoría
+  const categoriaIds = useMemo<string[] | undefined>(() => {
+    if (categoria) {
+      const cat = categorias.find((c) => c.slug === categoria);
+      return cat ? [cat.id] : [];
+    }
+    if (grupo) return categoriasDelGrupo.map((c) => c.id);
+    return undefined;
+  }, [categoria, categorias, grupo, categoriasDelGrupo]);
 
-  const availableBrandIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const p of productosScope) if (p.marca_id) ids.add(p.marca_id);
-    return ids;
-  }, [productosScope]);
-
+  // Marcas disponibles según scope (lightweight)
+  const { data: availableBrandIdsArr = [] } = useQuery(
+    productosScopeMarcasQuery(grupo ? (categoriaIds ?? []) : null),
+  );
+  const availableBrandIds = useMemo(() => new Set(availableBrandIdsArr), [availableBrandIdsArr]);
   const availableMarcas = useMemo(
     () => marcas.filter((m) => availableBrandIds.has(m.id)),
     [marcas, availableBrandIds],
@@ -67,25 +74,44 @@ function Catalogo() {
 
   // Auto-limpiar marca si no está disponible
   useEffect(() => {
-    if (marca && !availableBrandIds.has(marca)) {
+    if (marca && availableBrandIdsArr.length > 0 && !availableBrandIds.has(marca)) {
       navigate({ search: (prev: Search) => ({ ...prev, marca: undefined }) });
     }
-  }, [marca, availableBrandIds, navigate]);
+  }, [marca, availableBrandIds, availableBrandIdsArr.length, navigate]);
 
-  const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return productosScope.filter((p) => {
-      if (marca && p.marca_id !== marca) return false;
-      if (term) {
-        const hay =
-          p.nombre.toLowerCase().includes(term) ||
-          (p.marca?.nombre?.toLowerCase().includes(term) ?? false) ||
-          (p.categoria?.nombre?.toLowerCase().includes(term) ?? false);
-        if (!hay) return false;
-      }
-      return true;
-    });
-  }, [productosScope, marca, search]);
+  // Paginación server-side
+  const pageFilters = useMemo(
+    () => ({
+      categoriaIds: categoriaIds && categoriaIds.length > 0 ? categoriaIds : undefined,
+      marcaId: marca || undefined,
+      search: searchDebounced || undefined,
+    }),
+    [categoriaIds, marca, searchDebounced],
+  );
+
+  const {
+    data: pages,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["productos", "paged", pageFilters, perPage],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const from = (pageParam as number) * perPage;
+      const to = from + perPage - 1;
+      return fetchProductosPage(pageFilters, from, to);
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((s, p) => s + p.rows.length, 0);
+      return loaded < lastPage.total ? allPages.length : undefined;
+    },
+  });
+
+  const items = useMemo(() => pages?.pages.flatMap((p) => p.rows) ?? [], [pages]);
+  const total = pages?.pages[0]?.total ?? 0;
 
   const setParam = (patch: Partial<Search>) =>
     navigate({
@@ -259,19 +285,85 @@ function Catalogo() {
                 <div key={i} className="card-pro h-[360px] animate-pulse" />
               ))}
             </div>
-          ) : filtered.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="card-pro p-12 text-center">
-              <p className="text-muted-foreground">No encontramos productos con esos filtros.</p>
+              <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-[#FBF8F2] border border-[#E5E7EB] flex items-center justify-center">
+                <Search className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <p className="font-display text-lg mb-1">Sin resultados</p>
+              <p className="text-sm text-muted-foreground">No encontramos productos con esos filtros.</p>
+              {hasFilters && (
+                <button
+                  onClick={clearAll}
+                  className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" /> Limpiar filtros
+                </button>
+              )}
             </div>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground mb-3">{filtered.length} productos</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-[color:var(--color-foreground)]">{total}</span> productos encontrados
+                  {items.length < total && (
+                    <span className="text-muted-foreground/70"> · mostrando {items.length}</span>
+                  )}
+                </p>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="hidden sm:inline uppercase tracking-[0.16em]">Por carga</span>
+                  <div className="inline-flex rounded-full border border-[#E5E7EB] bg-white p-0.5">
+                    {([10, 20, 30] as const).map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => setPerPage(n)}
+                        className={[
+                          "px-3 py-1 rounded-full text-xs font-medium transition",
+                          perPage === n
+                            ? "bg-[#120E0E] text-[#D8C18A]"
+                            : "text-[color:var(--color-foreground)] hover:bg-[#FBF8F2]",
+                        ].join(" ")}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </label>
               </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {items.map((p) => <ProductCard key={p.id} p={p} />)}
+              </div>
+              {hasNextPage && (
+                <div className="flex justify-center mt-10">
+                  <button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#120E0E] text-[#D8C18A] px-8 py-3.5 text-sm font-medium tracking-[0.08em] uppercase shadow-[0_10px_30px_-12px_rgba(18,14,14,0.55)] hover:bg-[#1a1414] hover:shadow-[0_14px_36px_-12px_rgba(18,14,14,0.65)] transition disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> Cargando...
+                      </>
+                    ) : (
+                      <>Cargar más productos</>
+                    )}
+                  </button>
+                </div>
+              )}
+              {!hasNextPage && items.length > 0 && items.length === total && total > perPage && (
+                <p className="text-center text-xs text-muted-foreground mt-8 uppercase tracking-[0.18em]">
+                  Has visto todos los productos
+                </p>
+              )}
             </>
           )}
+          {isFetching && !isLoading && !isFetchingNextPage && (
+            <div className="flex justify-center mt-4 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> Actualizando...
+            </div>
+          )}
         </div>
+
       </main>
       <Footer />
     </div>

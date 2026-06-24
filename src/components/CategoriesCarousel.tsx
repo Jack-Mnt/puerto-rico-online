@@ -74,7 +74,7 @@ export function CategoriesCarousel({ categorias, activeSlug }: CategoriesCarouse
               <span
                 className={`
                   font-display leading-tight tracking-wide line-clamp-2
-                  text-[10px] sm:text-xs md:text-sm lg:text-base
+                  text-sm sm:text-base md:text-lg lg:text-xl
                   ${isActive ? "text-[#E6D3A3]" : "text-white/85"}
                 `}
               >

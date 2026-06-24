@@ -60,9 +60,11 @@ function CheckoutPage() {
     if (!sede) { toast.error("Selecciona una sede"); return; }
     setSubmitting(true);
     try {
-      // Try with sede_id (uuid). If sede is fallback string, send null
+      // Generate id client-side so we can link detalle without needing SELECT on pedidos
+      const pedidoId = crypto.randomUUID();
       const sedeIsUuid = /^[0-9a-f-]{36}$/i.test(sede.id);
       const pedidoPayload: Record<string, unknown> = {
+        id: pedidoId,
         cliente_nombre: nombre.trim(),
         cliente_telefono: telefono.trim(),
         sede_id: sedeIsUuid ? sede.id : null,
@@ -74,15 +76,14 @@ function CheckoutPage() {
         estado: "pedido_creado",
       };
 
-      const { data: pedido, error: pErr } = await supabase
+      // Insert without returning representation (no SELECT grant required on pedidos)
+      const { error: pErr } = await supabase
         .from("pedidos")
-        .insert(pedidoPayload)
-        .select("id, numero_pedido")
-        .single();
+        .insert(pedidoPayload);
       if (pErr) throw pErr;
 
       const detalle = items.map((i) => ({
-        pedido_id: pedido.id,
+        pedido_id: pedidoId,
         producto_id: i.id,
         cantidad: i.cantidad,
         precio_venta: i.precio_venta,
@@ -92,12 +93,15 @@ function CheckoutPage() {
       const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalle);
       if (dErr) throw dErr;
 
+      // Reference shown to the customer (local, no DB read)
+      const numeroLocal = pedidoId.slice(0, 8).toUpperCase();
+
       const whatsapp = (config.whatsapp_principal || config.whatsapp_moderador || "").replace(/\D/g, "");
       const productosTxt = items.map((i) => `- ${i.nombre} x${i.cantidad}`).join("\n");
       const msg = [
         "Hola, acabo de realizar un pedido en Puerto Rico.",
         "",
-        `Pedido #${pedido.numero_pedido}`,
+        `Pedido #${numeroLocal}`,
         `Nombre: ${nombre.trim()}`,
         `Sede: ${sede.nombre}`,
         `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Pick Up"}`,
@@ -110,7 +114,7 @@ function CheckoutPage() {
       const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(msg)}`;
 
       const resumen = {
-        numero_pedido: pedido.numero_pedido,
+        numero_pedido: numeroLocal,
         items: items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, subtotal: i.precio_venta * i.cantidad })),
         tipo_entrega: tipo,
         total,

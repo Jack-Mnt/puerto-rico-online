@@ -161,7 +161,7 @@ export function Header() {
             <div className="my-3 border-t border-white/10" />
 
             <a
-              href="https://wa.me/"
+              href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={close}
@@ -170,6 +170,7 @@ export function Header() {
               <MessageCircle className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">WhatsApp</span>
             </a>
+
           </nav>
 
           <div className="px-5 py-4 border-t border-white/10 text-[11px] text-white/50">

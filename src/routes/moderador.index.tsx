@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { MapPin, MessageCircle, Repeat, Ban, CheckCircle2 } from "lucide-react";
+import { MapPin, MessageCircle, Repeat, Ban, CheckCircle2, PackageCheck } from "lucide-react";
 import { supabase, storageUrl } from "@/lib/supabase";
 import { PageHeader, EmptyState } from "@/components/PanelLayout";
 import { Modal } from "@/components/Modal";
@@ -37,21 +37,35 @@ type Pedido = {
   created_at: string;
 };
 
-const COLUMNAS: EstadoPedido[] = [
+// Estados activos que mostramos en el panel principal.
+const ESTADOS_ACTIVOS: EstadoPedido[] = [
   "pedido_creado",
   "pedido_aceptado",
   "pedido_rechazado",
   "pedido_despachado",
-  "pedido_entregado",
 ];
 
-const COLUMNA_TITLE: Record<EstadoPedido, string> = {
-  pedido_creado: "Nuevos",
-  pedido_aceptado: "Aceptados",
-  pedido_rechazado: "Rechazados",
-  pedido_despachado: "Despachados",
-  pedido_entregado: "Entregados",
-  pedido_cancelado: "Cancelados",
+// Variante visual de cada tarjeta.
+type Variant = "creado" | "aceptado" | "rechazado" | "reasignado" | "despachado";
+
+type Columna = {
+  key: "nuevos" | "rechazados" | "despachados";
+  title: string;
+  variants: Variant[];
+};
+
+const COLUMNAS: Columna[] = [
+  { key: "nuevos", title: "Nuevos", variants: ["creado", "aceptado"] },
+  { key: "rechazados", title: "Rechazados", variants: ["rechazado", "reasignado"] },
+  { key: "despachados", title: "Despachados", variants: ["despachado"] },
+];
+
+const VARIANT_STYLES: Record<Variant, { bg: string; border: string; chip: string; label: string }> = {
+  creado: { bg: "#FFF7D6", border: "#FACC15", chip: "bg-amber-100 text-amber-900", label: "Nuevo" },
+  aceptado: { bg: "#EAF8EF", border: "#22C55E", chip: "bg-emerald-100 text-emerald-900", label: "Aceptado" },
+  rechazado: { bg: "#FDECEC", border: "#EF4444", chip: "bg-red-100 text-red-900", label: "Rechazado" },
+  reasignado: { bg: "#EAF2FF", border: "#3B82F6", chip: "bg-blue-100 text-blue-900", label: "Reasignado" },
+  despachado: { bg: "#DFF7E8", border: "#16A34A", chip: "bg-green-200 text-green-900", label: "Despachado" },
 };
 
 function ModeradorKanban() {
@@ -64,18 +78,31 @@ function ModeradorKanban() {
     queryFn: async () => (await supabase.from("sedes").select("id,nombre")).data || [],
   });
 
-  const queryKey = ["mod-pedidos"];
+  const queryKey = ["mod-pedidos-activos"];
   const { data = [], isLoading } = useQuery({
     queryKey,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("pedidos")
         .select("*")
-        .in("estado", COLUMNAS)
+        .in("estado", ESTADOS_ACTIVOS)
         .order("created_at", { ascending: false })
         .limit(500);
       if (error) throw error;
       return (data || []) as Pedido[];
+    },
+  });
+
+  // Pedidos con acción "pedido_reasignado" en historial (para variante visual).
+  const { data: reasignadosIds = new Set<string>() } = useQuery({
+    queryKey: ["mod-reasignados-ids"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("historial_pedidos")
+        .select("pedido_id")
+        .eq("accion", "pedido_reasignado");
+      if (error) throw error;
+      return new Set((data || []).map((r: any) => r.pedido_id as string));
     },
   });
 
@@ -107,6 +134,7 @@ function ModeradorKanban() {
       toast.success("Estado actualizado");
       qc.invalidateQueries({ queryKey });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
+      qc.invalidateQueries({ queryKey: ["mod-historial"] });
       setViewing(null);
     },
     onError: (e) => toast.error((e as Error).message),
@@ -133,67 +161,72 @@ function ModeradorKanban() {
     onSuccess: () => {
       toast.success("Sede reasignada");
       qc.invalidateQueries({ queryKey });
+      qc.invalidateQueries({ queryKey: ["mod-reasignados-ids"] });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
     },
     onError: (e) => toast.error((e as Error).message),
   });
 
-  const grupos = COLUMNAS.map((e) => ({
-    estado: e,
-    items: data.filter((p) => p.estado === e),
-  }));
+  function variantOf(p: Pedido): Variant {
+    if (p.estado === "pedido_despachado") return "despachado";
+    if (p.estado === "pedido_rechazado") return "rechazado";
+    if (p.estado === "pedido_aceptado") return "aceptado";
+    // pedido_creado: si fue reasignado, lo mostramos como reasignado
+    if (p.estado === "pedido_creado" && reasignadosIds.has(p.id)) return "reasignado";
+    return "creado";
+  }
+
+  const grupos = useMemo(() => {
+    return COLUMNAS.map((col) => ({
+      ...col,
+      items: data
+        .map((p) => ({ p, v: variantOf(p) }))
+        .filter((x) => col.variants.includes(x.v)),
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, reasignadosIds]);
 
   return (
     <div>
       <PageHeader
         title="Centro de operaciones"
-        description="Vista logística de todos los pedidos en curso."
+        description="Pedidos en curso. Los entregados y cancelados se archivan en Historial."
       />
 
       {isLoading ? (
         <div className="text-sm text-muted-foreground">Cargando...</div>
       ) : !data.length ? (
-        <EmptyState title="Sin pedidos" />
+        <EmptyState title="Sin pedidos activos" />
       ) : (
-        <div className="overflow-x-auto -mx-4 lg:-mx-6 px-4 lg:px-6 pb-2">
-          <div className="grid grid-flow-col auto-cols-[280px] gap-3 min-w-min">
-            {grupos.map((g) => (
-              <div key={g.estado} className="rounded-xl border border-border bg-card flex flex-col">
-                <div className="px-3 py-2.5 border-b border-border flex items-center justify-between sticky top-0 bg-card rounded-t-xl">
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-block h-2 w-2 rounded-full ${ESTADO_COLOR[g.estado].split(" ")[0]}`} />
-                    <h3 className="font-semibold text-sm">{COLUMNA_TITLE[g.estado]}</h3>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{g.items.length}</span>
-                </div>
-                <div className="p-2 space-y-2 max-h-[70vh] overflow-y-auto">
-                  {g.items.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setViewing(p)}
-                      className="w-full text-left p-3 rounded-lg border border-border bg-background hover:shadow-sm transition-shadow"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono text-muted-foreground">Pedido #{p.numero_pedido}</span>
-                        <span className="text-[10px] text-muted-foreground">{formatDate(p.created_at)}</span>
-                      </div>
-                      <div className="font-medium mt-1 truncate text-sm">{p.cliente_nombre}</div>
-                      <div className="text-[11px] text-muted-foreground truncate mt-0.5">
-                        {sedes.find((s) => s.id === p.sede_id)?.nombre || "Sin sede"}
-                      </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] capitalize text-muted-foreground">{p.tipo_entrega}</span>
-                        <span className="font-semibold text-sm">{formatMoney(p.total)}</span>
-                      </div>
-                    </button>
-                  ))}
-                  {g.items.length === 0 && (
-                    <p className="text-[11px] text-muted-foreground text-center py-6">—</p>
-                  )}
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {grupos.map((g) => (
+            <div key={g.key} className="rounded-xl border border-border bg-card flex flex-col">
+              <div className="px-3 py-2.5 border-b border-border flex items-center justify-between bg-card rounded-t-xl">
+                <h3 className="font-semibold text-sm">{g.title}</h3>
+                <span className="text-xs text-muted-foreground">{g.items.length}</span>
               </div>
-            ))}
-          </div>
+              <div className="p-2 space-y-2 max-h-[78vh] overflow-y-auto">
+                {g.items.map(({ p, v }) => (
+                  <PedidoCard
+                    key={p.id}
+                    pedido={p}
+                    variant={v}
+                    sedeNombre={sedes.find((s) => s.id === p.sede_id)?.nombre || "Sin sede"}
+                    onOpen={() => setViewing(p)}
+                    onMarcarEntregado={
+                      v === "despachado"
+                        ? () => cambiarEstado.mutate({ id: p.id, estado: "pedido_entregado" })
+                        : undefined
+                    }
+                    busy={cambiarEstado.isPending}
+                  />
+                ))}
+                {g.items.length === 0 && (
+                  <p className="text-[11px] text-muted-foreground text-center py-6">—</p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -207,6 +240,70 @@ function ModeradorKanban() {
           onReasignar={(nuevaSede) => reasignar.mutate({ p: viewing, nuevaSede })}
           busy={cambiarEstado.isPending || reasignar.isPending}
         />
+      )}
+    </div>
+  );
+}
+
+function formatHora(iso: string) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "";
+  }
+}
+
+function PedidoCard({
+  pedido,
+  variant,
+  sedeNombre,
+  onOpen,
+  onMarcarEntregado,
+  busy,
+}: {
+  pedido: Pedido;
+  variant: Variant;
+  sedeNombre: string;
+  onOpen: () => void;
+  onMarcarEntregado?: () => void;
+  busy?: boolean;
+}) {
+  const s = VARIANT_STYLES[variant];
+  return (
+    <div
+      className="rounded-lg border p-2.5 transition-shadow hover:shadow-sm"
+      style={{ backgroundColor: s.bg, borderColor: s.border }}
+    >
+      <button onClick={onOpen} className="w-full text-left">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] font-mono text-foreground/60">#{pedido.numero_pedido}</span>
+          <span className="text-[10px] text-foreground/60">{formatHora(pedido.created_at)}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-x-2 gap-y-1 mt-1.5">
+          <div className="text-sm text-foreground font-medium truncate">{pedido.cliente_nombre}</div>
+          <div className="text-sm text-foreground font-medium truncate text-right">{sedeNombre}</div>
+          <div className="text-sm text-foreground font-medium truncate capitalize">
+            {pedido.tipo_entrega || "—"}
+          </div>
+          <div className="text-sm text-foreground font-medium truncate text-right">
+            {formatMoney(pedido.total)}
+          </div>
+        </div>
+        <div className="mt-1.5">
+          <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${s.chip}`}>
+            {s.label}
+          </span>
+        </div>
+      </button>
+      {onMarcarEntregado && (
+        <button
+          disabled={busy}
+          onClick={onMarcarEntregado}
+          className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-emerald-700 text-white px-2 py-1.5 text-xs font-medium hover:bg-emerald-800 disabled:opacity-50"
+        >
+          <PackageCheck className="h-3.5 w-3.5" /> Marcar entregado
+        </button>
       )}
     </div>
   );
@@ -266,7 +363,6 @@ function PedidoModeradorModal({
   return (
     <Modal open onClose={onClose} title={`Pedido #${pedido.numero_pedido}`} size="xl">
       <div className="grid lg:grid-cols-3 gap-5 text-sm">
-        {/* IZQUIERDA: cliente + productos */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`rounded-full border px-2.5 py-0.5 text-xs ${ESTADO_COLOR[pedido.estado]}`}>
@@ -303,9 +399,7 @@ function PedidoModeradorModal({
                       {d.cantidad} × {formatMoney(Number(d.precio_venta))}
                     </div>
                   </div>
-                  <div className="font-semibold">
-                    {formatMoney(Number(d.subtotal))}
-                  </div>
+                  <div className="font-semibold">{formatMoney(Number(d.subtotal))}</div>
                 </div>
               ))}
             </div>
@@ -316,7 +410,6 @@ function PedidoModeradorModal({
           </div>
         </div>
 
-        {/* DERECHA: acciones + timeline */}
         <div className="space-y-4">
           <div className="rounded-lg border border-border p-3 space-y-2">
             <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
@@ -410,5 +503,4 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-// reference unused symbol so eslint doesn't whine
 void ESTADOS;

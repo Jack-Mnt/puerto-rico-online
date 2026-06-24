@@ -198,7 +198,6 @@ function Catalogo() {
                   <p className="text-xs text-muted-foreground italic">No hay familias para este grupo.</p>
                 ) : (
                   <HorizontalCarousel>
-                    <PillButton active={!categoria} onClick={() => setParam({ categoria: undefined, marca: undefined })}>Todas</PillButton>
                     {categoriasDelGrupo.map((c) => (
                       <PillButton key={c.id} active={categoria === c.slug} onClick={() => setParam({ categoria: c.slug, marca: undefined })}>
                         {c.nombre}

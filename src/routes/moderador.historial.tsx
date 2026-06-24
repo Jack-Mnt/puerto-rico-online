@@ -44,6 +44,9 @@ function ModeradorHistorial() {
   const [tipoEntrega, setTipoEntrega] = useState("");
   const [viewing, setViewing] = useState<Pedido | null>(null);
 
+  useRealtimePedidos([["mod-historial"], ["mod-pedido-items"], ["pedido-historial"]]);
+
+
   const { data: sedes = [] } = useQuery({
     queryKey: ["sedes-options"],
     queryFn: async () => (await supabase.from("sedes").select("id,nombre")).data || [],

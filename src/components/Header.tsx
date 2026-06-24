@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle } from "lucide-react";
+import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
@@ -129,15 +129,24 @@ export function Header() {
           </div>
 
           <div className="p-5 border-b border-white/10">
-            <form onSubmit={onSearch} className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                type="search"
-                placeholder="Buscar productos…"
-                className="w-full rounded-full bg-white/10 border border-white/15 pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-[color:var(--color-accent)]"
-              />
+            <form onSubmit={onSearch} className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  type="search"
+                  placeholder="¿Qué estás buscando?"
+                  className="w-full rounded-full bg-white/10 border border-white/15 pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-[color:var(--color-accent)]"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium transition"
+                style={{ background: "var(--color-accent)", color: "var(--color-primary)" }}
+              >
+                <Search className="h-4 w-4" /> Buscar
+              </button>
             </form>
           </div>
 
@@ -145,18 +154,9 @@ export function Header() {
             <MobileLink to="/" icon={Home} label="Inicio" onClick={close} />
             <MobileLink to="/productos" icon={Store} label="Catálogo" onClick={close} />
             <MobileLink to="/nosotros" icon={Info} label="Nosotros" onClick={close} />
-            <button
-              type="button"
-              onClick={() => {
-                close();
-                navigate({ to: "/productos" });
-              }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-white text-left"
-            >
-              <Search className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
-              <span className="text-sm">Buscar productos</span>
-            </button>
             <MobileLink to="/sedes" icon={MapPin} label="Nuestras sedes" onClick={close} />
+            <MobileLink to="/unete" icon={UserPlus} label="Únete a la familia PR" onClick={close} />
+            <MobileLink to="/contacto" icon={Mail} label="Contacto" onClick={close} />
 
             <div className="my-3 border-t border-white/10" />
 
@@ -170,8 +170,21 @@ export function Header() {
               <MessageCircle className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">WhatsApp</span>
             </a>
+            {config.instagram_url && (
+              <a
+                href={config.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-white"
+              >
+                <Instagram className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
+                <span className="text-sm">Instagram</span>
+              </a>
+            )}
 
           </nav>
+
 
           <div className="px-5 py-4 border-t border-white/10 text-[11px] text-white/50">
             Puerto Rico · Licorería premium

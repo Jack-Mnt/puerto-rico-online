@@ -290,17 +290,22 @@ function Catalogo() {
               <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-[#FBF8F2] border border-[#E5E7EB] flex items-center justify-center">
                 <Search className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="font-display text-lg mb-1">Sin resultados</p>
-              <p className="text-sm text-muted-foreground">No encontramos productos con esos filtros.</p>
+              <p className="font-display text-lg mb-1">
+                {searchDebounced ? "No encontramos productos para tu búsqueda." : "Sin resultados"}
+              </p>
+              {!searchDebounced && (
+                <p className="text-sm text-muted-foreground">No encontramos productos con esos filtros.</p>
+              )}
               {hasFilters && (
                 <button
                   onClick={clearAll}
-                  className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#120E0E] text-[#D8C18A] px-6 py-2.5 text-xs uppercase tracking-[0.18em] hover:bg-[#1a1414] transition"
                 >
-                  <RotateCcw className="h-3.5 w-3.5" /> Limpiar filtros
+                  <RotateCcw className="h-3.5 w-3.5" /> Ver todo el catálogo
                 </button>
               )}
             </div>
+
           ) : (
             <>
               <div className="flex items-center justify-between gap-3 mb-4">

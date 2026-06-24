@@ -21,12 +21,14 @@ export function SimpleCrud({
   fields,
   listColumns,
   orderBy,
+  renderCell,
 }: {
   title: string;
   table: string;
   fields: CrudField[];
   listColumns: string[];
   orderBy?: string;
+  renderCell?: Record<string, (row: Record<string, any>) => React.ReactNode>;
 }) {
   const qc = useQueryClient();
   const queryKey = ["crud", table];

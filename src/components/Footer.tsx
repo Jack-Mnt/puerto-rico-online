@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, Mail, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, MessageCircle } from "lucide-react";
 import { storageUrl } from "@/lib/supabase";
-import { configQuery, whatsappUrl } from "@/lib/queries";
+import { configQuery, sedesQuery, whatsappUrl } from "@/lib/queries";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -14,10 +14,9 @@ function TikTokIcon({ className }: { className?: string }) {
 
 export function Footer() {
   const { data: config = {} } = useQuery(configQuery);
+  const { data: sedes = [] } = useQuery(sedesQuery);
   const logoSrc = storageUrl(config.logo_light || config.logo_dark || "branding/logo-light.PNG");
-  const descripcion =
-    config.footer_descripcion ||
-    "Tu licorería premium online. Selección curada, entrega rápida y atención personalizada en todas nuestras sedes.";
+  const descripcion = config.footer_descripcion;
   const waUrl = whatsappUrl(config.whatsapp_principal);
   const email = config.email_contacto;
   const socials = [
@@ -33,7 +32,7 @@ export function Footer() {
           <div className="mb-3">
             <img src={logoSrc} alt={config.nombre_empresa || "Puerto Rico Online"} className="h-auto w-auto object-contain max-h-10 md:max-h-14" onError={(e) => (e.currentTarget.style.display = "none")} />
           </div>
-          <p className="text-sm text-white/70 leading-relaxed">{descripcion}</p>
+          {descripcion && <p className="text-sm text-white/70 leading-relaxed">{descripcion}</p>}
           {socials.length > 0 && (
             <div className="mt-5 flex items-center gap-2">
               {socials.map(({ url, icon: Icon, label }) => (
@@ -61,13 +60,33 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">SEDES</h4>
+          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">NUESTRAS SEDES</h4>
           <ul className="space-y-2 text-sm text-white/70">
-            <li><Link to="/sedes">Ver todas las sedes</Link></li>
+            {sedes.map((s) => (
+              <li key={s.id}>
+                {s.google_maps_url ? (
+                  <a
+                    href={s.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 hover:text-white transition-colors"
+                  >
+                    <MapPin className="h-3.5 w-3.5" /> {s.nombre}
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5" /> {s.nombre}
+                  </span>
+                )}
+              </li>
+            ))}
+            {sedes.length > 0 && (
+              <li className="pt-1"><Link to="/sedes" className="text-white/60 hover:text-white text-xs">Ver todas →</Link></li>
+            )}
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">CONTACTO</h4>
+          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">CONTÁCTANOS</h4>
           <ul className="space-y-2 text-sm text-white/70">
             {waUrl && (
               <li>

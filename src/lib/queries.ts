@@ -169,3 +169,9 @@ export function whatsappUrl(num?: string | null, text?: string) {
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
 }
 
+export function formatPhone(num?: string | null) {
+  const clean = (num || "").replace(/\D/g, "");
+  const digits = clean.length > 9 ? clean.slice(-9) : clean;
+  return digits.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
+}
+

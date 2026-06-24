@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Mail, MessageCircle, Facebook, Instagram, Building2 } from "lucide-react";
-import { configQuery, whatsappUrl } from "@/lib/queries";
+import { Mail, MessageCircle, Facebook, Instagram, Building2, Phone } from "lucide-react";
+import { configQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -57,6 +57,15 @@ function ContactoPage() {
                 </div>
                 <h3 className="font-display text-lg mb-1">WhatsApp</h3>
                 <p className="text-sm text-muted-foreground break-all">{config.whatsapp_principal}</p>
+              </a>
+            )}
+            {config.whatsapp_principal && (
+              <a href={`tel:${config.whatsapp_principal.replace(/\D/g, "")}`} className="card-pro p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}>
+                  <Phone className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
+                </div>
+                <h3 className="font-display text-lg mb-1">Llamar</h3>
+                <p className="text-sm text-muted-foreground">{formatPhone(config.whatsapp_principal)}</p>
               </a>
             )}
             {config.email_contacto && (

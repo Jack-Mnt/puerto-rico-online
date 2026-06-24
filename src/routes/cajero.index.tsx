@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Eye, Check, X, Truck } from "lucide-react";
+import { Check, X, Truck, PackageCheck } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase, storageUrl } from "@/lib/supabase";
 import { PageHeader, EmptyState } from "@/components/PanelLayout";
@@ -36,6 +36,28 @@ type Pedido = {
 
 const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_aceptado", "pedido_despachado"];
 
+type Variant = "creado" | "aceptado" | "despachado";
+
+const COLUMNAS: { key: Variant; title: string; estado: EstadoPedido }[] = [
+  { key: "creado", title: "Nuevo", estado: "pedido_creado" },
+  { key: "aceptado", title: "Aceptado", estado: "pedido_aceptado" },
+  { key: "despachado", title: "Despachado", estado: "pedido_despachado" },
+];
+
+const VARIANT_STYLES: Record<Variant, { bg: string; border: string }> = {
+  creado: { bg: "#FFF7D6", border: "#FACC15" },
+  aceptado: { bg: "#EAF8EF", border: "#22C55E" },
+  despachado: { bg: "#EAF2FF", border: "#3B82F6" },
+};
+
+function formatHora(iso: string) {
+  try {
+    return new Date(iso).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return "";
+  }
+}
+
 function CajeroPanel() {
   const { perfil } = useAuthStore();
   const qc = useQueryClient();
@@ -43,7 +65,7 @@ function CajeroPanel() {
   const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   const queryKey = ["cajero-pedidos", perfil?.sede_id];
-  useRealtimePedidos([queryKey, ["pedido-historial"], ["cajero-pedido-items"]]);
+  useRealtimePedidos([queryKey, ["pedido-historial"], ["cajero-pedido-items"], ["cajero-historial", perfil?.sede_id]]);
   const { data = [], isLoading } = useQuery({
     queryKey,
     enabled: !!perfil?.sede_id,
@@ -63,14 +85,12 @@ function CajeroPanel() {
     pedido_id: string,
     accion: EstadoPedido,
     descripcion?: string,
-    extra?: Record<string, unknown>,
   ) {
     const { error } = await supabase.from("historial_pedidos").insert({
       pedido_id,
       usuario_id: perfil?.id,
       accion,
       descripcion: descripcion ?? null,
-      ...extra,
     });
     if (error) console.warn("[historial]", error.message);
   }
@@ -90,13 +110,7 @@ function CajeroPanel() {
   });
 
   const rechazar = useMutation({
-    mutationFn: async ({
-      id,
-      observaciones,
-    }: {
-      id: string;
-      observaciones: string;
-    }) => {
+    mutationFn: async ({ id, observaciones }: { id: string; observaciones: string }) => {
       const { error } = await supabase
         .from("pedidos")
         .update({ estado: "pedido_rechazado", observaciones })
@@ -113,9 +127,9 @@ function CajeroPanel() {
     onError: (e) => toast.error((e as Error).message),
   });
 
-  const grupos = VISIBLES.map((e) => ({
-    estado: e,
-    items: data.filter((p) => p.estado === e),
+  const grupos = COLUMNAS.map((c) => ({
+    ...c,
+    items: data.filter((p) => p.estado === c.estado),
   }));
 
   if (!perfil?.sede_id) {
@@ -134,33 +148,30 @@ function CajeroPanel() {
       ) : !data.length ? (
         <EmptyState title="Sin pedidos" description="Cuando lleguen pedidos a tu sede aparecerán aquí." />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {grupos.map((g) => (
-            <div key={g.estado} className="rounded-xl border border-border bg-card p-3">
-              <div className="flex items-center justify-between mb-3 px-1">
-                <h2 className="font-semibold text-sm">{ESTADO_LABEL[g.estado]}</h2>
+            <div key={g.key} className="rounded-xl border border-border bg-card flex flex-col">
+              <div className="px-3 py-2.5 border-b border-border flex items-center justify-between rounded-t-xl">
+                <h3 className="font-semibold text-sm">{g.title}</h3>
                 <span className="text-xs text-muted-foreground">{g.items.length}</span>
               </div>
-              <div className="space-y-2">
+              <div className="p-2 space-y-2 max-h-[78vh] overflow-y-auto">
                 {g.items.length === 0 && (
-                  <p className="text-xs text-muted-foreground px-1 py-4 text-center">—</p>
+                  <p className="text-[11px] text-muted-foreground text-center py-6">—</p>
                 )}
                 {g.items.map((p) => (
-                  <button
+                  <PedidoCard
                     key={p.id}
-                    onClick={() => setViewing(p)}
-                    className="w-full text-left p-3 rounded-lg border border-border bg-background hover:bg-muted/40 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-mono text-muted-foreground">Pedido #{p.numero_pedido}</span>
-                      <span className="text-xs">{formatDate(p.created_at)}</span>
-                    </div>
-                    <div className="font-medium mt-1 truncate">{p.cliente_nombre}</div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs capitalize text-muted-foreground">{p.tipo_entrega ?? "—"}</span>
-                      <span className="font-semibold text-sm">{formatMoney(p.total)}</span>
-                    </div>
-                  </button>
+                    pedido={p}
+                    variant={g.key}
+                    onOpen={() => setViewing(p)}
+                    onDespachar={
+                      g.key === "aceptado"
+                        ? () => cambiarEstado.mutate({ id: p.id, estado: "pedido_despachado" })
+                        : undefined
+                    }
+                    busy={cambiarEstado.isPending}
+                  />
                 ))}
               </div>
             </div>
@@ -185,6 +196,56 @@ function CajeroPanel() {
           onSubmit={(observaciones) => rechazar.mutate({ id: rejectingId, observaciones })}
           busy={rechazar.isPending}
         />
+      )}
+    </div>
+  );
+}
+
+function PedidoCard({
+  pedido,
+  variant,
+  onOpen,
+  onDespachar,
+  busy,
+}: {
+  pedido: Pedido;
+  variant: Variant;
+  onOpen: () => void;
+  onDespachar?: () => void;
+  busy?: boolean;
+}) {
+  const s = VARIANT_STYLES[variant];
+  return (
+    <div
+      className="rounded-lg border p-2.5 transition-shadow hover:shadow-sm"
+      style={{ backgroundColor: s.bg, borderColor: s.border }}
+    >
+      <button onClick={onOpen} className="w-full text-left">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] font-mono text-foreground/60">#{pedido.numero_pedido}</span>
+          <span className="text-[10px] text-foreground/60">{formatHora(pedido.created_at)}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 mt-1">
+          <div className="text-sm text-foreground font-medium truncate">{pedido.cliente_nombre}</div>
+          <div className="text-sm text-foreground font-medium truncate text-right capitalize">
+            {pedido.metodo_pago || "—"}
+          </div>
+          <div className="text-sm text-foreground font-medium truncate capitalize">
+            {pedido.tipo_entrega || "—"}
+          </div>
+          <div className="text-sm text-foreground font-medium truncate text-right">
+            {formatMoney(pedido.total)}
+          </div>
+        </div>
+      </button>
+      {onDespachar && (
+        <button
+          disabled={busy}
+          onClick={onDespachar}
+          className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-indigo-600 text-white px-2 py-1.5 text-xs font-medium hover:bg-indigo-700 disabled:opacity-50"
+        >
+          <PackageCheck className="h-3.5 w-3.5" /> Marcar despachado
+        </button>
       )}
     </div>
   );
@@ -258,9 +319,7 @@ function PedidoCajeroModal({
                       {d.cantidad} × {formatMoney(Number(d.precio_venta))}
                     </div>
                   </div>
-                  <div className="font-semibold">
-                    {formatMoney(Number(d.subtotal))}
-                  </div>
+                  <div className="font-semibold">{formatMoney(Number(d.subtotal))}</div>
                 </div>
               ))}
             </div>
@@ -297,7 +356,7 @@ function PedidoCajeroModal({
               onClick={onDespachar}
               className="flex-1 inline-flex items-center justify-center gap-2 rounded-md bg-indigo-600 text-white px-4 py-2.5 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
             >
-              <Truck className="h-4 w-4" /> Marcar como despachado
+              <Truck className="h-4 w-4" /> Marcar despachado
             </button>
           )}
           {pedido.estado === "pedido_despachado" && (
@@ -386,5 +445,3 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
     </div>
   );
 }
-// keep unused icon import referenced
-void Eye;

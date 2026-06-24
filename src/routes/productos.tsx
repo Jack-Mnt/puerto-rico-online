@@ -160,47 +160,43 @@ function Catalogo() {
         )}
 
         {/* Filter block */}
-        <section className="mb-8 rounded-2xl border border-[color:var(--color-border)] bg-[#FBF8F2] shadow-[0_1px_2px_rgba(18,14,14,0.04)] overflow-hidden">
-          {/* Desktop: pills, Mobile: selects */}
-          <div className="px-4 md:px-6 py-5 space-y-5">
-            {/* 1. Grupo */}
-            <FilterRow label="1. Grupo">
-              {/* Mobile select */}
-              <select
-                className="field md:hidden"
-                value={grupo ?? ""}
-                onChange={(e) => setParam({ grupo: e.target.value || undefined, categoria: undefined, marca: undefined })}
-              >
-                <option value="">Selecciona un grupo</option>
-                {GRUPOS.map((g) => <option key={g} value={g}>{g}</option>)}
-              </select>
-              {/* Desktop pills */}
-              <div className="hidden md:flex flex-wrap items-center gap-2">
-                {GRUPOS.map((g) => (
-                  <PillButton key={g} active={grupo === g} onClick={() => setParam({ grupo: grupo === g ? undefined : g, categoria: undefined, marca: undefined })}>
-                    {g}
-                  </PillButton>
-                ))}
+        <section className="mb-8 rounded-2xl border border-[#E5E7EB] bg-[#FBF8F2] shadow-[0_1px_2px_rgba(18,14,14,0.04)] overflow-hidden">
+          <div className="px-4 md:px-6 py-5 md:py-6 space-y-6">
+            {/* Explorar por */}
+            <div>
+              <h3 className="font-display text-[11px] uppercase tracking-[0.24em] text-[color:var(--color-foreground)]/70 mb-3">
+                Explorar por
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {GRUPOS.map((g) => {
+                  const icon = g === "Licores" ? "🥃" : g === "Bebidas" ? "🥤" : g === "Cigarros y Vapes" ? "🚬" : "🧊";
+                  const active = grupo === g;
+                  return (
+                    <button
+                      key={g}
+                      onClick={() => setParam({ grupo: active ? undefined : g, categoria: undefined, marca: undefined })}
+                      className={[
+                        "group flex flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-5 md:py-6 transition-all duration-200",
+                        active
+                          ? "bg-[#120E0E] text-[#D8C18A] border-[#120E0E] shadow-[0_8px_24px_-12px_rgba(18,14,14,0.55)]"
+                          : "bg-white text-[color:var(--color-foreground)] border-[#E5E7EB] hover:border-[#C37D45] hover:shadow-sm",
+                      ].join(" ")}
+                    >
+                      <span className="text-2xl md:text-3xl leading-none">{icon}</span>
+                      <span className="text-xs md:text-sm font-medium text-center">{g}</span>
+                    </button>
+                  );
+                })}
               </div>
-            </FilterRow>
+            </div>
 
-            {/* 2. Categoría */}
-            <FilterRow label="2. Categoría">
-              {!grupo ? (
-                <p className="text-xs text-muted-foreground italic">Selecciona un grupo para ver las categorías.</p>
-              ) : categoriasDelGrupo.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">No hay categorías para este grupo.</p>
-              ) : (
-                <>
-                  <select
-                    className="field md:hidden"
-                    value={categoria ?? ""}
-                    onChange={(e) => setParam({ categoria: e.target.value || undefined, marca: undefined })}
-                  >
-                    <option value="">Todas las categorías</option>
-                    {categoriasDelGrupo.map((c) => <option key={c.id} value={c.slug}>{c.nombre}</option>)}
-                  </select>
-                  <div className="hidden md:flex flex-wrap items-center gap-2">
+            {/* Familias */}
+            {grupo && (
+              <FilterRow label="Familias">
+                {categoriasDelGrupo.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">No hay familias para este grupo.</p>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
                     <PillButton active={!categoria} onClick={() => setParam({ categoria: undefined, marca: undefined })}>Todas</PillButton>
                     {categoriasDelGrupo.map((c) => (
                       <PillButton key={c.id} active={categoria === c.slug} onClick={() => setParam({ categoria: c.slug, marca: undefined })}>
@@ -208,27 +204,17 @@ function Catalogo() {
                       </PillButton>
                     ))}
                   </div>
-                </>
-              )}
-            </FilterRow>
+                )}
+              </FilterRow>
+            )}
 
-            {/* 3. Marca */}
-            <FilterRow label="3. Marca">
-              {!grupo ? (
-                <p className="text-xs text-muted-foreground italic">Selecciona un grupo primero.</p>
-              ) : availableMarcas.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">No hay marcas disponibles.</p>
-              ) : (
-                <>
-                  <select
-                    className="field md:hidden"
-                    value={marca ?? ""}
-                    onChange={(e) => setParam({ marca: e.target.value || undefined })}
-                  >
-                    <option value="">Todas las marcas</option>
-                    {availableMarcas.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}
-                  </select>
-                  <div className="hidden md:flex flex-wrap items-center gap-2">
+            {/* Marcas */}
+            {grupo && (
+              <FilterRow label="Marcas">
+                {availableMarcas.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">No hay marcas disponibles.</p>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
                     <PillButton active={!marca} onClick={() => setParam({ marca: undefined })}>Todas</PillButton>
                     {availableMarcas.map((m) => (
                       <PillButton key={m.id} active={marca === m.id} onClick={() => setParam({ marca: m.id })}>
@@ -236,13 +222,13 @@ function Catalogo() {
                       </PillButton>
                     ))}
                   </div>
-                </>
-              )}
-            </FilterRow>
+                )}
+              </FilterRow>
+            )}
 
             {/* Limpiar filtros */}
             {hasFilters && (
-              <div className="pt-2 border-t border-[color:var(--color-border)]/60">
+              <div className="pt-2 border-t border-[#E5E7EB]/70">
                 <button
                   onClick={clearAll}
                   className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--color-accent)] hover:opacity-80 transition"
@@ -254,6 +240,7 @@ function Catalogo() {
             )}
           </div>
         </section>
+
 
         {/* Products grid */}
         <div>

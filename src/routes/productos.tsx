@@ -313,3 +313,69 @@ function PillButton({
     </button>
   );
 }
+
+function HorizontalCarousel({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [canL, setCanL] = useState(false);
+  const [canR, setCanR] = useState(false);
+
+  const update = () => {
+    const el = ref.current;
+    if (!el) return;
+    setCanL(el.scrollLeft > 4);
+    setCanR(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    update();
+    const el = ref.current;
+    if (!el) return;
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  const scrollBy = (dir: 1 | -1) => {
+    const el = ref.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(240, el.clientWidth * 0.7), behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative group/car">
+      {canL && (
+        <button
+          type="button"
+          aria-label="Anterior"
+          onClick={() => scrollBy(-1)}
+          className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E5E7EB] shadow-md hover:border-[#C37D45] transition"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      )}
+      {canR && (
+        <button
+          type="button"
+          aria-label="Siguiente"
+          onClick={() => scrollBy(1)}
+          className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 items-center justify-center rounded-full bg-white border border-[#E5E7EB] shadow-md hover:border-[#C37D45] transition"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      )}
+      <div
+        ref={ref}
+        className="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 md:px-10 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {Array.isArray(children)
+          ? (children as React.ReactNode[]).map((child, i) => (
+              <div key={i} className="snap-start">{child}</div>
+            ))
+          : <div className="snap-start">{children}</div>}
+      </div>
+    </div>
+  );
+}

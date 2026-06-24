@@ -18,7 +18,7 @@ export const Route = createFileRoute("/sedes")({
 });
 
 function SedesPage() {
-  const { data: sedes = [] } = useQuery(sedesQuery);
+  const { data: sedes = [], isLoading } = useQuery(sedesQuery);
   const { data: config = {} } = useQuery(configQuery);
 
   const whatsappGeneral = (config.whatsapp_moderador || "51955618119").replace(/\D/g, "");
@@ -47,52 +47,89 @@ function SedesPage() {
 
         {/* Lista de Sedes */}
         <section className="container-pro py-16 md:py-24">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sedes.map((sede) => (
-              <div
-                key={sede.id}
-                className="rounded-2xl p-6 md:p-7 transition"
-                style={{
-                  background: "var(--color-primary)",
-                  color: "var(--color-primary-foreground)",
-                  border: "1px solid color-mix(in oklab, white 10%, transparent)",
-                }}
-              >
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, white 10%, transparent)" }}>
-                    <MapPin className="h-5 w-5" style={{ color: "var(--color-premium)" }} />
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl p-6 md:p-7 animate-pulse"
+                  style={{ background: "white", border: "1px solid var(--color-border)" }}
+                >
+                  <div className="flex items-start gap-3 mb-5">
+                    <div className="h-10 w-10 rounded-xl" style={{ background: "var(--color-surface)" }} />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-2/3 rounded" style={{ background: "var(--color-surface)" }} />
+                      <div className="h-3 w-full rounded" style={{ background: "var(--color-surface)" }} />
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-display text-lg">{sede.nombre}</h3>
-                    {sede.direccion ? (
-                      <p className="text-sm text-white/60 mt-1 leading-relaxed">{sede.direccion}</p>
+                  <div className="h-10 w-full rounded-xl" style={{ background: "var(--color-surface)" }} />
+                </div>
+              ))}
+            </div>
+          ) : sedes.length === 0 ? (
+            <div
+              className="mx-auto max-w-md rounded-2xl p-10 text-center"
+              style={{ background: "white", border: "1px solid var(--color-border)" }}
+            >
+              <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "var(--color-surface)" }}>
+                <MapPin className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
+              </div>
+              <h3 className="font-display text-lg mb-2">Aún no hay sedes registradas</h3>
+              <p className="text-sm text-muted-foreground">
+                Pronto compartiremos los puntos donde podrás visitarnos.
+              </p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sedes.map((sede) => (
+                <div
+                  key={sede.id}
+                  className="rounded-2xl p-6 md:p-7 transition hover:shadow-lg flex flex-col"
+                  style={{
+                    background: "white",
+                    border: "1px solid var(--color-border)",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <div className="flex items-start gap-3 mb-5">
+                    <div
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-xl"
+                      style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}
+                    >
+                      <MapPin className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-display text-lg">{sede.nombre}</h3>
+                      {sede.direccion ? (
+                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{sede.direccion}</p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground/70 mt-1 leading-relaxed italic">Dirección por confirmar</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-auto">
+                    {sede.google_maps_url ? (
+                      <a
+                        href={sede.google_maps_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline w-full text-sm"
+                      >
+                        <ExternalLink className="h-4 w-4" /> Ver en Google Maps
+                      </a>
                     ) : (
-                      <p className="text-sm text-white/40 mt-1 leading-relaxed">Dirección por confirmar</p>
+                      <button
+                        disabled
+                        className="btn btn-outline w-full text-sm opacity-50 cursor-not-allowed"
+                      >
+                        <ExternalLink className="h-4 w-4" /> Ubicación no disponible
+                      </button>
                     )}
                   </div>
                 </div>
-                {sede.google_maps_url ? (
-                  <a
-                    href={sede.google_maps_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline w-full text-sm"
-                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
-                  >
-                    <ExternalLink className="h-4 w-4" /> Ver ubicación
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    className="btn btn-outline w-full text-sm opacity-50 cursor-not-allowed"
-                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
-                  >
-                    <ExternalLink className="h-4 w-4" /> Ver ubicación
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* CTA bloque */}
           <div

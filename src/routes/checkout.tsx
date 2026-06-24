@@ -69,6 +69,7 @@ function CheckoutPage() {
     e.preventDefault();
     if (!nombre.trim() || !telefono.trim()) { toast.error("Ingresa nombre y teléfono"); return; }
     if (!sede) { toast.error("Selecciona una sede"); return; }
+    if (tipo === "delivery" && !direccion.trim()) { toast.error("Ingresa la dirección de entrega"); return; }
     if (items.some((i) => Number(i.cantidad) <= 0)) { toast.error("Revisa las cantidades del carrito"); return; }
     setSubmitting(true);
     let pedidoCreado = false;

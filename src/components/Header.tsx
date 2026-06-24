@@ -56,6 +56,7 @@ export function Header() {
           <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>
           <Link to="/productos" className="text-white/80 hover:text-white">Catálogo</Link>
           <Link to="/nosotros" className="text-white/80 hover:text-white">Nosotros</Link>
+          <Link to="/sedes" className="text-white/80 hover:text-white">Sedes</Link>
         </nav>
         <div className="flex items-center gap-2">
           <Link
@@ -148,7 +149,7 @@ export function Header() {
               <Search className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">Buscar productos</span>
             </button>
-            <MobileLink to="/nosotros" icon={MapPin} label="Nuestras sedes" onClick={close} hash="sedes" />
+            <MobileLink to="/sedes" icon={MapPin} label="Nuestras sedes" onClick={close} />
 
             <div className="my-3 border-t border-white/10" />
 

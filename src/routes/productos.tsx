@@ -305,8 +305,8 @@ function PillButton({
       className={[
         "shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border",
         active
-          ? "bg-[#120E0E] text-white border-[#120E0E] shadow-[0_4px_14px_-6px_rgba(18,14,14,0.45)]"
-          : "bg-white text-[color:var(--color-foreground)] border-[color:var(--color-border)] hover:border-[color:var(--color-accent)] hover:bg-[color:color-mix(in_oklab,var(--color-accent)_8%,white)]",
+          ? "bg-[#120E0E] text-[#D8C18A] border-[#120E0E] shadow-[0_4px_14px_-6px_rgba(18,14,14,0.45)]"
+          : "bg-white text-[color:var(--color-foreground)] border-[#E5E7EB] hover:border-[#C37D45] hover:bg-[color:color-mix(in_oklab,var(--color-accent)_8%,white)]",
       ].join(" ")}
     >
       {children}

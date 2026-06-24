@@ -30,7 +30,10 @@ export function Footer() {
         </div>
         <div>
           <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">CONTACTO</h4>
-          <p className="text-sm text-white/70">WhatsApp: +51 955 618 119<br/>Atención todos los días.</p>
+          <p className="text-sm text-white/70">
+            <a href="https://wa.me/51955618119" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors">WhatsApp: +51 955 618 119</a>
+            <br/>Atención todos los días.
+          </p>
         </div>
       </div>
       <div className="border-t border-white/10">

@@ -72,6 +72,40 @@ export const productosQuery = queryOptions({
   },
 });
 
+export type ProductosPageFilters = {
+  categoriaIds?: string[];
+  marcaId?: string;
+  search?: string;
+};
+
+export type ProductosPage = { rows: Producto[]; total: number; from: number; to: number };
+
+export async function fetchProductosPage(
+  filters: ProductosPageFilters,
+  from: number,
+  to: number,
+): Promise<ProductosPage> {
+  let q = supabase
+    .from("productos")
+    .select(PRODUCTO_SELECT, { count: "exact" })
+    .eq("activo", true);
+  if (filters.categoriaIds && filters.categoriaIds.length > 0) {
+    q = q.in("categoria_id", filters.categoriaIds);
+  }
+  if (filters.marcaId) q = q.eq("marca_id", filters.marcaId);
+  if (filters.search && filters.search.trim()) {
+    q = q.ilike("nombre", `%${filters.search.trim()}%`);
+  }
+  const { data, error, count } = await q.order("nombre").range(from, to);
+  if (error) throw error;
+  return {
+    rows: (data ?? []) as unknown as Producto[],
+    total: count ?? 0,
+    from,
+    to,
+  };
+}
+
 export const productoBySlugQuery = (slug: string) =>
   queryOptions({
     queryKey: ["producto", slug],

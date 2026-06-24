@@ -194,10 +194,29 @@ function NosotrosPage() {
                 <Link to="/productos" className="btn btn-accent">
                   Explorar catálogo
                 </Link>
-                <Link to="/" className="btn btn-outline" style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 20%, transparent)" }}>
-                  Volver al inicio
-                </Link>
+                {whatsappGeneralUrl && (
+                  <a href={whatsappGeneralUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline inline-flex items-center gap-2" style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 20%, transparent)" }}>
+                    <MessageCircle className="h-4 w-4" /> Contáctanos por WhatsApp
+                  </a>
+                )}
               </div>
+              {socials.length > 0 && (
+                <div className="mt-8 flex items-center justify-center gap-3">
+                  {socials.map(({ url, icon: Icon, label }) => (
+                    <a
+                      key={label}
+                      href={url as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 text-white/85 hover:bg-white/10 hover:text-white transition-colors"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
+              )}
+
             </div>
           </div>
         </section>

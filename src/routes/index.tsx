@@ -23,9 +23,29 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const PRIORITY_CATEGORIES = [
+  "Whisky",
+  "Ron",
+  "Cervezas",
+  "Vodka",
+  "Gin",
+  "Tequila",
+  "Vino",
+  "Pisco",
+  "Champagne",
+  "Licores Varios",
+];
+
 function Home() {
   const { data: destacados = [], isLoading: loadingDest } = useQuery(destacadosQuery);
-  const { data: categorias = [] } = useQuery(categoriasQuery);
+  const { data: allCategorias = [] } = useQuery(categoriasQuery);
+
+  const categorias = (() => {
+    const map = new Map(allCategorias.map((c) => [c.nombre, c]));
+    return PRIORITY_CATEGORIES
+      .map((nombre) => map.get(nombre))
+      .filter((c): c is NonNullable<typeof c> => Boolean(c));
+  })();
 
   return (
     <div className="min-h-screen flex flex-col">

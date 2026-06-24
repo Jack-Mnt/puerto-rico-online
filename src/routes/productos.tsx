@@ -57,7 +57,7 @@ function Catalogo() {
 
   // Marcas disponibles según scope (lightweight)
   const { data: availableBrandIdsArr = [] } = useQuery(
-    (await import("@/lib/queries")).productosScopeMarcasQuery(grupo ? (categoriaIds ?? []) : null),
+    productosScopeMarcasQuery(grupo ? (categoriaIds ?? []) : null),
   );
   const availableBrandIds = useMemo(() => new Set(availableBrandIdsArr), [availableBrandIdsArr]);
   const availableMarcas = useMemo(

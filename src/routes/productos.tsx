@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { categoriasQuery, marcasQuery, productosQuery } from "@/lib/queries";
-import { Search, X, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { categoriasQuery, fetchProductosPage, marcasQuery, productosQuery } from "@/lib/queries";
+import { Search, X, RotateCcw, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };
+type PerPage = 10 | 20 | 30;
 
 const GRUPOS = ["Licores", "Bebidas", "Cigarros y Vapes", "Complementos"] as const;
 

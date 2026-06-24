@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { categoriasQuery, marcasQuery, productosQuery } from "@/lib/queries";
-import { Search, X, RotateCcw } from "lucide-react";
+import { Search, X, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Search = { grupo?: string; categoria?: string; marca?: string; q?: string };
 

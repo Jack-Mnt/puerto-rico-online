@@ -169,10 +169,10 @@ function ModeradorKanban() {
 
   function variantOf(p: Pedido): Variant {
     if (p.estado === "pedido_despachado") return "despachado";
+    // Reasignado tiene prioridad sobre cualquier estado activo no-despachado.
+    if (reasignadosIds.has(p.id)) return "reasignado";
     if (p.estado === "pedido_rechazado") return "rechazado";
     if (p.estado === "pedido_aceptado") return "aceptado";
-    // pedido_creado: si fue reasignado, lo mostramos como reasignado
-    if (p.estado === "pedido_creado" && reasignadosIds.has(p.id)) return "reasignado";
     return "creado";
   }
 
@@ -280,7 +280,7 @@ function PedidoCard({
           <span className="text-[10px] font-mono text-foreground/60">#{pedido.numero_pedido}</span>
           <span className="text-[10px] text-foreground/60">{formatHora(pedido.created_at)}</span>
         </div>
-        <div className="grid grid-cols-2 gap-x-2 gap-y-1 mt-1.5">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 mt-1">
           <div className="text-sm text-foreground font-medium truncate">{pedido.cliente_nombre}</div>
           <div className="text-sm text-foreground font-medium truncate text-right">{sedeNombre}</div>
           <div className="text-sm text-foreground font-medium truncate capitalize">
@@ -289,11 +289,6 @@ function PedidoCard({
           <div className="text-sm text-foreground font-medium truncate text-right">
             {formatMoney(pedido.total)}
           </div>
-        </div>
-        <div className="mt-1.5">
-          <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${s.chip}`}>
-            {s.label}
-          </span>
         </div>
       </button>
       {onMarcarEntregado && (

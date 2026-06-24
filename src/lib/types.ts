@@ -14,7 +14,7 @@ export type Producto = {
   categoria?: { nombre: string; slug: string } | null;
 };
 
-export type Categoria = { id: string; nombre: string; slug: string; activo: boolean; orden?: number };
+export type Categoria = { id: string; nombre: string; slug: string; activo: boolean; orden?: number; grupo?: string | null };
 export type Marca = { id: string; nombre: string; activo: boolean };
 
 export type Banner = {

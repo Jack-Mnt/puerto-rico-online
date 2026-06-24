@@ -22,7 +22,7 @@ type MetodoPago = "efectivo" | "yape_plin";
 type ProductoDetalleInfo = {
   id: string;
   precio_costo: number | null;
-  marca?: { nombre: string | null } | null;
+  marca_info?: { nombre: string | null } | null;
 };
 
 function toValidNumber(value: unknown, fallback = 0) {
@@ -77,7 +77,7 @@ function CheckoutPage() {
       const productoIds = Array.from(new Set(items.map((i) => i.id)));
       const { data: productosDetalle, error: productosErr } = await supabase
         .from("productos")
-        .select("id,precio_costo,marca:marcas(nombre)")
+        .select("id,precio_costo,marca_info:marcas(nombre)")
         .in("id", productoIds);
       if (productosErr) throw productosErr;
 
@@ -95,7 +95,7 @@ function CheckoutPage() {
         return {
           producto_id: i.id,
           producto_nombre: i.nombre,
-          producto_marca: productoInfo?.marca?.nombre ?? null,
+          producto_marca: productoInfo?.marca_info?.nombre ?? null,
           cantidad,
           precio_venta: precioVenta,
           precio_costo: precioCosto,

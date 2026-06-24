@@ -56,7 +56,7 @@ function ContactoPage() {
                   <MessageCircle className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
                 </div>
                 <h3 className="font-display text-lg mb-1">WhatsApp</h3>
-                <p className="text-sm text-muted-foreground break-all">{config.whatsapp_principal}</p>
+                <p className="text-sm text-muted-foreground break-all">{formatPhone(config.whatsapp_principal)}</p>
               </a>
             )}
             {config.whatsapp_principal && (

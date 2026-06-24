@@ -26,11 +26,18 @@ export const Route = createFileRoute("/productos")({
 function Catalogo() {
   const { grupo, categoria, marca, q } = Route.useSearch();
   const navigate = useNavigate({ from: "/productos" });
-  const { data: productos = [], isLoading } = useQuery(productosQuery);
   const { data: categorias = [] } = useQuery(categoriasQuery);
   const { data: marcas = [] } = useQuery(marcasQuery);
   const [search, setSearch] = useState(q ?? "");
   const [showMarcas, setShowMarcas] = useState(false);
+  const [perPage, setPerPage] = useState<PerPage>(20);
+
+  // Debounce búsqueda para no spamear Supabase
+  const [searchDebounced, setSearchDebounced] = useState(search);
+  useEffect(() => {
+    const id = setTimeout(() => setSearchDebounced(search), 300);
+    return () => clearTimeout(id);
+  }, [search]);
 
   // Categorías filtradas por grupo
   const categoriasDelGrupo = useMemo(
@@ -38,22 +45,21 @@ function Catalogo() {
     [categorias, grupo],
   );
 
-  // Productos dentro del scope grupo/categoría (sin marca, sin búsqueda) para calcular marcas disponibles
-  const productosScope = useMemo(() => {
-    const catsDelGrupoSlugs = new Set(categoriasDelGrupo.map((c) => c.slug));
-    return productos.filter((p) => {
-      if (grupo && !catsDelGrupoSlugs.has(p.categoria?.slug ?? "")) return false;
-      if (categoria && p.categoria?.slug !== categoria) return false;
-      return true;
-    });
-  }, [productos, grupo, categoria, categoriasDelGrupo]);
+  // IDs de categorías que aplican según grupo/categoría
+  const categoriaIds = useMemo<string[] | undefined>(() => {
+    if (categoria) {
+      const cat = categorias.find((c) => c.slug === categoria);
+      return cat ? [cat.id] : [];
+    }
+    if (grupo) return categoriasDelGrupo.map((c) => c.id);
+    return undefined;
+  }, [categoria, categorias, grupo, categoriasDelGrupo]);
 
-  const availableBrandIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const p of productosScope) if (p.marca_id) ids.add(p.marca_id);
-    return ids;
-  }, [productosScope]);
-
+  // Marcas disponibles según scope (lightweight)
+  const { data: availableBrandIdsArr = [] } = useQuery(
+    (await import("@/lib/queries")).productosScopeMarcasQuery(grupo ? (categoriaIds ?? []) : null),
+  );
+  const availableBrandIds = useMemo(() => new Set(availableBrandIdsArr), [availableBrandIdsArr]);
   const availableMarcas = useMemo(
     () => marcas.filter((m) => availableBrandIds.has(m.id)),
     [marcas, availableBrandIds],
@@ -68,25 +74,44 @@ function Catalogo() {
 
   // Auto-limpiar marca si no está disponible
   useEffect(() => {
-    if (marca && !availableBrandIds.has(marca)) {
+    if (marca && availableBrandIdsArr.length > 0 && !availableBrandIds.has(marca)) {
       navigate({ search: (prev: Search) => ({ ...prev, marca: undefined }) });
     }
-  }, [marca, availableBrandIds, navigate]);
+  }, [marca, availableBrandIds, availableBrandIdsArr.length, navigate]);
 
-  const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return productosScope.filter((p) => {
-      if (marca && p.marca_id !== marca) return false;
-      if (term) {
-        const hay =
-          p.nombre.toLowerCase().includes(term) ||
-          (p.marca?.nombre?.toLowerCase().includes(term) ?? false) ||
-          (p.categoria?.nombre?.toLowerCase().includes(term) ?? false);
-        if (!hay) return false;
-      }
-      return true;
-    });
-  }, [productosScope, marca, search]);
+  // Paginación server-side
+  const pageFilters = useMemo(
+    () => ({
+      categoriaIds: categoriaIds && categoriaIds.length > 0 ? categoriaIds : undefined,
+      marcaId: marca || undefined,
+      search: searchDebounced || undefined,
+    }),
+    [categoriaIds, marca, searchDebounced],
+  );
+
+  const {
+    data: pages,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["productos", "paged", pageFilters, perPage],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const from = (pageParam as number) * perPage;
+      const to = from + perPage - 1;
+      return fetchProductosPage(pageFilters, from, to);
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((s, p) => s + p.rows.length, 0);
+      return loaded < lastPage.total ? allPages.length : undefined;
+    },
+  });
+
+  const items = useMemo(() => pages?.pages.flatMap((p) => p.rows) ?? [], [pages]);
+  const total = pages?.pages[0]?.total ?? 0;
 
   const setParam = (patch: Partial<Search>) =>
     navigate({

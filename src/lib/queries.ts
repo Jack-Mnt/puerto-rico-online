@@ -20,7 +20,7 @@ export const categoriasQuery = queryOptions({
   queryFn: async (): Promise<Categoria[]> => {
     const { data, error } = await supabase
       .from("categorias")
-      .select("id,nombre,slug,activo")
+      .select("id,nombre,slug,activo,grupo")
       .eq("activo", true)
       .order("nombre");
     if (error) throw error;

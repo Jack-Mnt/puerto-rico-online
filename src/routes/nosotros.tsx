@@ -2,8 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Award, Clock, HeartHandshake, Sparkles, Wine, MapPin, ExternalLink, MessageCircle } from "lucide-react";
-import { sedesQuery, configQuery } from "@/lib/queries";
+import { Award, Clock, HeartHandshake, Sparkles, Wine, MapPin, MessageCircle, Facebook, Instagram } from "lucide-react";
+import { sedesQuery, configQuery, whatsappUrl } from "@/lib/queries";
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M16.5 3a5.5 5.5 0 0 0 4.5 4.5v3a8.5 8.5 0 0 1-4.5-1.3v6.3A6.5 6.5 0 1 1 10 9v3.2a3.3 3.3 0 1 0 3.3 3.3V3h3.2Z" />
+    </svg>
+  );
+}
 
 export const Route = createFileRoute("/nosotros")({
   head: () => ({
@@ -21,8 +29,13 @@ function NosotrosPage() {
   const { data: sedes = [] } = useQuery(sedesQuery);
   const { data: config = {} } = useQuery(configQuery);
 
-  const whatsappGeneral = (config.whatsapp_moderador || "51955618119").replace(/\D/g, "");
-  const whatsappGeneralUrl = `https://wa.me/${whatsappGeneral}`;
+  const whatsappGeneralUrl = whatsappUrl(config.whatsapp_principal);
+  const socials = [
+    { url: config.facebook_url, icon: Facebook, label: "Facebook" },
+    { url: config.instagram_url, icon: Instagram, label: "Instagram" },
+    { url: config.tiktok_url, icon: TikTokIcon, label: "TikTok" },
+  ].filter((s) => s.url);
+
 
   return (
     <div className="min-h-screen flex flex-col">

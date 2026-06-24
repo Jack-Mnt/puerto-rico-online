@@ -9,9 +9,10 @@ import { Modal, ConfirmDialog } from "./Modal";
 export type CrudField = {
   name: string;
   label: string;
-  type: "text" | "number" | "boolean";
+  type: "text" | "number" | "boolean" | "select";
   required?: boolean;
   defaultValue?: any;
+  options?: { label: string; value: string }[];
 };
 
 export function SimpleCrud({
@@ -20,12 +21,14 @@ export function SimpleCrud({
   fields,
   listColumns,
   orderBy,
+  renderCell,
 }: {
   title: string;
   table: string;
   fields: CrudField[];
   listColumns: string[];
   orderBy?: string;
+  renderCell?: Record<string, (row: Record<string, any>) => React.ReactNode>;
 }) {
   const qc = useQueryClient();
   const queryKey = ["crud", table];
@@ -91,7 +94,7 @@ export function SimpleCrud({
                 <tr key={row.id} className="border-t border-border">
                   {listColumns.map((c) => (
                     <td key={c} className="p-3">
-                      {typeof row[c] === "boolean" ? (row[c] ? "Sí" : "No") : row[c] ?? "—"}
+                      {renderCell?.[c] ? renderCell[c](row) : typeof row[c] === "boolean" ? (row[c] ? "Sí" : "No") : row[c] ?? "—"}
                     </td>
                   ))}
                   <td className="p-3 text-right">
@@ -187,7 +190,18 @@ function CrudForm({
         {fields.map((f) => (
           <label key={f.name} className="block text-sm">
             <span className="block mb-1 font-medium">{f.label}</span>
-            {f.type === "boolean" ? (
+            {f.type === "select" ? (
+              <select
+                className="input"
+                value={form[f.name] ?? ""}
+                onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
+              >
+                <option value="">Seleccionar...</option>
+                {f.options?.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            ) : f.type === "boolean" ? (
               <input
                 type="checkbox"
                 checked={!!form[f.name]}

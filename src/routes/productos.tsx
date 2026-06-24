@@ -29,6 +29,7 @@ function Catalogo() {
   const { data: categorias = [] } = useQuery(categoriasQuery);
   const { data: marcas = [] } = useQuery(marcasQuery);
   const [search, setSearch] = useState(q ?? "");
+  const [showMarcas, setShowMarcas] = useState(false);
 
   // Categorías filtradas por grupo
   const categoriasDelGrupo = useMemo(

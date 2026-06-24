@@ -32,7 +32,7 @@ export function Footer() {
           <div className="mb-3">
             <img src={logoSrc} alt={config.nombre_empresa || "Puerto Rico Online"} className="h-auto w-auto object-contain max-h-10 md:max-h-14" onError={(e) => (e.currentTarget.style.display = "none")} />
           </div>
-          {descripcion && <p className="text-sm text-white/70 leading-relaxed">{descripcion}</p>}
+          {descripcion && <p className="text-base text-white/85 leading-relaxed">{descripcion}</p>}
           {socials.length > 0 && (
             <div className="mt-5 flex items-center gap-2">
               {socials.map(({ url, icon: Icon, label }) => (
@@ -51,17 +51,17 @@ export function Footer() {
           )}
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">TIENDA</h4>
-          <ul className="space-y-2 text-sm text-white/70">
-            <li><Link to="/productos">Catálogo</Link></li>
-            <li><Link to="/carrito">Carrito</Link></li>
-            <li><Link to="/checkout">Checkout</Link></li>
-            <li><Link to="/nosotros">Nosotros</Link></li>
+          <h4 className="font-display text-sm tracking-[0.18em] text-white mb-4">TIENDA</h4>
+          <ul className="space-y-2.5 text-base text-white/80">
+            <li><Link to="/productos" className="hover:text-white transition-colors">Catálogo</Link></li>
+            <li><Link to="/carrito" className="hover:text-white transition-colors">Carrito</Link></li>
+            <li><Link to="/checkout" className="hover:text-white transition-colors">Checkout</Link></li>
+            <li><Link to="/nosotros" className="hover:text-white transition-colors">Nosotros</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">NUESTRAS SEDES</h4>
-          <ul className="space-y-2 text-sm text-white/70">
+          <h4 className="font-display text-sm tracking-[0.18em] text-white mb-4">NUESTRAS SEDES</h4>
+          <ul className="space-y-2.5 text-base text-white/80">
             {sedes.map((s) => (
               <li key={s.id}>
                 {s.google_maps_url ? (
@@ -71,25 +71,25 @@ export function Footer() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 hover:text-white transition-colors"
                   >
-                    <MapPin className="h-3.5 w-3.5" /> {s.nombre}
+                    <MapPin className="h-4 w-4 shrink-0" /> {s.nombre}
                   </a>
                 ) : (
                   <span className="inline-flex items-center gap-2">
-                    <MapPin className="h-3.5 w-3.5" /> {s.nombre}
+                    <MapPin className="h-4 w-4 shrink-0" /> {s.nombre}
                   </span>
                 )}
               </li>
             ))}
             {sedes.length > 0 && (
-              <li className="pt-1"><Link to="/sedes" className="text-white/60 hover:text-white text-xs">Ver todas →</Link></li>
+              <li className="pt-1"><Link to="/sedes" className="text-white/70 hover:text-white text-sm">Ver todas →</Link></li>
             )}
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-xs tracking-[0.18em] text-white/80 mb-3">
+          <h4 className="font-display text-sm tracking-[0.18em] text-white mb-4">
             <Link to="/contacto" className="hover:text-white transition-colors">CONTÁCTANOS</Link>
           </h4>
-          <ul className="space-y-2 text-sm text-white/70">
+          <ul className="space-y-2.5 text-base text-white/80">
             {config.whatsapp_principal && (
               <li>
                 <a href={`tel:${config.whatsapp_principal.replace(/\D/g, "")}`} className="inline-flex items-center gap-2 hover:text-white transition-colors">
@@ -112,12 +112,12 @@ export function Footer() {
               </li>
             )}
             <li className="pt-1"><Link to="/unete" className="inline-flex items-center gap-2 hover:text-white transition-colors"><Briefcase className="h-4 w-4" /> Trabaja con nosotros</Link></li>
-            <li className="text-white/50 text-xs pt-1">Atención todos los días.</li>
+            <li className="text-white/65 text-sm pt-1">Atención todos los días.</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container-pro py-4 text-xs text-white/50 flex justify-between">
+        <div className="container-pro py-4 text-sm text-white/65 flex flex-col sm:flex-row gap-2 sm:gap-4 sm:justify-between">
           <span>© {new Date().getFullYear()} {config.nombre_empresa || "Puerto Rico Online"}</span>
           <span>Tomar bebidas alcohólicas en exceso es dañino. Venta prohibida a menores de 18 años.</span>
         </div>

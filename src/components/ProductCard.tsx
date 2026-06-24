@@ -17,23 +17,23 @@ export function ProductCard({ p }: { p: Producto }) {
           <div className="h-full w-full grid place-items-center text-xs text-muted-foreground">Sin imagen</div>
         )}
         {p.destacado && (
-          <span className="absolute left-3 top-3 chip premium-gradient !text-[#120E0E] !border-transparent text-[10px] uppercase tracking-wider">Más vendido</span>
+          <span className="absolute left-3 top-3 chip premium-gradient !text-[#120E0E] !border-transparent text-[11px] uppercase tracking-wider font-semibold">Más vendido</span>
         )}
       </Link>
       <div className="flex flex-1 flex-col p-4">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{p.marca?.nombre ?? "—"}</div>
-        <Link to="/producto/$slug" params={{ slug: p.slug }} className="mt-1 line-clamp-2 text-sm font-semibold leading-snug hover:text-[color:var(--color-accent)]">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{p.marca?.nombre ?? "—"}</div>
+        <Link to="/producto/$slug" params={{ slug: p.slug }} className="mt-1.5 line-clamp-2 text-base font-semibold leading-snug hover:text-[color:var(--color-accent)]">
           {p.nombre}
         </Link>
         <div className="mt-3 flex items-center justify-between gap-2">
-          <span className="price text-lg font-bold">S/ {p.precio_venta.toFixed(2)}</span>
+          <span className="price text-xl font-bold">S/ {p.precio_venta.toFixed(2)}</span>
           <button
             onClick={() => { add({ id: p.id, nombre: p.nombre, slug: p.slug, precio_venta: Number(p.precio_venta), precio_costo: p.precio_costo, imagen: p.imagen }); toast.success("Agregado al carrito"); }}
             className="btn btn-accent !px-3 !py-2"
             aria-label="Agregar"
           >
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline text-xs">Agregar</span>
+            <span className="hidden sm:inline text-sm">Agregar</span>
           </button>
         </div>
       </div>

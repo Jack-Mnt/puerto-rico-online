@@ -54,11 +54,11 @@ function Home() {
         <BannerCarousel />
 
         {/* Destacados */}
-        <section className="container-pro py-16">
-          <div className="flex items-end justify-between mb-8">
+        <section className="container-pro py-12 md:py-16">
+          <div className="flex items-end justify-between mb-6 md:mb-8">
             <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Selección</p>
-              <h2 className="font-display text-2xl md:text-4xl mt-2">Productos destacados</h2>
+              <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Selección</p>
+              <h2 className="font-display text-3xl md:text-4xl mt-2">Productos destacados</h2>
             </div>
             <Link to="/productos" className="hidden md:inline btn btn-outline">Ver todo</Link>
           </div>
@@ -69,19 +69,22 @@ function Home() {
               ))}
             </div>
           ) : destacados.length === 0 ? (
-            <p className="text-muted-foreground">Aún no hay productos destacados.</p>
+            <p className="text-base text-muted-foreground">Aún no hay productos destacados.</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {destacados.map((p) => <ProductCard key={p.id} p={p} />)}
             </div>
           )}
+          <div className="mt-6 md:hidden flex justify-center">
+            <Link to="/productos" className="btn btn-outline w-full">Ver todo</Link>
+          </div>
         </section>
 
         {/* Categorías */}
-        <section id="categorias" className="container-pro pb-16">
-          <div className="mb-8">
-            <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Explora</p>
-            <h2 className="font-display text-2xl md:text-4xl mt-2">Categorías</h2>
+        <section id="categorias" className="container-pro pb-12 md:pb-16">
+          <div className="mb-6 md:mb-8">
+            <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Explora</p>
+            <h2 className="font-display text-3xl md:text-4xl mt-2">Categorías</h2>
           </div>
           <CategoriesCarousel categorias={categorias} />
         </section>

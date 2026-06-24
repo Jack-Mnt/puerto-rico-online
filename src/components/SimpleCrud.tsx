@@ -94,7 +94,7 @@ export function SimpleCrud({
                 <tr key={row.id} className="border-t border-border">
                   {listColumns.map((c) => (
                     <td key={c} className="p-3">
-                      {typeof row[c] === "boolean" ? (row[c] ? "Sí" : "No") : row[c] ?? "—"}
+                      {renderCell?.[c] ? renderCell[c](row) : typeof row[c] === "boolean" ? (row[c] ? "Sí" : "No") : row[c] ?? "—"}
                     </td>
                   ))}
                   <td className="p-3 text-right">

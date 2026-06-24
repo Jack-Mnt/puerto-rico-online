@@ -16,6 +16,7 @@ import {
   type EstadoPedido,
   type AccionHistorial,
 } from "@/lib/estados";
+import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
 
 export const Route = createFileRoute("/moderador/")({
   component: ModeradorKanban,
@@ -79,6 +80,7 @@ function ModeradorKanban() {
   });
 
   const queryKey = ["mod-pedidos-activos"];
+  useRealtimePedidos([queryKey, ["mod-reasignados-ids"], ["mod-historial"], ["pedido-historial"], ["mod-pedido-items"]]);
   const { data = [], isLoading } = useQuery({
     queryKey,
     queryFn: async () => {

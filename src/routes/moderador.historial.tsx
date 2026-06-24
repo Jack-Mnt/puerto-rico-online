@@ -13,6 +13,7 @@ import {
   type EstadoPedido,
   type AccionHistorial,
 } from "@/lib/estados";
+import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
 
 export const Route = createFileRoute("/moderador/historial")({
   component: ModeradorHistorial,
@@ -42,6 +43,9 @@ function ModeradorHistorial() {
   const [fecha, setFecha] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("");
   const [viewing, setViewing] = useState<Pedido | null>(null);
+
+  useRealtimePedidos([["mod-historial"], ["mod-pedido-items"], ["pedido-historial"]]);
+
 
   const { data: sedes = [] } = useQuery({
     queryKey: ["sedes-options"],

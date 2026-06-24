@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
  * Subscribe to realtime changes on pedidos, detalle_pedidos e historial_pedidos.
  * Invalida las queries indicadas para refrescar el panel sin recargar.
  */
-export function useRealtimePedidos(invalidateKeys: (string | (string | undefined)[])[]) {
+export function useRealtimePedidos(invalidateKeys: ReadonlyArray<ReadonlyArray<unknown>>) {
   const qc = useQueryClient();
 
   // Serializa las keys para que el effect no se reejecute en cada render.

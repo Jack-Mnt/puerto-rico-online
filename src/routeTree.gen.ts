@@ -27,6 +27,8 @@ import { Route as CajeroIndexRouteImport } from './routes/cajero.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoSlugRouteImport } from './routes/producto.$slug'
 import { Route as ModeradorHistorialRouteImport } from './routes/moderador.historial'
+import { Route as CajeroHistorialRouteImport } from './routes/cajero.historial'
+import { Route as CajeroHistorialRouteImport } from './routes/cajero.historial'
 import { Route as ApiStaffUsersRouteImport } from './routes/api.staff-users'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
@@ -128,6 +130,11 @@ const ModeradorHistorialRoute = ModeradorHistorialRouteImport.update({
   path: '/historial',
   getParentRoute: () => ModeradorRoute,
 } as any)
+const CajeroHistorialRoute = CajeroHistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => CajeroRoute,
+} as any)
 const ApiStaffUsersRoute = ApiStaffUsersRouteImport.update({
   id: '/api/staff-users',
   path: '/api/staff-users',
@@ -203,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
+  '/cajero/historial': typeof CajeroHistorialRoute
   '/moderador/historial': typeof ModeradorHistorialRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -230,6 +238,7 @@ export interface FileRoutesByTo {
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
+  '/cajero/historial': typeof CajeroHistorialRoute
   '/moderador/historial': typeof ModeradorHistorialRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -261,6 +270,7 @@ export interface FileRoutesById {
   '/admin/sedes': typeof AdminSedesRoute
   '/admin/usuarios': typeof AdminUsuariosRoute
   '/api/staff-users': typeof ApiStaffUsersRoute
+  '/cajero/historial': typeof CajeroHistorialRoute
   '/moderador/historial': typeof ModeradorHistorialRoute
   '/producto/$slug': typeof ProductoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
+    | '/cajero/historial'
     | '/moderador/historial'
     | '/producto/$slug'
     | '/admin/'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
+    | '/cajero/historial'
     | '/moderador/historial'
     | '/producto/$slug'
     | '/admin'
@@ -350,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/sedes'
     | '/admin/usuarios'
     | '/api/staff-users'
+    | '/cajero/historial'
     | '/moderador/historial'
     | '/producto/$slug'
     | '/admin/'
@@ -503,6 +516,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModeradorHistorialRouteImport
       parentRoute: typeof ModeradorRoute
     }
+    '/cajero/historial': {
+      id: '/cajero/historial'
+      path: '/historial'
+      fullPath: '/cajero/historial'
+      preLoaderRoute: typeof CajeroHistorialRouteImport
+      parentRoute: typeof CajeroRoute
+    }
     '/api/staff-users': {
       id: '/api/staff-users'
       path: '/api/staff-users'
@@ -605,10 +625,12 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CajeroRouteChildren {
+  CajeroHistorialRoute: typeof CajeroHistorialRoute
   CajeroIndexRoute: typeof CajeroIndexRoute
 }
 
 const CajeroRouteChildren: CajeroRouteChildren = {
+  CajeroHistorialRoute: CajeroHistorialRoute,
   CajeroIndexRoute: CajeroIndexRoute,
 }
 

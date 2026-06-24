@@ -28,7 +28,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductoSlugRouteImport } from './routes/producto.$slug'
 import { Route as ModeradorHistorialRouteImport } from './routes/moderador.historial'
 import { Route as CajeroHistorialRouteImport } from './routes/cajero.historial'
-import { Route as CajeroHistorialRouteImport } from './routes/cajero.historial'
 import { Route as ApiStaffUsersRouteImport } from './routes/api.staff-users'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
@@ -129,6 +128,11 @@ const ModeradorHistorialRoute = ModeradorHistorialRouteImport.update({
   id: '/historial',
   path: '/historial',
   getParentRoute: () => ModeradorRoute,
+} as any)
+const CajeroHistorialRoute = CajeroHistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => CajeroRoute,
 } as any)
 const CajeroHistorialRoute = CajeroHistorialRouteImport.update({
   id: '/historial',

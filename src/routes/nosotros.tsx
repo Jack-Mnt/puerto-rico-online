@@ -51,63 +51,53 @@ function NosotrosPage() {
         <section className="container-pro py-16 md:py-24">
           <div className="text-center mb-12">
             <p className="text-xs uppercase tracking-[0.22em] font-display mb-3" style={{ color: "var(--color-accent)" }}>Nuestras Sedes</p>
-            <h2 className="font-display text-2xl md:text-4xl">Nuestras Sedes</h2>
+            <h2 className="font-display text-2xl md:text-4xl">Estamos cerca de ti</h2>
             <p className="mt-3 mx-auto max-w-xl text-muted-foreground leading-relaxed">
-              Estamos cerca de ti para acompañar cada celebración.
+              Conoce los puntos donde puedes encontrarnos.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sedes.map((sede) => (
-              <div
-                key={sede.id}
-                className="rounded-2xl p-6 md:p-7 transition"
-                style={{
-                  background: "var(--color-primary)",
-                  color: "var(--color-primary-foreground)",
-                  border: "1px solid color-mix(in oklab, white 10%, transparent)",
-                }}
-              >
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, white 10%, transparent)" }}>
-                    <MapPin className="h-5 w-5" style={{ color: "var(--color-premium)" }} />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-lg">{sede.nombre}</h3>
-                    {sede.direccion ? (
-                      <p className="text-sm text-white/60 mt-1 leading-relaxed">{sede.direccion}</p>
-                    ) : (
-                      <p className="text-sm text-white/40 mt-1 leading-relaxed">Dirección por confirmar</p>
-                    )}
-                  </div>
+          <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
+            {/* Foto / placeholder */}
+            <div
+              className="relative aspect-[4/3] rounded-2xl overflow-hidden grid place-items-center"
+              style={{
+                background: "var(--color-surface)",
+                border: "1px dashed var(--color-border)",
+              }}
+            >
+              <div className="text-center px-6">
+                <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}>
+                  <MapPin className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
                 </div>
-                {sede.google_maps_url ? (
-                  <a
-                    href={sede.google_maps_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline w-full text-sm"
-                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
-                  >
-                    <ExternalLink className="h-4 w-4" /> Ver ubicación
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    className="btn btn-outline w-full text-sm opacity-50 cursor-not-allowed"
-                    style={{ color: "var(--color-primary-foreground)", borderColor: "color-mix(in oklab, white 15%, transparent)" }}
-                  >
-                    <ExternalLink className="h-4 w-4" /> Ver ubicación
-                  </button>
-                )}
+                <p className="text-sm text-muted-foreground">Espacio reservado para foto de nuestras sedes</p>
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="mt-10 text-center">
-            <Link to="/sedes" className="btn btn-accent inline-flex">
-              Ver todas las sedes
-            </Link>
+            {/* Lista compacta */}
+            <div>
+              <ul className="divide-y" style={{ borderColor: "var(--color-border)" }}>
+                {sedes.map((sede) => (
+                  <li key={sede.id} className="flex items-start gap-3 py-4">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg" style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}>
+                      <MapPin className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-display text-base md:text-lg">{sede.nombre}</p>
+                      {sede.direccion && (
+                        <p className="text-sm text-muted-foreground leading-relaxed truncate">{sede.direccion}</p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8">
+                <Link to="/sedes" className="btn btn-accent inline-flex">
+                  Ver todas las sedes
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 

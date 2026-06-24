@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin/configuracion")({
   component: ConfigPage,
 });
 
-type ConfigRow = { id: string; clave: string; valor: string | null };
+type ConfigRow = { clave: string; valor: string | null };
 
 function ConfigPage() {
   const qc = useQueryClient();
@@ -19,7 +19,7 @@ function ConfigPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("configuracion")
-        .select("id,clave,valor")
+        .select("clave,valor")
         .order("clave");
       if (error) throw error;
       return (data ?? []) as ConfigRow[];
@@ -50,7 +50,7 @@ function ConfigPage() {
       const { error } = await supabase
         .from("configuracion")
         .update({ valor })
-        .eq("id", selectedRow.id);
+        .eq("clave", selectedRow.clave);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -82,7 +82,7 @@ function ConfigPage() {
                 onChange={(e) => setSelectedClave(e.target.value)}
               >
                 {rows.map((r) => (
-                  <option key={r.id} value={r.clave}>
+                  <option key={r.clave} value={r.clave}>
                     {r.clave}
                   </option>
                 ))}

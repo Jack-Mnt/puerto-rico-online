@@ -59,6 +59,15 @@ function ContactoPage() {
                 <p className="text-sm text-muted-foreground break-all">{config.whatsapp_principal}</p>
               </a>
             )}
+            {config.whatsapp_principal && (
+              <a href={`tel:${config.whatsapp_principal.replace(/\D/g, "")}`} className="card-pro p-6 text-center hover:shadow-lg transition-shadow">
+                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}>
+                  <Phone className="h-5 w-5" style={{ color: "var(--color-accent)" }} />
+                </div>
+                <h3 className="font-display text-lg mb-1">Llamar</h3>
+                <p className="text-sm text-muted-foreground">{formatPhone(config.whatsapp_principal)}</p>
+              </a>
+            )}
             {config.email_contacto && (
               <a href={`mailto:${config.email_contacto}`} className="card-pro p-6 text-center hover:shadow-lg transition-shadow">
                 <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-xl" style={{ background: "color-mix(in oklab, var(--color-accent) 12%, transparent)" }}>

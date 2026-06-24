@@ -39,7 +39,7 @@ export function BannerCarousel() {
                     <img src={mobile} alt={b.titulo ?? ""} className="block w-full h-[280px] md:h-[440px] object-cover" loading="lazy" />
                   </picture>
                   {b.texto_visible !== false && (b.titulo || b.subtitulo) && (
-                    <div className="absolute inset-0 flex items-end md:items-center bg-gradient-to-t md:bg-gradient-to-r from-black/55 via-black/20 to-transparent">
+                    <div className="absolute inset-0 flex items-end md:items-center bg-gradient-to-t md:bg-gradient-to-r from-black/75 via-black/40 to-transparent">
                       <div className="container-pro pb-6 md:pb-0">
                         <div className="max-w-xl">
                           {b.titulo && (

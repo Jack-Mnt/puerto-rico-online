@@ -82,7 +82,7 @@ function ConfigPage() {
                 onChange={(e) => setSelectedClave(e.target.value)}
               >
                 {rows.map((r) => (
-                  <option key={r.id} value={r.clave}>
+                  <option key={r.clave} value={r.clave}>
                     {r.clave}
                   </option>
                 ))}

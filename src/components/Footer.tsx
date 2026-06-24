@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Briefcase, Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { storageUrl } from "@/lib/supabase";
 import { configQuery, sedesQuery, whatsappUrl, formatPhone } from "@/lib/queries";
 

@@ -116,7 +116,7 @@ function CheckoutPage() {
         sede_id: sedeIsUuid ? sede.id : null,
         tipo_entrega: tipo,
         metodo_pago: pago,
-        direccion: tipo === "delivery" ? direccion.trim() || null : null,
+        direccion: tipo === "delivery" ? direccion.trim() : null,
         referencia: tipo === "delivery" ? referencia.trim() || null : null,
         total,
         estado: "pedido_creado",

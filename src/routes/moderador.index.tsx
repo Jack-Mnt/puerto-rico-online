@@ -335,7 +335,6 @@ function PedidoModeradorModal({
   busy: boolean;
 }) {
   const [nuevaSede, setNuevaSede] = useState(pedido.sede_id ?? "");
-  const [reasObs, setReasObs] = useState("");
   const sedeActual = sedes.find((s) => s.id === pedido.sede_id)?.nombre || "Sin sede";
 
   const { data: items } = useQuery({
@@ -435,16 +434,9 @@ function PedidoModeradorModal({
                 </option>
               ))}
             </select>
-            <textarea
-              value={reasObs}
-              onChange={(e) => setReasObs(e.target.value)}
-              rows={2}
-              placeholder="Motivo / observaciones de la reasignación"
-              className="input w-full"
-            />
             <button
-              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id || !reasObs.trim()}
-              onClick={() => onReasignar(nuevaSede, reasObs.trim())}
+              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id}
+              onClick={() => onReasignar(nuevaSede, "")}
               className="w-full rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50"
             >
               Reasignar

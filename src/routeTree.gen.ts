@@ -18,6 +18,7 @@ import { Route as ModeradorRouteImport } from './routes/moderador'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as CarritoRouteImport } from './routes/carrito'
 import { Route as CajeroRouteImport } from './routes/cajero'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -83,6 +84,11 @@ const ContactoRoute = ContactoRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CarritoRoute = CarritoRouteImport.update({
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
+  '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/carrito': typeof CarritoRoute
+  '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/cajero': typeof CajeroRouteWithChildren
   '/carrito': typeof CarritoRoute
+  '/catalogo': typeof CatalogoRoute
   '/checkout': typeof CheckoutRoute
   '/contacto': typeof ContactoRoute
   '/login': typeof LoginRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cajero'
     | '/carrito'
+    | '/catalogo'
     | '/checkout'
     | '/contacto'
     | '/login'
@@ -322,6 +332,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/carrito'
+    | '/catalogo'
     | '/checkout'
     | '/contacto'
     | '/login'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cajero'
     | '/carrito'
+    | '/catalogo'
     | '/checkout'
     | '/contacto'
     | '/login'
@@ -386,6 +398,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   CajeroRoute: typeof CajeroRouteWithChildren
   CarritoRoute: typeof CarritoRoute
+  CatalogoRoute: typeof CatalogoRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactoRoute: typeof ContactoRoute
   LoginRoute: typeof LoginRoute
@@ -462,6 +475,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/carrito': {
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   CajeroRoute: CajeroRouteWithChildren,
   CarritoRoute: CarritoRoute,
+  CatalogoRoute: CatalogoRoute,
   CheckoutRoute: CheckoutRoute,
   ContactoRoute: ContactoRoute,
   LoginRoute: LoginRoute,

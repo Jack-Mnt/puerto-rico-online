@@ -90,8 +90,8 @@ function CheckoutPage() {
         const precioVenta = Math.max(0, toValidNumber(i.precio_venta));
         const productoInfo = productosInfo.get(i.id);
         const precioCosto = Math.max(0, toValidNumber(i.precio_costo ?? productoInfo?.precio_costo));
-        const subtotal = Math.max(0, precioVenta * cantidad);
-        const utilidad = Math.max(0, subtotal - precioCosto * cantidad);
+        const totalLinea = Math.max(0, precioVenta * cantidad);
+        const utilidad = (precioVenta - precioCosto) * cantidad;
 
         return {
           producto_id: i.id,
@@ -100,7 +100,7 @@ function CheckoutPage() {
           cantidad,
           precio_venta: precioVenta,
           precio_costo: precioCosto,
-          subtotal,
+          total: totalLinea,
           utilidad,
         };
       });

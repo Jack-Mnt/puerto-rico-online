@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MapPin, MessageCircle, Repeat, Ban, CheckCircle2, PackageCheck } from "lucide-react";
 import { supabase, storageUrl } from "@/lib/supabase";

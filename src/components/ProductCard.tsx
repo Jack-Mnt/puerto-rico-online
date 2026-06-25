@@ -57,7 +57,7 @@ export function ProductCard({ p }: { p: Producto }) {
             add({ id: p.id, nombre: p.nombre, slug: p.slug, precio_venta: Number(p.precio_venta), precio_costo: p.precio_costo, imagen: p.imagen });
             toast.success("Agregado al carrito");
           }}
-          className="btn btn-accent rounded-full shrink-0 h-9 w-9 !p-0 sm:!py-2 sm:!px-3 md:!px-4"
+          className="btn btn-accent rounded-full shrink-0 h-9 w-9 !p-0 sm:h-auto sm:w-auto sm:!py-2 sm:!px-3 md:!px-4"
           aria-label="Agregar"
         >
           <Plus className="h-4 w-4" />

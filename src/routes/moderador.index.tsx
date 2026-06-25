@@ -519,4 +519,46 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+function CancelarModal({
+  onClose,
+  onSubmit,
+  busy,
+}: {
+  onClose: () => void;
+  onSubmit: (observaciones: string) => void;
+  busy: boolean;
+}) {
+  const [nota, setNota] = useState("");
+  return (
+    <Modal open onClose={onClose} title="Cancelar pedido" size="md">
+      <div className="space-y-4 text-sm">
+        <div>
+          <label className="text-xs text-muted-foreground mb-1 block">
+            Motivo de la cancelación (obligatorio)
+          </label>
+          <textarea
+            value={nota}
+            onChange={(e) => setNota(e.target.value)}
+            rows={3}
+            placeholder="Ej: Cliente solicitó cancelar"
+            className="input w-full"
+          />
+        </div>
+        <div className="flex justify-end gap-2 pt-2 border-t border-border">
+          <button onClick={onClose} className="rounded-md border border-border px-4 py-2 text-sm">
+            Cerrar
+          </button>
+          <button
+            disabled={busy || !nota.trim()}
+            onClick={() => onSubmit(nota.trim())}
+            className="rounded-md bg-zinc-800 text-white px-4 py-2 text-sm font-medium hover:bg-zinc-900 disabled:opacity-50"
+          >
+            Confirmar cancelación
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 void ESTADOS;

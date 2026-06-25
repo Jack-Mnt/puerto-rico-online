@@ -39,7 +39,7 @@ const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_aceptado", "pedido_de
 type Variant = "creado" | "aceptado" | "despachado";
 
 const COLUMNAS: { key: Variant; title: string; estado: EstadoPedido }[] = [
-  { key: "creado", title: "Nuevo", estado: "pedido_creado" },
+  { key: "creado", title: "Pendiente", estado: "pedido_creado" },
   { key: "aceptado", title: "Aceptado", estado: "pedido_aceptado" },
   { key: "despachado", title: "Despachado", estado: "pedido_despachado" },
 ];

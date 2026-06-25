@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram } from "lucide-react";
+import { ShoppingBag, Search, MapPin, Menu, X, Home, LayoutGrid, Info, MessageCircle, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
@@ -50,17 +50,21 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-pro flex items-center justify-between py-3 md:py-4">
+      <div className="container-pro flex items-center justify-between py-2 md:py-3">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-12 lg:mr-[72px]">
           <img
             src={logoSrc}
             alt={config.nombre_empresa || "Puerto Rico Online"}
-            className="h-auto w-auto object-contain max-h-9 md:max-h-14"
+            className="h-auto w-auto object-contain max-h-7 md:max-h-10"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
 
         </Link>
         <div className="flex items-center gap-2">
+          <Link to="/catalogo" className="relative btn btn-accent">
+            <LayoutGrid className="h-4 w-4" />
+            <span className="hidden sm:inline">Catálogo</span>
+          </Link>
           <Link to="/carrito" className="relative btn btn-accent">
             <ShoppingBag className="h-4 w-4" />
             <span className="hidden sm:inline">Carrito</span>

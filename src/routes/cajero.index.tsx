@@ -323,7 +323,7 @@ function PedidoCajeroModal({
         </div>
 
         <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-          {pedido.estado === "pedido_creado" && (
+          {(pedido.estado === "pedido_creado" || pedido.estado === "pedido_reasignado") && (
             <>
               <button
                 disabled={busy}

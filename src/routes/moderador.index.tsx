@@ -340,6 +340,10 @@ function PedidoModeradorModal({
   busy: boolean;
 }) {
   const [nuevaSede, setNuevaSede] = useState(pedido.sede_id ?? "");
+  // Resincroniza el select cuando cambia la sede actual del pedido (p. ej. tras reasignar).
+  useEffect(() => {
+    setNuevaSede(pedido.sede_id ?? "");
+  }, [pedido.sede_id]);
   const sedeActual = sedes.find((s) => s.id === pedido.sede_id)?.nombre || "Sin sede";
 
   const { data: items } = useQuery({

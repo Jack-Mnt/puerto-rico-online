@@ -34,12 +34,12 @@ type Pedido = {
   created_at: string;
 };
 
-const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_reasignado", "pedido_aceptado", "pedido_despachado"];
+const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_aceptado", "pedido_despachado"];
 
 type Variant = "creado" | "aceptado" | "despachado";
 
 const COLUMNAS: { key: Variant; title: string; estados: EstadoPedido[] }[] = [
-  { key: "creado", title: "Nuevos", estados: ["pedido_creado", "pedido_reasignado"] },
+  { key: "creado", title: "Nuevos", estados: ["pedido_creado"] },
   { key: "aceptado", title: "Aceptados", estados: ["pedido_aceptado"] },
   { key: "despachado", title: "Despachados", estados: ["pedido_despachado"] },
 ];
@@ -323,7 +323,7 @@ function PedidoCajeroModal({
         </div>
 
         <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-          {(pedido.estado === "pedido_creado" || pedido.estado === "pedido_reasignado") && (
+          {pedido.estado === "pedido_creado" && (
             <>
               <button
                 disabled={busy}

@@ -43,12 +43,11 @@ const ESTADOS_ACTIVOS: EstadoPedido[] = [
   "pedido_creado",
   "pedido_aceptado",
   "pedido_rechazado",
-  "pedido_reasignado",
   "pedido_despachado",
 ];
 
 // Variante visual de cada tarjeta.
-type Variant = "creado" | "aceptado" | "rechazado" | "reasignado" | "despachado";
+type Variant = "creado" | "aceptado" | "rechazado" | "despachado";
 
 type Columna = {
   key: "nuevos" | "rechazados" | "despachados";
@@ -58,7 +57,7 @@ type Columna = {
 
 const COLUMNAS: Columna[] = [
   { key: "nuevos", title: "Pendientes", variants: ["creado", "aceptado"] },
-  { key: "rechazados", title: "Observados", variants: ["rechazado", "reasignado"] },
+  { key: "rechazados", title: "Observados", variants: ["rechazado"] },
   { key: "despachados", title: "Despachados", variants: ["despachado"] },
 ];
 
@@ -66,7 +65,6 @@ const VARIANT_STYLES: Record<Variant, { bg: string; border: string; chip: string
   creado: { bg: "#FFF7D6", border: "#FACC15", chip: "bg-amber-100 text-amber-900", label: "Nuevo" },
   aceptado: { bg: "#EAF8EF", border: "#22C55E", chip: "bg-emerald-100 text-emerald-900", label: "Aceptado" },
   rechazado: { bg: "#FDECEC", border: "#EF4444", chip: "bg-red-100 text-red-900", label: "Rechazado" },
-  reasignado: { bg: "#EAF2FF", border: "#3B82F6", chip: "bg-blue-100 text-blue-900", label: "Reasignado" },
   despachado: { bg: "#DFF7E8", border: "#16A34A", chip: "bg-green-200 text-green-900", label: "Despachado" },
 };
 
@@ -176,11 +174,7 @@ function ModeradorKanban() {
   function variantOf(p: Pedido): Variant {
     if (p.estado === "pedido_despachado") return "despachado";
     if (p.estado === "pedido_aceptado") return "aceptado";
-    if (p.estado === "pedido_reasignado") return "reasignado";
-    if (p.estado === "pedido_rechazado") {
-      if (reasignadosIds.has(p.id)) return "reasignado";
-      return "rechazado";
-    }
+    if (p.estado === "pedido_rechazado") return "rechazado";
     return "creado";
   }
 

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Search, MapPin, Menu, X, Home, LayoutGrid, Info, MessageCircle, Mail } from "lucide-react";
+import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
@@ -50,21 +50,17 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-pro flex items-center justify-between py-2 md:py-3">
+      <div className="container-pro flex items-center justify-between py-3 md:py-4">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-12 lg:mr-[72px]">
           <img
             src={logoSrc}
             alt={config.nombre_empresa || "Puerto Rico Online"}
-            className="h-auto w-auto object-contain max-h-7 md:max-h-10"
+            className="h-auto w-auto object-contain max-h-9 md:max-h-14"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
 
         </Link>
         <div className="flex items-center gap-2">
-          <Link to="/catalogo" className="relative btn btn-accent">
-            <LayoutGrid className="h-4 w-4" />
-            <span className="hidden sm:inline">Catálogo</span>
-          </Link>
           <Link to="/carrito" className="relative btn btn-accent">
             <ShoppingBag className="h-4 w-4" />
             <span className="hidden sm:inline">Carrito</span>
@@ -145,8 +141,10 @@ export function Header() {
 
           <nav className="flex-1 overflow-y-auto px-3 py-3">
             <MobileLink to="/" icon={Home} label="Inicio" onClick={close} />
+            <MobileLink to="/productos" icon={Store} label="Catálogo" onClick={close} />
             <MobileLink to="/nosotros" icon={Info} label="Nosotros" onClick={close} />
-            <MobileLink to="/sedes" icon={MapPin} label="Sedes" onClick={close} />
+            <MobileLink to="/sedes" icon={MapPin} label="Nuestras sedes" onClick={close} />
+            <MobileLink to="/unete" icon={UserPlus} label="Únete a la familia PR" onClick={close} />
             <MobileLink to="/contacto" icon={Mail} label="Contacto" onClick={close} />
 
             <div className="my-3 border-t border-white/10" />
@@ -161,6 +159,19 @@ export function Header() {
               <MessageCircle className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">WhatsApp</span>
             </a>
+            {config.instagram_url && (
+              <a
+                href={config.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-white"
+              >
+                <Instagram className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
+                <span className="text-sm">Instagram</span>
+              </a>
+            )}
+
           </nav>
 
 

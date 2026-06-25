@@ -27,7 +27,7 @@ export function Footer() {
 
   return (
     <footer style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}>
-      <div className="container-pro py-12 md:py-16 grid gap-10 md:gap-10 sm:grid-cols-2 md:grid-cols-4">
+      <div className="container-pro py-12 md:py-16 grid gap-10 md:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
         <div>
           <div className="mb-3">
             <img src={logoSrc} alt={config.nombre_empresa || "Puerto Rico Online"} className="h-auto w-auto object-contain max-h-10 md:max-h-14" onError={(e) => (e.currentTarget.style.display = "none")} />

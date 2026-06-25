@@ -19,7 +19,7 @@ function AdminDashboard() {
       const [pedidosHoyResp, productosResp, sedesResp] = await Promise.all([
         supabase
           .from("pedidos")
-          .select("id,total,sede_id,estado,detalle_pedidos(cantidad,precio_venta,subtotal,producto_id,productos(nombre,precio_costo))")
+          .select("id,total,sede_id,estado,detalle_pedidos(cantidad,precio_venta,total,producto_id,productos(nombre,precio_costo))")
           .gte("created_at", isoToday)
           .neq("estado", "pedido_cancelado")
           .neq("estado", "pedido_rechazado"),
@@ -49,7 +49,7 @@ function AdminDashboard() {
           const k = d.producto_id || "?";
           const v = prodVendidos.get(k) || { nombre: d.productos?.nombre || "Producto", cantidad: 0, ventas: 0 };
           v.cantidad += Number(d.cantidad);
-          v.ventas += Number(d.subtotal);
+          v.ventas += Number(d.total);
           prodVendidos.set(k, v);
           const r = prodRentables.get(k) || { nombre: d.productos?.nombre || "Producto", utilidad: 0 };
           r.utilidad += ganancia;

@@ -29,7 +29,7 @@ export function ProductCard({ p }: { p: Producto }) {
           <span className="price text-xl font-bold leading-none">S/ {p.precio_venta.toFixed(2)}</span>
           <button
             onClick={() => { add({ id: p.id, nombre: p.nombre, slug: p.slug, precio_venta: Number(p.precio_venta), precio_costo: p.precio_costo, imagen: p.imagen }); toast.success("Agregado al carrito"); }}
-            className="btn btn-accent !px-3 !py-2"
+            className="btn btn-accent !p-2 rounded-full"
             aria-label="Agregar"
           >
             <Plus className="h-4 w-4" />

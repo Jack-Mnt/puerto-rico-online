@@ -175,7 +175,7 @@ export function Header() {
 
 
           <div className="px-5 py-4 border-t border-white/10 text-[11px] text-white/50">
-            Puerto Rico · Licorería premium
+            Puerto Rico · La\u00a0Licorería
           </div>
         </aside>
       </div>

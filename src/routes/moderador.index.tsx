@@ -335,7 +335,6 @@ function PedidoModeradorModal({
   busy: boolean;
 }) {
   const [nuevaSede, setNuevaSede] = useState(pedido.sede_id ?? "");
-  const [reasObs, setReasObs] = useState("");
   const sedeActual = sedes.find((s) => s.id === pedido.sede_id)?.nombre || "Sin sede";
 
   const { data: items } = useQuery({

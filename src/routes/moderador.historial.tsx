@@ -37,7 +37,7 @@ type Pedido = {
 
 const ESTADOS_HISTORIAL: EstadoPedido[] = ["pedido_entregado", "pedido_cancelado"];
 
-function ModeradorHistorial() {
+export function ModeradorHistorial() {
   const [estado, setEstado] = useState<"" | EstadoPedido>("");
   const [sedeFiltro, setSedeFiltro] = useState("");
   const [fecha, setFecha] = useState("");

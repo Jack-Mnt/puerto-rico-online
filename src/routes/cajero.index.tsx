@@ -34,14 +34,14 @@ type Pedido = {
   created_at: string;
 };
 
-const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_aceptado", "pedido_despachado"];
+const VISIBLES: EstadoPedido[] = ["pedido_creado", "pedido_reasignado", "pedido_aceptado", "pedido_despachado"];
 
 type Variant = "creado" | "aceptado" | "despachado";
 
-const COLUMNAS: { key: Variant; title: string; estado: EstadoPedido }[] = [
-  { key: "creado", title: "Pendiente", estado: "pedido_creado" },
-  { key: "aceptado", title: "Aceptado", estado: "pedido_aceptado" },
-  { key: "despachado", title: "Despachado", estado: "pedido_despachado" },
+const COLUMNAS: { key: Variant; title: string; estados: EstadoPedido[] }[] = [
+  { key: "creado", title: "Nuevos", estados: ["pedido_creado", "pedido_reasignado"] },
+  { key: "aceptado", title: "Aceptados", estados: ["pedido_aceptado"] },
+  { key: "despachado", title: "Despachados", estados: ["pedido_despachado"] },
 ];
 
 const VARIANT_STYLES: Record<Variant, { bg: string; border: string }> = {

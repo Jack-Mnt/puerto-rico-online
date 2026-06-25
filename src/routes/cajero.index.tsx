@@ -120,7 +120,7 @@ function CajeroPanel() {
 
   const grupos = COLUMNAS.map((c) => ({
     ...c,
-    items: data.filter((p) => p.estado === c.estado),
+    items: data.filter((p) => c.estados.includes(p.estado)),
   }));
 
   if (!perfil?.sede_id) {

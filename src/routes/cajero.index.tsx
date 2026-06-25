@@ -81,25 +81,17 @@ function CajeroPanel() {
     },
   });
 
-  async function logHistorial(
-    pedido_id: string,
-    accion: EstadoPedido,
-    descripcion?: string,
-  ) {
-    const { error } = await supabase.from("historial_pedidos").insert({
-      pedido_id,
-      usuario_id: perfil?.id,
-      accion,
-      descripcion: descripcion ?? null,
-    });
-    if (error) console.warn("[historial]", error.message);
-  }
-
   const cambiarEstado = useMutation({
     mutationFn: async ({ id, estado }: { id: string; estado: EstadoPedido }) => {
-      const { error } = await supabase.from("pedidos").update({ estado }).eq("id", id);
+      const fn =
+        estado === "pedido_aceptado"
+          ? "aceptar_pedido"
+          : estado === "pedido_despachado"
+          ? "despachar_pedido"
+          : null;
+      if (!fn) throw new Error(`Estado no soportado: ${estado}`);
+      const { error } = await supabase.rpc(fn, { p_pedido_id: id });
       if (error) throw error;
-      await logHistorial(id, estado);
     },
     onSuccess: () => {
       toast.success("Estado actualizado");
@@ -111,12 +103,11 @@ function CajeroPanel() {
 
   const rechazar = useMutation({
     mutationFn: async ({ id, observaciones }: { id: string; observaciones: string }) => {
-      const { error } = await supabase
-        .from("pedidos")
-        .update({ estado: "pedido_rechazado", observaciones })
-        .eq("id", id);
+      const { error } = await supabase.rpc("rechazar_pedido", {
+        p_pedido_id: id,
+        p_observaciones: observaciones,
+      });
       if (error) throw error;
-      await logHistorial(id, "pedido_rechazado", observaciones);
     },
     onSuccess: () => {
       toast.success("Pedido rechazado");

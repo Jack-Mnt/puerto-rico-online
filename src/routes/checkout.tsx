@@ -201,6 +201,7 @@ function CheckoutPage() {
         navigate({ to: "/pedido-confirmado" });
         return;
       }
+      console.error("Error en checkout:", err);
       const message = err instanceof Error ? err.message : "Error al crear pedido";
       toast.error(message);
       setSubmitting(false);

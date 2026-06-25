@@ -73,6 +73,7 @@ function ModeradorKanban() {
   const qc = useQueryClient();
   const { perfil } = useAuthStore();
   const [viewing, setViewing] = useState<Pedido | null>(null);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   const { data: sedes = [] } = useQuery({
     queryKey: ["sedes-options"],
@@ -108,32 +109,13 @@ function ModeradorKanban() {
     },
   });
 
-  async function logHistorial(args: {
-    pedido_id: string;
-    accion: AccionHistorial;
-    descripcion?: string | null;
-    sede_anterior?: string | null;
-    sede_nueva?: string | null;
-  }) {
-    const { error } = await supabase.from("historial_pedidos").insert({
-      pedido_id: args.pedido_id,
-      usuario_id: perfil?.id,
-      accion: args.accion,
-      descripcion: args.descripcion ?? null,
-      sede_anterior: args.sede_anterior ?? null,
-      sede_nueva: args.sede_nueva ?? null,
-    });
-    if (error) console.warn("[historial]", error.message);
-  }
-
-  const cambiarEstado = useMutation({
-    mutationFn: async ({ id, estado }: { id: string; estado: EstadoPedido }) => {
-      const { error } = await supabase.from("pedidos").update({ estado }).eq("id", id);
+  const entregar = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc("entregar_pedido", { p_pedido_id: id });
       if (error) throw error;
-      await logHistorial({ pedido_id: id, accion: estado });
     },
     onSuccess: () => {
-      toast.success("Estado actualizado");
+      toast.success("Pedido entregado");
       qc.invalidateQueries({ queryKey });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
       qc.invalidateQueries({ queryKey: ["mod-historial"] });
@@ -142,23 +124,41 @@ function ModeradorKanban() {
     onError: (e) => toast.error((e as Error).message),
   });
 
-  const reasignar = useMutation({
-    mutationFn: async ({ p, nuevaSede }: { p: Pedido; nuevaSede: string }) => {
-      const sede_anterior = p.sede_id;
-      const { error } = await supabase
-        .from("pedidos")
-        .update({ sede_id: nuevaSede })
-        .eq("id", p.id);
-      if (error) throw error;
-      const nombre_ant = sedes.find((s) => s.id === sede_anterior)?.nombre || "Sin sede";
-      const nombre_nuev = sedes.find((s) => s.id === nuevaSede)?.nombre || "—";
-      await logHistorial({
-        pedido_id: p.id,
-        accion: "pedido_reasignado",
-        descripcion: `${nombre_ant} → ${nombre_nuev}`,
-        sede_anterior,
-        sede_nueva: nuevaSede,
+  const cancelar = useMutation({
+    mutationFn: async ({ id, observaciones }: { id: string; observaciones: string }) => {
+      const { error } = await supabase.rpc("cancelar_pedido", {
+        p_pedido_id: id,
+        p_observaciones: observaciones,
       });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Pedido cancelado");
+      qc.invalidateQueries({ queryKey });
+      qc.invalidateQueries({ queryKey: ["pedido-historial"] });
+      qc.invalidateQueries({ queryKey: ["mod-historial"] });
+      setCancelingId(null);
+      setViewing(null);
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  const reasignar = useMutation({
+    mutationFn: async ({
+      p,
+      nuevaSede,
+      observaciones,
+    }: {
+      p: Pedido;
+      nuevaSede: string;
+      observaciones: string;
+    }) => {
+      const { error } = await supabase.rpc("reasignar_pedido", {
+        p_pedido_id: p.id,
+        p_nueva_sede_id: nuevaSede,
+        p_observaciones: observaciones,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Sede reasignada");
@@ -218,10 +218,10 @@ function ModeradorKanban() {
                     onOpen={() => setViewing(p)}
                     onMarcarEntregado={
                       v === "despachado"
-                        ? () => cambiarEstado.mutate({ id: p.id, estado: "pedido_entregado" })
+                        ? () => entregar.mutate(p.id)
                         : undefined
                     }
-                    busy={cambiarEstado.isPending}
+                    busy={entregar.isPending}
                   />
                 ))}
                 {g.items.length === 0 && (
@@ -238,10 +238,20 @@ function ModeradorKanban() {
           pedido={viewing}
           sedes={sedes}
           onClose={() => setViewing(null)}
-          onCancelar={() => cambiarEstado.mutate({ id: viewing.id, estado: "pedido_cancelado" })}
-          onEntregado={() => cambiarEstado.mutate({ id: viewing.id, estado: "pedido_entregado" })}
-          onReasignar={(nuevaSede) => reasignar.mutate({ p: viewing, nuevaSede })}
-          busy={cambiarEstado.isPending || reasignar.isPending}
+          onCancelar={() => setCancelingId(viewing.id)}
+          onEntregado={() => entregar.mutate(viewing.id)}
+          onReasignar={(nuevaSede, observaciones) =>
+            reasignar.mutate({ p: viewing, nuevaSede, observaciones })
+          }
+          busy={entregar.isPending || reasignar.isPending}
+        />
+      )}
+
+      {cancelingId && (
+        <CancelarModal
+          onClose={() => setCancelingId(null)}
+          onSubmit={(observaciones) => cancelar.mutate({ id: cancelingId, observaciones })}
+          busy={cancelar.isPending}
         />
       )}
     </div>
@@ -321,10 +331,11 @@ function PedidoModeradorModal({
   onClose: () => void;
   onCancelar: () => void;
   onEntregado: () => void;
-  onReasignar: (sedeId: string) => void;
+  onReasignar: (sedeId: string, observaciones: string) => void;
   busy: boolean;
 }) {
   const [nuevaSede, setNuevaSede] = useState(pedido.sede_id ?? "");
+  const [reasObs, setReasObs] = useState("");
   const sedeActual = sedes.find((s) => s.id === pedido.sede_id)?.nombre || "Sin sede";
 
   const { data: items } = useQuery({
@@ -424,9 +435,16 @@ function PedidoModeradorModal({
                 </option>
               ))}
             </select>
+            <textarea
+              value={reasObs}
+              onChange={(e) => setReasObs(e.target.value)}
+              rows={2}
+              placeholder="Motivo / observaciones de la reasignación"
+              className="input w-full"
+            />
             <button
-              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id}
-              onClick={() => onReasignar(nuevaSede)}
+              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id || !reasObs.trim()}
+              onClick={() => onReasignar(nuevaSede, reasObs.trim())}
               className="w-full rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50"
             >
               Reasignar
@@ -498,6 +516,48 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="font-medium">{value}</div>
     </div>
+  );
+}
+
+function CancelarModal({
+  onClose,
+  onSubmit,
+  busy,
+}: {
+  onClose: () => void;
+  onSubmit: (observaciones: string) => void;
+  busy: boolean;
+}) {
+  const [nota, setNota] = useState("");
+  return (
+    <Modal open onClose={onClose} title="Cancelar pedido" size="md">
+      <div className="space-y-4 text-sm">
+        <div>
+          <label className="text-xs text-muted-foreground mb-1 block">
+            Motivo de la cancelación (obligatorio)
+          </label>
+          <textarea
+            value={nota}
+            onChange={(e) => setNota(e.target.value)}
+            rows={3}
+            placeholder="Ej: Cliente solicitó cancelar"
+            className="input w-full"
+          />
+        </div>
+        <div className="flex justify-end gap-2 pt-2 border-t border-border">
+          <button onClick={onClose} className="rounded-md border border-border px-4 py-2 text-sm">
+            Cerrar
+          </button>
+          <button
+            disabled={busy || !nota.trim()}
+            onClick={() => onSubmit(nota.trim())}
+            className="rounded-md bg-zinc-800 text-white px-4 py-2 text-sm font-medium hover:bg-zinc-900 disabled:opacity-50"
+          >
+            Confirmar cancelación
+          </button>
+        </div>
+      </div>
+    </Modal>
   );
 }
 

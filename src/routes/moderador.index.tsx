@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MapPin, MessageCircle, Repeat, Ban, CheckCircle2, PackageCheck } from "lucide-react";
 import { supabase, storageUrl } from "@/lib/supabase";
@@ -43,6 +43,7 @@ const ESTADOS_ACTIVOS: EstadoPedido[] = [
   "pedido_creado",
   "pedido_aceptado",
   "pedido_rechazado",
+  "pedido_reasignado",
   "pedido_despachado",
 ];
 
@@ -159,12 +160,15 @@ function ModeradorKanban() {
         p_observaciones: observaciones,
       });
       if (error) throw error;
+      return { id: p.id, nuevaSede };
     },
-    onSuccess: () => {
+    onSuccess: ({ id, nuevaSede }) => {
       toast.success("Sede reasignada");
       qc.invalidateQueries({ queryKey });
       qc.invalidateQueries({ queryKey: ["mod-reasignados-ids"] });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
+      // Mantener el modal abierto y reflejar la nueva sede inmediatamente.
+      setViewing((prev) => (prev && prev.id === id ? { ...prev, sede_id: nuevaSede } : prev));
     },
     onError: (e) => toast.error((e as Error).message),
   });
@@ -172,6 +176,7 @@ function ModeradorKanban() {
   function variantOf(p: Pedido): Variant {
     if (p.estado === "pedido_despachado") return "despachado";
     if (p.estado === "pedido_aceptado") return "aceptado";
+    if (p.estado === "pedido_reasignado") return "reasignado";
     if (p.estado === "pedido_rechazado") {
       if (reasignadosIds.has(p.id)) return "reasignado";
       return "rechazado";
@@ -335,6 +340,10 @@ function PedidoModeradorModal({
   busy: boolean;
 }) {
   const [nuevaSede, setNuevaSede] = useState(pedido.sede_id ?? "");
+  // Resincroniza el select cuando cambia la sede actual del pedido (p. ej. tras reasignar).
+  useEffect(() => {
+    setNuevaSede(pedido.sede_id ?? "");
+  }, [pedido.sede_id]);
   const sedeActual = sedes.find((s) => s.id === pedido.sede_id)?.nombre || "Sin sede";
 
   const { data: items } = useQuery({

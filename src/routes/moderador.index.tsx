@@ -218,10 +218,10 @@ function ModeradorKanban() {
                     onOpen={() => setViewing(p)}
                     onMarcarEntregado={
                       v === "despachado"
-                        ? () => cambiarEstado.mutate({ id: p.id, estado: "pedido_entregado" })
+                        ? () => entregar.mutate(p.id)
                         : undefined
                     }
-                    busy={cambiarEstado.isPending}
+                    busy={entregar.isPending}
                   />
                 ))}
                 {g.items.length === 0 && (
@@ -238,10 +238,20 @@ function ModeradorKanban() {
           pedido={viewing}
           sedes={sedes}
           onClose={() => setViewing(null)}
-          onCancelar={() => cambiarEstado.mutate({ id: viewing.id, estado: "pedido_cancelado" })}
-          onEntregado={() => cambiarEstado.mutate({ id: viewing.id, estado: "pedido_entregado" })}
-          onReasignar={(nuevaSede) => reasignar.mutate({ p: viewing, nuevaSede })}
-          busy={cambiarEstado.isPending || reasignar.isPending}
+          onCancelar={() => setCancelingId(viewing.id)}
+          onEntregado={() => entregar.mutate(viewing.id)}
+          onReasignar={(nuevaSede, observaciones) =>
+            reasignar.mutate({ p: viewing, nuevaSede, observaciones })
+          }
+          busy={entregar.isPending || reasignar.isPending}
+        />
+      )}
+
+      {cancelingId && (
+        <CancelarModal
+          onClose={() => setCancelingId(null)}
+          onSubmit={(observaciones) => cancelar.mutate({ id: cancelingId, observaciones })}
+          busy={cancelar.isPending}
         />
       )}
     </div>

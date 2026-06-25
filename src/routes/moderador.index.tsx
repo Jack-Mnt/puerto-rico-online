@@ -43,6 +43,7 @@ const ESTADOS_ACTIVOS: EstadoPedido[] = [
   "pedido_creado",
   "pedido_aceptado",
   "pedido_rechazado",
+  "pedido_reasignado",
   "pedido_despachado",
 ];
 

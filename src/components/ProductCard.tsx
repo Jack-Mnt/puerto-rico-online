@@ -9,7 +9,7 @@ export function ProductCard({ p }: { p: Producto }) {
   const add = useCart((s) => s.add);
   const img = storageUrl(p.imagen);
   return (
-    <div className="card-pro card-producto group flex flex-col overflow-hidden h-[390px] md:h-[440px] lg:h-[470px]">
+    <div className="card-pro card-producto group flex flex-col overflow-hidden h-[330px] md:h-[380px] lg:h-[410px]">
       {/* Zona imagen */}
       <Link
         to="/producto/$slug"

@@ -10,12 +10,14 @@ import {
   Settings,
   ListOrdered,
   BarChart3,
+  Radio,
 } from "lucide-react";
 import { PanelLayout, type NavItem } from "@/components/PanelLayout";
 
 const nav: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/pedidos", label: "Pedidos", icon: ListOrdered },
+  { to: "/admin/operacion", label: "Centro de operaciones", icon: Radio },
   { to: "/admin/reportes", label: "Reportes", icon: BarChart3 },
   { to: "/admin/productos", label: "Productos", icon: Package },
   { to: "/admin/categorias", label: "Categorías", icon: Tags },

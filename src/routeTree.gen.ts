@@ -34,10 +34,12 @@ import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
 import { Route as AdminReportesRouteImport } from './routes/admin.reportes'
 import { Route as AdminProductosRouteImport } from './routes/admin.productos'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
+import { Route as AdminOperacionRouteImport } from './routes/admin.operacion'
 import { Route as AdminMarcasRouteImport } from './routes/admin.marcas'
 import { Route as AdminConfiguracionRouteImport } from './routes/admin.configuracion'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
+import { Route as AdminOperacionHistorialRouteImport } from './routes/admin.operacion.historial'
 
 const UneteRoute = UneteRouteImport.update({
   id: '/unete',
@@ -164,6 +166,11 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOperacionRoute = AdminOperacionRouteImport.update({
+  id: '/operacion',
+  path: '/operacion',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMarcasRoute = AdminMarcasRouteImport.update({
   id: '/marcas',
   path: '/marcas',
@@ -184,6 +191,11 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOperacionHistorialRoute = AdminOperacionHistorialRouteImport.update({
+  id: '/historial',
+  path: '/historial',
+  getParentRoute: () => AdminOperacionRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -203,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -215,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/cajero/': typeof CajeroIndexRoute
   '/moderador/': typeof ModeradorIndexRoute
+  '/admin/operacion/historial': typeof AdminOperacionHistorialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -231,6 +245,7 @@ export interface FileRoutesByTo {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -243,6 +258,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/cajero': typeof CajeroIndexRoute
   '/moderador': typeof ModeradorIndexRoute
+  '/admin/operacion/historial': typeof AdminOperacionHistorialRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -263,6 +279,7 @@ export interface FileRoutesById {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -275,6 +292,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/cajero/': typeof CajeroIndexRoute
   '/moderador/': typeof ModeradorIndexRoute
+  '/admin/operacion/historial': typeof AdminOperacionHistorialRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -296,6 +314,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -308,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/cajero/'
     | '/moderador/'
+    | '/admin/operacion/historial'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -324,6 +344,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -336,6 +357,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cajero'
     | '/moderador'
+    | '/admin/operacion/historial'
   id:
     | '__root__'
     | '/'
@@ -355,6 +377,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -367,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/cajero/'
     | '/moderador/'
+    | '/admin/operacion/historial'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -564,6 +588,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/operacion': {
+      id: '/admin/operacion'
+      path: '/operacion'
+      fullPath: '/admin/operacion'
+      preLoaderRoute: typeof AdminOperacionRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/marcas': {
       id: '/admin/marcas'
       path: '/marcas'
@@ -592,14 +623,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/operacion/historial': {
+      id: '/admin/operacion/historial'
+      path: '/historial'
+      fullPath: '/admin/operacion/historial'
+      preLoaderRoute: typeof AdminOperacionHistorialRouteImport
+      parentRoute: typeof AdminOperacionRoute
+    }
   }
 }
+
+interface AdminOperacionRouteChildren {
+  AdminOperacionHistorialRoute: typeof AdminOperacionHistorialRoute
+}
+
+const AdminOperacionRouteChildren: AdminOperacionRouteChildren = {
+  AdminOperacionHistorialRoute: AdminOperacionHistorialRoute,
+}
+
+const AdminOperacionRouteWithChildren = AdminOperacionRoute._addFileChildren(
+  AdminOperacionRouteChildren,
+)
 
 interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminConfiguracionRoute: typeof AdminConfiguracionRoute
   AdminMarcasRoute: typeof AdminMarcasRoute
+  AdminOperacionRoute: typeof AdminOperacionRouteWithChildren
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProductosRoute: typeof AdminProductosRoute
   AdminReportesRoute: typeof AdminReportesRoute
@@ -613,6 +664,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminConfiguracionRoute: AdminConfiguracionRoute,
   AdminMarcasRoute: AdminMarcasRoute,
+  AdminOperacionRoute: AdminOperacionRouteWithChildren,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminProductosRoute: AdminProductosRoute,
   AdminReportesRoute: AdminReportesRoute,

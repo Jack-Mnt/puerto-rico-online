@@ -435,9 +435,16 @@ function PedidoModeradorModal({
                 </option>
               ))}
             </select>
+            <textarea
+              value={reasObs}
+              onChange={(e) => setReasObs(e.target.value)}
+              rows={2}
+              placeholder="Motivo / observaciones de la reasignación"
+              className="input w-full"
+            />
             <button
-              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id}
-              onClick={() => onReasignar(nuevaSede)}
+              disabled={busy || !nuevaSede || nuevaSede === pedido.sede_id || !reasObs.trim()}
+              onClick={() => onReasignar(nuevaSede, reasObs.trim())}
               className="w-full rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm disabled:opacity-50"
             >
               Reasignar

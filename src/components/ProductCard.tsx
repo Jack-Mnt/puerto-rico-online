@@ -48,7 +48,7 @@ export function ProductCard({ p }: { p: Producto }) {
       </div>
 
       {/* Zona compra */}
-      <div className="product-buy-row mt-auto flex items-center justify-between gap-2 px-3 pb-3 md:px-4 md:pb-4">
+      <div className="product-buy-row flex items-center justify-between gap-2 px-3 pb-3 md:px-4 md:pb-4">
         <span className="product-price text-base md:text-lg font-bold leading-none whitespace-nowrap">
           S/ {p.precio_venta.toFixed(2)}
         </span>

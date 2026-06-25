@@ -68,7 +68,7 @@ const VARIANT_STYLES: Record<Variant, { bg: string; border: string; chip: string
   despachado: { bg: "#DFF7E8", border: "#16A34A", chip: "bg-green-200 text-green-900", label: "Despachado" },
 };
 
-function ModeradorKanban() {
+export function ModeradorKanban() {
   const qc = useQueryClient();
   const { perfil } = useAuthStore();
   const [viewing, setViewing] = useState<Pedido | null>(null);

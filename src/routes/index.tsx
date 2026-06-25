@@ -54,37 +54,37 @@ function Home() {
         <BannerCarousel />
 
         {/* Destacados */}
-        <section className="container-pro py-12 md:py-16">
-          <div className="flex items-end justify-between mb-6 md:mb-8">
-            <div>
-              <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Selección</p>
-              <h2 className="font-display text-3xl md:text-4xl mt-2">Productos destacados</h2>
+        <section className="container-pro py-14 md:py-20">
+          <div className="flex items-end justify-between mb-8 md:mb-10">
+            <div className="space-y-2">
+              <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display leading-none">Selección</p>
+              <h2 className="font-display text-3xl md:text-4xl leading-tight">Productos destacados</h2>
             </div>
             <Link to="/productos" className="hidden md:inline btn btn-outline">Ver todo</Link>
           </div>
           {loadingDest ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="card-pro h-[360px] animate-pulse" />
               ))}
             </div>
           ) : destacados.length === 0 ? (
-            <p className="text-base text-muted-foreground">Aún no hay productos destacados.</p>
+            <p className="text-base text-muted-foreground leading-relaxed">Aún no hay productos destacados.</p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {destacados.map((p) => <ProductCard key={p.id} p={p} />)}
             </div>
           )}
-          <div className="mt-6 md:hidden flex justify-center">
+          <div className="mt-8 md:hidden flex justify-center">
             <Link to="/productos" className="btn btn-outline w-full">Ver todo</Link>
           </div>
         </section>
 
         {/* Categorías */}
-        <section id="categorias" className="container-pro pb-12 md:pb-16">
-          <div className="mb-6 md:mb-8">
-            <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display">Explora</p>
-            <h2 className="font-display text-3xl md:text-4xl mt-2">Categorías</h2>
+        <section id="categorias" className="container-pro pb-14 md:pb-20">
+          <div className="mb-8 md:mb-10 space-y-2">
+            <p className="text-sm uppercase tracking-[0.22em] text-[color:var(--color-accent)] font-display leading-none">Explora</p>
+            <h2 className="font-display text-3xl md:text-4xl leading-tight">Categorías</h2>
           </div>
           <CategoriesCarousel categorias={categorias} />
         </section>

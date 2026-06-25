@@ -25,7 +25,7 @@ export function BannerCarousel() {
   if (!banners.length) return null;
 
   return (
-    <section className="container-pro mt-6">
+    <section className="container-pro mt-4 md:mt-6">
       <div className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-primary)]">
         <div ref={emblaRef}>
           <div className="flex">
@@ -40,13 +40,13 @@ export function BannerCarousel() {
                   </picture>
                   {b.texto_visible !== false && (b.titulo || b.subtitulo) && (
                     <div className="absolute inset-0 flex items-end md:items-center bg-gradient-to-t md:bg-gradient-to-r from-black/75 via-black/40 to-transparent">
-                      <div className="container-pro pb-6 md:pb-0">
-                        <div className="max-w-xl">
+                      <div className="container-pro pb-8 md:pb-0">
+                        <div className="max-w-xl space-y-3 md:space-y-4">
                           {b.titulo && (
-                            <h2 className="font-display text-3xl md:text-5xl text-white drop-shadow-lg leading-tight" style={{ color: b.texto_color || "#fff" }}>{b.titulo}</h2>
+                            <h2 className="font-display text-3xl md:text-5xl text-white drop-shadow-lg leading-[1.15]" style={{ color: b.texto_color || "#fff" }}>{b.titulo}</h2>
                           )}
                           {b.subtitulo && (
-                            <p className="mt-3 text-white text-base md:text-lg drop-shadow-md leading-relaxed" style={{ color: b.texto_color || "#fff" }}>{b.subtitulo}</p>
+                            <p className="text-white text-base md:text-lg drop-shadow-md leading-relaxed" style={{ color: b.texto_color || "#fff" }}>{b.subtitulo}</p>
                           )}
                         </div>
                       </div>

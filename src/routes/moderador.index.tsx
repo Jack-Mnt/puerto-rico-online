@@ -56,8 +56,8 @@ type Columna = {
 };
 
 const COLUMNAS: Columna[] = [
-  { key: "nuevos", title: "Nuevos", variants: ["creado", "aceptado"] },
-  { key: "rechazados", title: "Rechazados", variants: ["rechazado", "reasignado"] },
+  { key: "nuevos", title: "Pendientes", variants: ["creado", "aceptado"] },
+  { key: "rechazados", title: "Observados", variants: ["rechazado", "reasignado"] },
   { key: "despachados", title: "Despachados", variants: ["despachado"] },
 ];
 

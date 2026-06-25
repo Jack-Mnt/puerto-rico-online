@@ -34,8 +34,8 @@ export function ProductCard({ p }: { p: Producto }) {
       </Link>
 
       {/* Zona información */}
-      <div className="product-info flex flex-col px-3 pt-2 md:px-4 md:pt-3">
-        <div className="text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground font-medium truncate">
+      <div className="product-info flex flex-col px-3 pt-2 md:px-4 md:pt-3 h-[62px] md:h-[76px]">
+        <div className="text-[10px] md:text-xs uppercase tracking-wider text-muted-foreground font-medium truncate leading-none">
           {p.marca?.nombre ?? "—"}
         </div>
         <Link

@@ -90,8 +90,8 @@ function CheckoutPage() {
         const precioVenta = Math.max(0, toValidNumber(i.precio_venta));
         const productoInfo = productosInfo.get(i.id);
         const precioCosto = Math.max(0, toValidNumber(i.precio_costo ?? productoInfo?.precio_costo));
-        const subtotal = Math.max(0, precioVenta * cantidad);
-        const utilidad = Math.max(0, subtotal - precioCosto * cantidad);
+        const totalLinea = Math.max(0, precioVenta * cantidad);
+        const utilidad = (precioVenta - precioCosto) * cantidad;
 
         return {
           producto_id: i.id,
@@ -100,7 +100,7 @@ function CheckoutPage() {
           cantidad,
           precio_venta: precioVenta,
           precio_costo: precioCosto,
-          subtotal,
+          total: totalLinea,
           utilidad,
         };
       });
@@ -130,7 +130,10 @@ function CheckoutPage() {
       pedidoCreado = true;
 
       const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalleConPedido);
-      if (dErr) throw dErr;
+      if (dErr) {
+        console.error("Error insertando detalle_pedidos:", dErr, { payload: detalleConPedido });
+        throw new Error(`detalle_pedidos: ${dErr.message}`);
+      }
 
       // Reference shown to the customer (local, no DB read)
       const numeroLocal = pedidoId.slice(0, 8).toUpperCase();
@@ -198,6 +201,7 @@ function CheckoutPage() {
         navigate({ to: "/pedido-confirmado" });
         return;
       }
+      console.error("Error en checkout:", err);
       const message = err instanceof Error ? err.message : "Error al crear pedido";
       toast.error(message);
       setSubmitting(false);

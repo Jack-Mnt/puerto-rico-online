@@ -106,11 +106,12 @@ export function Footer() {
             )}
             {email && (
               <li>
-                <a href={`mailto:${email}`} className="inline-flex items-center gap-2 hover:text-white transition-colors">
-                  <Mail className="h-4 w-4" /> {email}
+                <a href={`mailto:${email}`} className="inline-flex items-start gap-2 hover:text-white transition-colors max-w-full [overflow-wrap:anywhere] [word-break:break-word]">
+                  <Mail className="h-4 w-4 shrink-0 mt-1" /> <span className="min-w-0 break-all">{email}</span>
                 </a>
               </li>
             )}
+
             <li className="pt-1"><Link to="/unete" className="inline-flex items-center gap-2 hover:text-white transition-colors"><Briefcase className="h-4 w-4" /> Trabaja con nosotros</Link></li>
             <li className="text-white/65 text-sm pt-1">Atención todos los días.</li>
           </ul>

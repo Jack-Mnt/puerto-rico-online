@@ -27,7 +27,7 @@ export function Footer() {
 
   return (
     <footer style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}>
-      <div className="container-pro py-12 md:py-16 grid gap-10 md:gap-10 sm:grid-cols-2 md:grid-cols-4">
+      <div className="container-pro py-12 md:py-16 grid gap-10 md:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
         <div>
           <div className="mb-3">
             <img src={logoSrc} alt={config.nombre_empresa || "Puerto Rico Online"} className="h-auto w-auto object-contain max-h-10 md:max-h-14" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -106,11 +106,12 @@ export function Footer() {
             )}
             {email && (
               <li>
-                <a href={`mailto:${email}`} className="inline-flex items-center gap-2 hover:text-white transition-colors">
-                  <Mail className="h-4 w-4" /> {email}
+                <a href={`mailto:${email}`} className="inline-flex items-start gap-2 hover:text-white transition-colors max-w-full [overflow-wrap:anywhere] [word-break:break-word]">
+                  <Mail className="h-4 w-4 shrink-0 mt-1" /> <span className="min-w-0 break-all">{email}</span>
                 </a>
               </li>
             )}
+
             <li className="pt-1"><Link to="/unete" className="inline-flex items-center gap-2 hover:text-white transition-colors"><Briefcase className="h-4 w-4" /> Trabaja con nosotros</Link></li>
             <li className="text-white/65 text-sm pt-1">Atención todos los días.</li>
           </ul>

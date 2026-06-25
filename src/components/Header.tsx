@@ -41,14 +41,15 @@ export function Header() {
       className="sticky top-0 z-40"
       style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}
     >
-      <div className="hidden md:block border-b border-white/10">
-        <div className="container-pro flex items-center justify-between py-2 text-xs text-white/70">
-          <span className="flex items-center gap-1.5">
-            <MapPin className="h-3.5 w-3.5" /> Cutervo · Huaca · Divino · Casua · Unidad
+      <div className="hidden lg:block border-b border-white/10">
+        <div className="container-pro flex items-center justify-between gap-4 py-2 text-xs text-white/70 min-w-0">
+          <span className="flex items-center gap-1.5 min-w-0 truncate">
+            <MapPin className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">Cutervo · Huaca · Divino · Casua · Unidad</span>
           </span>
-          <span>Atención todos los días · Delivery & Pick Up</span>
+          <span className="shrink-0 truncate">Atención todos los días · Delivery & Pick Up</span>
         </div>
       </div>
+
       <div className="container-pro flex items-center justify-between py-3 md:py-4">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-12 lg:mr-[72px]">
           <img

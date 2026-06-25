@@ -72,15 +72,20 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * { border-color: var(--color-border); box-sizing: border-box; }
   html, body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
+  main, header, footer, section { max-width: 100%; }
   h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
 }
+
 
 @layer components {
   .container-pro { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }

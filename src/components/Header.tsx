@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram } from "lucide-react";
+import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram, LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";

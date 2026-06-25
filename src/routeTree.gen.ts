@@ -34,6 +34,7 @@ import { Route as AdminSedesRouteImport } from './routes/admin.sedes'
 import { Route as AdminReportesRouteImport } from './routes/admin.reportes'
 import { Route as AdminProductosRouteImport } from './routes/admin.productos'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
+import { Route as AdminOperacionRouteImport } from './routes/admin.operacion'
 import { Route as AdminMarcasRouteImport } from './routes/admin.marcas'
 import { Route as AdminConfiguracionRouteImport } from './routes/admin.configuracion'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
@@ -164,6 +165,11 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOperacionRoute = AdminOperacionRouteImport.update({
+  id: '/operacion',
+  path: '/operacion',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMarcasRoute = AdminMarcasRouteImport.update({
   id: '/marcas',
   path: '/marcas',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/marcas': typeof AdminMarcasRoute
+  '/admin/operacion': typeof AdminOperacionRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/productos': typeof AdminProductosRoute
   '/admin/reportes': typeof AdminReportesRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/configuracion'
     | '/admin/marcas'
+    | '/admin/operacion'
     | '/admin/pedidos'
     | '/admin/productos'
     | '/admin/reportes'
@@ -564,6 +576,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/operacion': {
+      id: '/admin/operacion'
+      path: '/operacion'
+      fullPath: '/admin/operacion'
+      preLoaderRoute: typeof AdminOperacionRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/marcas': {
       id: '/admin/marcas'
       path: '/marcas'
@@ -600,6 +619,7 @@ interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminConfiguracionRoute: typeof AdminConfiguracionRoute
   AdminMarcasRoute: typeof AdminMarcasRoute
+  AdminOperacionRoute: typeof AdminOperacionRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminProductosRoute: typeof AdminProductosRoute
   AdminReportesRoute: typeof AdminReportesRoute
@@ -613,6 +633,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminConfiguracionRoute: AdminConfiguracionRoute,
   AdminMarcasRoute: AdminMarcasRoute,
+  AdminOperacionRoute: AdminOperacionRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminProductosRoute: AdminProductosRoute,
   AdminReportesRoute: AdminReportesRoute,

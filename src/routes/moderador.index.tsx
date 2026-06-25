@@ -160,12 +160,15 @@ function ModeradorKanban() {
         p_observaciones: observaciones,
       });
       if (error) throw error;
+      return { id: p.id, nuevaSede };
     },
-    onSuccess: () => {
+    onSuccess: ({ id, nuevaSede }) => {
       toast.success("Sede reasignada");
       qc.invalidateQueries({ queryKey });
       qc.invalidateQueries({ queryKey: ["mod-reasignados-ids"] });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
+      // Mantener el modal abierto y reflejar la nueva sede inmediatamente.
+      setViewing((prev) => (prev && prev.id === id ? { ...prev, sede_id: nuevaSede } : prev));
     },
     onError: (e) => toast.error((e as Error).message),
   });
@@ -173,6 +176,7 @@ function ModeradorKanban() {
   function variantOf(p: Pedido): Variant {
     if (p.estado === "pedido_despachado") return "despachado";
     if (p.estado === "pedido_aceptado") return "aceptado";
+    if (p.estado === "pedido_reasignado") return "reasignado";
     if (p.estado === "pedido_rechazado") {
       if (reasignadosIds.has(p.id)) return "reasignado";
       return "rechazado";

@@ -73,6 +73,7 @@ function ModeradorKanban() {
   const qc = useQueryClient();
   const { perfil } = useAuthStore();
   const [viewing, setViewing] = useState<Pedido | null>(null);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   const { data: sedes = [] } = useQuery({
     queryKey: ["sedes-options"],

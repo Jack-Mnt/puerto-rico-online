@@ -282,7 +282,7 @@ function Catalogo() {
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="card-pro h-[390px] md:h-[440px] lg:h-[470px] animate-pulse" />
+                <div key={i} className="card-pro h-[330px] md:h-[380px] lg:h-[410px] animate-pulse" />
               ))}
             </div>
           ) : items.length === 0 ? (

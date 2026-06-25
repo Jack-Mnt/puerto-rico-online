@@ -407,7 +407,7 @@ function PedidoModeradorModal({
                       {d.cantidad} × {formatMoney(Number(d.precio_venta))}
                     </div>
                   </div>
-                  <div className="font-semibold">{formatMoney(Number(d.subtotal))}</div>
+                  <div className="font-semibold">{formatMoney(Number(d.total))}</div>
                 </div>
               ))}
             </div>

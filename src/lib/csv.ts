@@ -33,7 +33,8 @@ function triggerDownload(blob: Blob, filename: string) {
 
 export function formatMoney(n: number | null | undefined): string {
   const v = Number(n ?? 0);
-  return new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(v);
+  const safe = Number.isFinite(v) ? v : 0;
+  return new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(safe);
 }
 
 export function formatDate(d: string | Date | null | undefined): string {

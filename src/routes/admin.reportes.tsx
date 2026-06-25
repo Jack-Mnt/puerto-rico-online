@@ -28,7 +28,7 @@ type PedidoRich = {
   detalle_pedidos: {
     cantidad: number;
     precio_venta: number;
-    subtotal: number;
+    total: number;
     producto_id: string;
     productos?: { nombre: string | null; precio_costo: number | null } | null;
   }[];
@@ -55,7 +55,7 @@ function ReportesPage() {
     queryFn: async () => {
       let q = supabase
         .from("pedidos")
-        .select("id,numero_pedido,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_venta,subtotal,producto_id,productos(nombre,precio_costo))")
+        .select("id,numero_pedido,total,sede_id,estado,metodo_pago,tipo_entrega,cliente_nombre,cliente_telefono,created_at,fecha_entrega,detalle_pedidos(cantidad,precio_venta,total,producto_id,productos(nombre,precio_costo))")
         .gte("created_at", desde + "T00:00:00")
         .lte("created_at", hasta + "T23:59:59")
         .order("created_at", { ascending: false })

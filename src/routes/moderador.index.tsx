@@ -109,32 +109,13 @@ function ModeradorKanban() {
     },
   });
 
-  async function logHistorial(args: {
-    pedido_id: string;
-    accion: AccionHistorial;
-    descripcion?: string | null;
-    sede_anterior?: string | null;
-    sede_nueva?: string | null;
-  }) {
-    const { error } = await supabase.from("historial_pedidos").insert({
-      pedido_id: args.pedido_id,
-      usuario_id: perfil?.id,
-      accion: args.accion,
-      descripcion: args.descripcion ?? null,
-      sede_anterior: args.sede_anterior ?? null,
-      sede_nueva: args.sede_nueva ?? null,
-    });
-    if (error) console.warn("[historial]", error.message);
-  }
-
-  const cambiarEstado = useMutation({
-    mutationFn: async ({ id, estado }: { id: string; estado: EstadoPedido }) => {
-      const { error } = await supabase.from("pedidos").update({ estado }).eq("id", id);
+  const entregar = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc("entregar_pedido", { p_pedido_id: id });
       if (error) throw error;
-      await logHistorial({ pedido_id: id, accion: estado });
     },
     onSuccess: () => {
-      toast.success("Estado actualizado");
+      toast.success("Pedido entregado");
       qc.invalidateQueries({ queryKey });
       qc.invalidateQueries({ queryKey: ["pedido-historial"] });
       qc.invalidateQueries({ queryKey: ["mod-historial"] });
@@ -143,23 +124,41 @@ function ModeradorKanban() {
     onError: (e) => toast.error((e as Error).message),
   });
 
-  const reasignar = useMutation({
-    mutationFn: async ({ p, nuevaSede }: { p: Pedido; nuevaSede: string }) => {
-      const sede_anterior = p.sede_id;
-      const { error } = await supabase
-        .from("pedidos")
-        .update({ sede_id: nuevaSede })
-        .eq("id", p.id);
-      if (error) throw error;
-      const nombre_ant = sedes.find((s) => s.id === sede_anterior)?.nombre || "Sin sede";
-      const nombre_nuev = sedes.find((s) => s.id === nuevaSede)?.nombre || "—";
-      await logHistorial({
-        pedido_id: p.id,
-        accion: "pedido_reasignado",
-        descripcion: `${nombre_ant} → ${nombre_nuev}`,
-        sede_anterior,
-        sede_nueva: nuevaSede,
+  const cancelar = useMutation({
+    mutationFn: async ({ id, observaciones }: { id: string; observaciones: string }) => {
+      const { error } = await supabase.rpc("cancelar_pedido", {
+        p_pedido_id: id,
+        p_observaciones: observaciones,
       });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Pedido cancelado");
+      qc.invalidateQueries({ queryKey });
+      qc.invalidateQueries({ queryKey: ["pedido-historial"] });
+      qc.invalidateQueries({ queryKey: ["mod-historial"] });
+      setCancelingId(null);
+      setViewing(null);
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  const reasignar = useMutation({
+    mutationFn: async ({
+      p,
+      nuevaSede,
+      observaciones,
+    }: {
+      p: Pedido;
+      nuevaSede: string;
+      observaciones: string;
+    }) => {
+      const { error } = await supabase.rpc("reasignar_pedido", {
+        p_pedido_id: p.id,
+        p_nueva_sede_id: nuevaSede,
+        p_observaciones: observaciones,
+      });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Sede reasignada");

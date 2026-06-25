@@ -60,6 +60,7 @@ export function Header() {
 
         </Link>
         <div className="flex items-center gap-2">
+          <Link to="/carrito" className="relative btn btn-accent">
             <ShoppingBag className="h-4 w-4" />
             <span className="hidden sm:inline">Carrito</span>
             {mounted && count > 0 && (
@@ -72,16 +73,16 @@ export function Header() {
             type="button"
             aria-label="Abrir menú"
             onClick={() => setOpen(true)}
-            className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/90 hover:bg-white/10"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/90 hover:bg-white/10"
           >
             <Menu className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Drawer */}
       <div
-        className={`md:hidden fixed inset-0 z-50 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         aria-hidden={!open}

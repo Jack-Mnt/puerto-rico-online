@@ -130,7 +130,10 @@ function CheckoutPage() {
       pedidoCreado = true;
 
       const { error: dErr } = await supabase.from("detalle_pedidos").insert(detalleConPedido);
-      if (dErr) throw dErr;
+      if (dErr) {
+        console.error("Error insertando detalle_pedidos:", dErr, { payload: detalleConPedido });
+        throw new Error(`detalle_pedidos: ${dErr.message}`);
+      }
 
       // Reference shown to the customer (local, no DB read)
       const numeroLocal = pedidoId.slice(0, 8).toUpperCase();

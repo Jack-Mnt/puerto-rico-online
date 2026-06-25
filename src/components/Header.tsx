@@ -59,20 +59,7 @@ export function Header() {
           />
 
         </Link>
-        <nav className="hidden md:flex items-center gap-7 text-sm">
-          <Link to="/" className="text-white/80 hover:text-white">Inicio</Link>
-          <Link to="/productos" className="text-white/80 hover:text-white">Catálogo</Link>
-          <Link to="/nosotros" className="text-white/80 hover:text-white">Nosotros</Link>
-          <Link to="/sedes" className="text-white/80 hover:text-white">Sedes</Link>
-        </nav>
         <div className="flex items-center gap-2">
-          <Link
-            to="/productos"
-            className="hidden sm:inline-flex btn btn-ghost text-white/90 hover:bg-white/10"
-          >
-            <Search className="h-4 w-4" />
-          </Link>
-          <Link to="/carrito" className="relative btn btn-accent">
             <ShoppingBag className="h-4 w-4" />
             <span className="hidden sm:inline">Carrito</span>
             {mounted && count > 0 && (

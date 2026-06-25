@@ -145,10 +145,8 @@ export function Header() {
 
           <nav className="flex-1 overflow-y-auto px-3 py-3">
             <MobileLink to="/" icon={Home} label="Inicio" onClick={close} />
-            <MobileLink to="/productos" icon={Store} label="Catálogo" onClick={close} />
             <MobileLink to="/nosotros" icon={Info} label="Nosotros" onClick={close} />
-            <MobileLink to="/sedes" icon={MapPin} label="Nuestras sedes" onClick={close} />
-            <MobileLink to="/unete" icon={UserPlus} label="Únete a la familia PR" onClick={close} />
+            <MobileLink to="/sedes" icon={MapPin} label="Sedes" onClick={close} />
             <MobileLink to="/contacto" icon={Mail} label="Contacto" onClick={close} />
 
             <div className="my-3 border-t border-white/10" />
@@ -163,19 +161,6 @@ export function Header() {
               <MessageCircle className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
               <span className="text-sm">WhatsApp</span>
             </a>
-            {config.instagram_url && (
-              <a
-                href={config.instagram_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={close}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-white"
-              >
-                <Instagram className="h-4 w-4" style={{ color: "var(--color-accent)" }} />
-                <span className="text-sm">Instagram</span>
-              </a>
-            )}
-
           </nav>
 
 

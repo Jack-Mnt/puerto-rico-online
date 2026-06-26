@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram } from "lucide-react";
+import { ShoppingBag, Search, MapPin, Menu, X, Home, Store, Info, MessageCircle, Mail, UserPlus, Instagram, LayoutGrid } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/lib/cart";
@@ -50,31 +50,52 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-pro flex items-center justify-between py-3 md:py-4">
-        <Link to="/" className="flex items-center gap-3 mr-2 md:mr-12 lg:mr-[72px]">
+      <div className="container-pro flex items-center justify-between py-2 md:py-3">
+        <Link to="/" className="flex items-center gap-3 mr-2 md:mr-8 lg:mr-12">
           <img
             src={logoSrc}
             alt={config.nombre_empresa || "Puerto Rico Online"}
-            className="h-auto w-auto object-contain max-h-9 md:max-h-14"
+            className="h-auto w-auto object-contain max-h-8 md:max-h-10"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
-
         </Link>
         <div className="flex items-center gap-2">
-          <Link to="/carrito" className="relative btn btn-accent">
+          {/* Catálogo desktop */}
+          <Link to="/productos" className="hidden sm:inline-flex btn btn-accent">
+            <LayoutGrid className="h-4 w-4" />
+            <span>Catálogo</span>
+          </Link>
+          {/* Catálogo mobile */}
+          <Link to="/productos" className="sm:hidden inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm">
+            <LayoutGrid className="h-4 w-4" />
+          </Link>
+
+          {/* Carrito desktop */}
+          <Link to="/carrito" className="hidden sm:inline-flex relative btn btn-accent">
             <ShoppingBag className="h-4 w-4" />
-            <span className="hidden sm:inline">Carrito</span>
+            <span>Carrito</span>
             {mounted && count > 0 && (
               <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-bold text-[color:var(--color-accent)]">
                 {count}
               </span>
             )}
           </Link>
+          {/* Carrito mobile */}
+          <Link to="/carrito" className="sm:hidden relative inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm">
+            <ShoppingBag className="h-4 w-4" />
+            {mounted && count > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[color:var(--color-accent)]">
+                {count}
+              </span>
+            )}
+          </Link>
+
+          {/* Menú hamburguesa */}
           <button
             type="button"
             aria-label="Abrir menú"
             onClick={() => setOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white/90 hover:bg-white/10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full sm:rounded-lg border border-white/15 text-white/90 hover:bg-white/10"
           >
             <Menu className="h-5 w-5" />
           </button>

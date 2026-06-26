@@ -60,7 +60,6 @@ export function Header() {
         style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}
       >
       <div className="hidden lg:block border-b border-white/10">
-        <div className="container-pro flex items-center justify-between gap-4 py-2 text-xs text-white/70 min-w-0">
         <div className="container-pro flex items-center justify-between gap-4 py-2.5 text-xs text-white/70 min-w-0">
           <span className="flex items-center gap-1.5 min-w-0 truncate">
             <MapPin className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">Cutervo · Huaca · Divino · Casua · Unidad</span>

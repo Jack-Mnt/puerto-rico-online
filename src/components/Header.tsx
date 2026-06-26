@@ -36,11 +36,29 @@ export function Header() {
     navigate({ to: "/productos", search: term ? { q: term } : {} });
   };
 
+  const headerRef = useRef<HTMLElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setHeaderHeight(entry.contentRect.height);
+      }
+    });
+    ro.observe(el);
+    setHeaderHeight(el.getBoundingClientRect().height);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <header
-      className="sticky top-0 z-40"
-      style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}
-    >
+    <>
+      <header
+        ref={headerRef}
+        className="fixed top-0 left-0 right-0 z-40"
+        style={{ background: "var(--color-primary)", color: "var(--color-primary-foreground)" }}
+      >
       <div className="hidden lg:block border-b border-white/10">
         <div className="container-pro flex items-center justify-between gap-4 py-2 text-xs text-white/70 min-w-0">
           <span className="flex items-center gap-1.5 min-w-0 truncate">

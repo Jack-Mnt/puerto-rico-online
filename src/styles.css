@@ -82,8 +82,8 @@
     max-width: 100%;
     overflow-x: hidden;
   }
-  html { scroll-padding-top: 5rem; }
-  @media (min-width: 1024px) { html { scroll-padding-top: 7.5rem; } }
+  html { scroll-padding-top: 6.5rem; }
+  @media (min-width: 1024px) { html { scroll-padding-top: 9.75rem; } }
   main, header, footer, section { max-width: 100%; }
   h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: 0.02em; }
 }

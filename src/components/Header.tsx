@@ -220,6 +220,8 @@ export function Header() {
         </aside>
       </div>
     </header>
+    <div style={{ height: headerHeight }} aria-hidden="true" />
+    </>
   );
 }
 

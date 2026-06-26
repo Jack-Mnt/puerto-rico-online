@@ -68,7 +68,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-pro flex items-center justify-between py-2.5 md:py-4">
+      <div className="container-pro flex items-center justify-between py-[13px] md:py-[21px]">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-8 lg:mr-12">
           <img
             src={logoSrc}

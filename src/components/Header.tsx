@@ -50,12 +50,12 @@ export function Header() {
         </div>
       </div>
 
-      <div className="container-pro flex items-center justify-between py-2 md:py-3">
+      <div className="container-pro flex items-center justify-between py-2.5 md:py-4">
         <Link to="/" className="flex items-center gap-3 mr-2 md:mr-8 lg:mr-12">
           <img
             src={logoSrc}
             alt={config.nombre_empresa || "Puerto Rico Online"}
-            className="h-auto w-auto object-contain max-h-8 md:max-h-10"
+            className="h-auto w-auto object-contain max-h-[29px] md:max-h-10"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
         </Link>

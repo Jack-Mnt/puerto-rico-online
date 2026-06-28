@@ -16,6 +16,8 @@ import {
   type MotivoRechazo,
 } from "@/lib/estados";
 import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
+import { useNuevoPedidoNotifier } from "@/hooks/useNuevoPedidoNotifier";
+import { NotifToggle } from "@/components/NotifToggle";
 
 export const Route = createFileRoute("/cajero/")({
   component: CajeroPanel,
@@ -66,6 +68,7 @@ function CajeroPanel() {
 
   const queryKey = ["cajero-pedidos", perfil?.sede_id];
   useRealtimePedidos([queryKey, ["pedido-historial"], ["cajero-pedido-items"], ["cajero-historial", perfil?.sede_id]]);
+  useNuevoPedidoNotifier({ variant: "cajero", sedeFilterId: perfil?.sede_id ?? null });
   const { data = [], isLoading } = useQuery({
     queryKey,
     enabled: !!perfil?.sede_id,
@@ -132,6 +135,7 @@ function CajeroPanel() {
       <PageHeader
         title="Pedidos de mi sede"
         description="Acepta, despacha o rechaza los pedidos asignados a tu sede."
+        action={<NotifToggle />}
       />
 
       {isLoading ? (

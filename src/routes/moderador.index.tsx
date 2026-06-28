@@ -17,6 +17,8 @@ import {
   type AccionHistorial,
 } from "@/lib/estados";
 import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
+import { useNuevoPedidoNotifier } from "@/hooks/useNuevoPedidoNotifier";
+import { NotifToggle } from "@/components/NotifToggle";
 
 export const Route = createFileRoute("/moderador/")({
   component: ModeradorKanban,
@@ -81,6 +83,10 @@ export function ModeradorKanban() {
 
   const queryKey = ["mod-pedidos-activos"];
   useRealtimePedidos([queryKey, ["mod-reasignados-ids"], ["mod-historial"], ["pedido-historial"], ["mod-pedido-items"]]);
+  useNuevoPedidoNotifier({
+    variant: "general",
+    getSedeNombre: (id) => sedes.find((s) => s.id === id)?.nombre,
+  });
   const { data = [], isLoading } = useQuery({
     queryKey,
     queryFn: async () => {
@@ -193,6 +199,7 @@ export function ModeradorKanban() {
       <PageHeader
         title="Centro de operaciones"
         description="Pedidos en curso. Los entregados y cancelados se archivan en Historial."
+        action={<NotifToggle />}
       />
 
       {isLoading ? (

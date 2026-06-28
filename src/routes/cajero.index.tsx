@@ -135,6 +135,7 @@ function CajeroPanel() {
       <PageHeader
         title="Pedidos de mi sede"
         description="Acepta, despacha o rechaza los pedidos asignados a tu sede."
+        action={<NotifToggle />}
       />
 
       {isLoading ? (

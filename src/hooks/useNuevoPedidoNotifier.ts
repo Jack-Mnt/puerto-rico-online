@@ -58,8 +58,8 @@ export function useNuevoPedidoNotifier(opts: Opts = {}) {
           : "Nuevo pedido recibido";
       const body =
         o.variant === "cajero"
-          ? `Pedido #${pedido.numero_pedido} · S/ ${total.replace(/^S\/\s?/, "")}`
-          : `Pedido #${pedido.numero_pedido} · ${sedeNombre} · S/ ${total.replace(/^S\/\s?/, "")}`;
+          ? `Pedido #${pedido.numero_pedido} · ${total}`
+          : `Pedido #${pedido.numero_pedido} · ${sedeNombre} · ${total}`;
 
       if (isSoundEnabled()) {
         playNewOrderChime();

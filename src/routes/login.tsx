@@ -24,7 +24,10 @@ function LoginPage() {
 
   useEffect(() => {
     if (perfil) navigate({ to: rolHome(perfil.rol), replace: true });
-    else if (userId && !perfil) toast.error("Tu usuario no tiene rol asignado. Contacta al administrador.");
+    else if (userId && !perfil)
+      toast.error(
+        "Tu usuario no tiene rol asignado. Contacta al administrador.",
+      );
   }, [perfil, userId, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -32,7 +35,9 @@ function LoginPage() {
     const parsed = schema.safeParse({ email, password });
     if (!parsed.success) {
       const errs: Record<string, string> = {};
-      parsed.error.issues.forEach((i) => (errs[i.path[0] as string] = i.message));
+      parsed.error.issues.forEach(
+        (i) => (errs[i.path[0] as string] = i.message),
+      );
       setErrors(errs);
       return;
     }
@@ -40,7 +45,8 @@ function LoginPage() {
     try {
       await signIn(parsed.data.email, parsed.data.password);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "No se pudo iniciar sesión";
+      const msg =
+        err instanceof Error ? err.message : "No se pudo iniciar sesión";
       toast.error(msg);
     }
   }
@@ -49,8 +55,12 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/40 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Puerto Rico Online</h1>
-          <p className="text-sm text-muted-foreground mt-2">Acceso para personal autorizado</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Puerto Rico Online
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            Acceso para personal autorizado
+          </p>
         </div>
         <form
           onSubmit={onSubmit}
@@ -66,10 +76,14 @@ function LoginPage() {
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="staff@puertoricoonline.com"
             />
-            {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-xs text-destructive mt-1">{errors.email}</p>
+            )}
           </div>
           <div>
-            <label className="text-sm font-medium block mb-1.5">Contraseña</label>
+            <label className="text-sm font-medium block mb-1.5">
+              Contraseña
+            </label>
             <input
               type="password"
               autoComplete="current-password"
@@ -77,7 +91,9 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+            {errors.password && (
+              <p className="text-xs text-destructive mt-1">{errors.password}</p>
+            )}
           </div>
           <button
             type="submit"
@@ -87,7 +103,8 @@ function LoginPage() {
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
           <p className="text-xs text-muted-foreground text-center pt-2">
-            Solo personal autorizado. Si no tienes acceso, contacta al administrador.
+            Solo personal autorizado. Si no tienes acceso, contacta a Jack
+            Muñante.
           </p>
         </form>
       </div>

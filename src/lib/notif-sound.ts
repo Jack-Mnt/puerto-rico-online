@@ -1,6 +1,7 @@
 // Utilidades para sonido + preferencia de notificaciones de nuevos pedidos.
 
 const STORAGE_KEY = "pro-notif-sound-enabled";
+const SYS_STORAGE_KEY = "pro-notif-system-enabled";
 
 export function isSoundEnabled(): boolean {
   if (typeof window === "undefined") return false;
@@ -13,6 +14,20 @@ export function setSoundEnabled(enabled: boolean) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, enabled ? "1" : "0");
   window.dispatchEvent(new CustomEvent("pro-notif-sound-changed", { detail: enabled }));
+}
+
+export function isSystemNotifEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  if (!("Notification" in window)) return false;
+  if (Notification.permission !== "granted") return false;
+  const v = window.localStorage.getItem(SYS_STORAGE_KEY);
+  return v === "1";
+}
+
+export function setSystemNotifEnabled(enabled: boolean) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SYS_STORAGE_KEY, enabled ? "1" : "0");
+  window.dispatchEvent(new CustomEvent("pro-notif-system-changed", { detail: enabled }));
 }
 
 let ctx: AudioContext | null = null;

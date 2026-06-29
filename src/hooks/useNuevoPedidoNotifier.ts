@@ -63,6 +63,8 @@ export function useNuevoPedidoNotifier(opts: Opts = {}) {
 
       if (isSoundEnabled()) {
         playNewOrderChime();
+      }
+      if (isSystemNotifEnabled()) {
         tryBrowserNotification(title, body);
       }
       toast.success(title, { description: body });

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { formatMoney } from "@/lib/csv";
-import { isSoundEnabled, playNewOrderChime, tryBrowserNotification } from "@/lib/notif-sound";
+import { isSoundEnabled, isSystemNotifEnabled, playNewOrderChime, tryBrowserNotification } from "@/lib/notif-sound";
 
 type Pedido = {
   id: string;

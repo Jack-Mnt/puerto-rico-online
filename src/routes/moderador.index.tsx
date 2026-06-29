@@ -19,6 +19,7 @@ import {
 import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
 import { useNuevoPedidoNotifier } from "@/hooks/useNuevoPedidoNotifier";
 import { NotifToggle } from "@/components/NotifToggle";
+import { NotifSystemToggle } from "@/components/NotifSystemToggle";
 
 export const Route = createFileRoute("/moderador/")({
   component: ModeradorKanban,

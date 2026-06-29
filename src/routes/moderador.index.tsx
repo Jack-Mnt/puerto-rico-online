@@ -19,6 +19,7 @@ import {
 import { useRealtimePedidos } from "@/hooks/useRealtimePedidos";
 import { useNuevoPedidoNotifier } from "@/hooks/useNuevoPedidoNotifier";
 import { NotifToggle } from "@/components/NotifToggle";
+import { NotifSystemToggle } from "@/components/NotifSystemToggle";
 
 export const Route = createFileRoute("/moderador/")({
   component: ModeradorKanban,
@@ -199,7 +200,7 @@ export function ModeradorKanban() {
       <PageHeader
         title="Centro de operaciones"
         description="Pedidos en curso. Los entregados y cancelados se archivan en Historial."
-        action={<NotifToggle />}
+        action={<div className="flex items-center gap-2"><NotifSystemToggle /><NotifToggle /></div>}
       />
 
       {isLoading ? (

@@ -200,7 +200,7 @@ export function ModeradorKanban() {
       <PageHeader
         title="Centro de operaciones"
         description="Pedidos en curso. Los entregados y cancelados se archivan en Historial."
-        action={<NotifToggle />}
+        action={<div className="flex items-center gap-2"><NotifSystemToggle /><NotifToggle /></div>}
       />
 
       {isLoading ? (

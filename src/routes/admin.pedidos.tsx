@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { PageHeader, EmptyState } from "@/components/PanelLayout";
 import { Modal } from "@/components/Modal";
 import { formatMoney, formatDate } from "@/lib/csv";
+import { labelTipoEntrega } from "@/lib/tipo-entrega";
 import {
   ESTADOS,
   ESTADO_LABEL,
@@ -221,7 +222,7 @@ function AdminPedidos() {
                 </span>
               } />
               <Info label="Método pago" value={viewing.metodo_pago ?? "—"} />
-              <Info label="Tipo entrega" value={viewing.tipo_entrega ?? "—"} />
+              <Info label="Tipo entrega" value={labelTipoEntrega(viewing.tipo_entrega)} />
             </div>
             {viewing.direccion && <Info label="Dirección" value={viewing.direccion} />}
             {viewing.observaciones && <Info label="Observaciones" value={viewing.observaciones} />}

@@ -8,6 +8,7 @@ import { PageHeader, EmptyState } from "@/components/PanelLayout";
 import { Modal } from "@/components/Modal";
 import { useAuthStore } from "@/lib/auth";
 import { formatMoney, formatDate } from "@/lib/csv";
+import { labelTipoEntrega } from "@/lib/tipo-entrega";
 import {
   ESTADO_LABEL,
   ESTADO_COLOR,
@@ -227,7 +228,7 @@ function PedidoCard({
             {pedido.metodo_pago || "—"}
           </div>
           <div className="text-sm text-foreground font-medium truncate capitalize">
-            {pedido.tipo_entrega || "—"}
+            {labelTipoEntrega(pedido.tipo_entrega)}
           </div>
           <div className="text-sm text-foreground font-medium truncate text-right">
             {formatMoney(pedido.total)}
@@ -287,7 +288,7 @@ function PedidoCajeroModal({
         <div className="grid grid-cols-2 gap-3">
           <Info label="Cliente" value={pedido.cliente_nombre} />
           <Info label="Método pago" value={pedido.metodo_pago ?? "—"} />
-          <Info label="Tipo entrega" value={pedido.tipo_entrega ?? "—"} />
+          <Info label="Tipo entrega" value={labelTipoEntrega(pedido.tipo_entrega)} />
         </div>
         {pedido.observaciones && (
           <div className="p-2 border border-border rounded bg-muted/30">

@@ -64,7 +64,7 @@ export function Header() {
           <span className="flex items-center gap-1.5 min-w-0 truncate">
             <MapPin className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">Cutervo · Huaca · Divino · Casua · Unidad</span>
           </span>
-          <span className="shrink-0 truncate">Atención todos los días · Delivery & Pick Up</span>
+          <span className="shrink-0 truncate">Atención todos los días · Delivery y Recojo en tienda</span>
         </div>
       </div>
 

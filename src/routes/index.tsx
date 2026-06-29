@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Puerto Rico Online · Licorería Premium" },
-      { name: "description", content: "Whisky, vinos, espumantes y más con delivery o pick up." },
+      { name: "description", content: "Whisky, vinos, espumantes y más con delivery o recojo en tienda." },
       { property: "og:title", content: "Puerto Rico Online" },
       { property: "og:description", content: "Licorería premium online en Perú." },
     ],

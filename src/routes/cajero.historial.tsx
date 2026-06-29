@@ -7,6 +7,7 @@ import { PageHeader, EmptyState } from "@/components/PanelLayout";
 import { Modal } from "@/components/Modal";
 import { useAuthStore } from "@/lib/auth";
 import { formatMoney, formatDate } from "@/lib/csv";
+import { labelTipoEntrega } from "@/lib/tipo-entrega";
 import {
   ESTADO_LABEL,
   ESTADO_COLOR,
@@ -124,7 +125,7 @@ function CajeroHistorial() {
         >
           <option value="">Todos los tipos</option>
           <option value="delivery">Delivery</option>
-          <option value="pickup">Pickup</option>
+          <option value="pickup">Recojo en tienda</option>
         </select>
         <select
           className="input"
@@ -170,7 +171,7 @@ function CajeroHistorial() {
                     {p.metodo_pago || "—"}
                   </div>
                   <div className="md:col-span-1 text-xs capitalize text-muted-foreground">
-                    {p.tipo_entrega || "—"}
+                    {labelTipoEntrega(p.tipo_entrega)}
                   </div>
                   <div className="md:col-span-1 font-semibold">{formatMoney(p.total)}</div>
                   <div className="md:col-span-3 text-xs text-muted-foreground">
@@ -242,7 +243,7 @@ function PedidoDetalleModal({ pedido, onClose }: { pedido: Pedido; onClose: () =
             <Info label="Cliente" value={pedido.cliente_nombre} />
             <Info label="Teléfono" value={pedido.cliente_telefono ?? "—"} />
             <Info label="Método pago" value={pedido.metodo_pago ?? "—"} />
-            <Info label="Tipo entrega" value={pedido.tipo_entrega ?? "—"} />
+            <Info label="Tipo entrega" value={labelTipoEntrega(pedido.tipo_entrega)} />
           </div>
 
           <div>

@@ -81,7 +81,7 @@ function PedidoConfirmadoPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Tipo de entrega</span>
                   <span className="font-medium">
-                    {resumen.tipo_entrega === "delivery" ? "Delivery" : "Pick Up"}
+                    {resumen.tipo_entrega === "delivery" ? "Delivery" : "Recojo en tienda"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-4">

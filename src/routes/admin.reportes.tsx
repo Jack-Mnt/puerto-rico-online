@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { PageHeader } from "@/components/PanelLayout";
 import { formatMoney, formatDate } from "@/lib/csv";
+import { labelTipoEntrega } from "@/lib/tipo-entrega";
 import { downloadXlsx } from "@/lib/xlsx-export";
 import { ESTADOS, ESTADO_LABEL, type EstadoPedido } from "@/lib/estados";
 
@@ -104,7 +105,7 @@ function ReportesPage() {
       Sede: sedeNombre(p.sede_id),
       Estado: ESTADO_LABEL[p.estado] ?? p.estado,
       "Método pago": p.metodo_pago ?? "",
-      "Tipo entrega": p.tipo_entrega ?? "",
+      "Tipo entrega": labelTipoEntrega(p.tipo_entrega),
       Total: Number(p.total ?? 0),
       Productos: p._productosStr,
       "Utilidad estimada": Number(p._utilidad.toFixed(2)),

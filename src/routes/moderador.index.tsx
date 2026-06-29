@@ -8,6 +8,7 @@ import { PageHeader, EmptyState } from "@/components/PanelLayout";
 import { Modal } from "@/components/Modal";
 import { useAuthStore } from "@/lib/auth";
 import { formatMoney, formatDate } from "@/lib/csv";
+import { labelTipoEntrega } from "@/lib/tipo-entrega";
 import {
   ESTADOS,
   ESTADO_LABEL,
@@ -304,7 +305,7 @@ function PedidoCard({
           <div className="text-sm text-foreground font-medium truncate">{pedido.cliente_nombre}</div>
           <div className="text-sm text-foreground font-medium truncate text-right">{sedeNombre}</div>
           <div className="text-sm text-foreground font-medium truncate capitalize">
-            {pedido.tipo_entrega || "—"}
+            {labelTipoEntrega(pedido.tipo_entrega)}
           </div>
           <div className="text-sm text-foreground font-medium truncate text-right">
             {formatMoney(pedido.total)}
@@ -394,7 +395,7 @@ function PedidoModeradorModal({
             <Info label="Cliente" value={pedido.cliente_nombre} />
             <Info label="Teléfono" value={pedido.cliente_telefono ?? "—"} />
             <Info label="Método pago" value={pedido.metodo_pago ?? "—"} />
-            <Info label="Tipo entrega" value={pedido.tipo_entrega ?? "—"} />
+            <Info label="Tipo entrega" value={labelTipoEntrega(pedido.tipo_entrega)} />
             <Info label="Sede actual" value={sedeActual} />
             <Info label="Estado" value={ESTADO_LABEL[pedido.estado]} />
           </div>

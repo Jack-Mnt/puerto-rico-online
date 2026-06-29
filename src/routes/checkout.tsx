@@ -146,7 +146,7 @@ function CheckoutPage() {
         `Pedido #${numeroLocal}`,
         `Nombre: ${nombre.trim()}`,
         `Sede: ${sede.nombre}`,
-        `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Pick Up"}`,
+        `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Recojo en tienda"}`,
         `Método de pago: ${pago === "efectivo" ? "Efectivo" : "Yape / Plin"}`,
         `Total: S/ ${total.toFixed(2)}`,
         "",
@@ -179,7 +179,7 @@ function CheckoutPage() {
           "Pedido creado",
           `Nombre: ${nombre.trim()}`,
           `Sede: ${sede.nombre}`,
-          `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Pick Up"}`,
+          `Tipo de entrega: ${tipo === "delivery" ? "Delivery" : "Recojo en tienda"}`,
           `Método de pago: ${pago === "efectivo" ? "Efectivo" : "Yape / Plin"}`,
           `Total: S/ ${total.toFixed(2)}`,
           "",
@@ -235,7 +235,7 @@ function CheckoutPage() {
               <h2 className="font-display text-lg mb-4">Tipo de entrega</h2>
               <div className="seg">
                 <button type="button" className="seg-btn" data-active={tipo === "delivery"} onClick={() => setTipo("delivery")}>Delivery</button>
-                <button type="button" className="seg-btn" data-active={tipo === "pickup"} onClick={() => setTipo("pickup")}>Pick Up</button>
+                <button type="button" className="seg-btn" data-active={tipo === "pickup"} onClick={() => setTipo("pickup")}>Recojo en tienda</button>
               </div>
               {tipo === "delivery" && (
                 <div className="grid sm:grid-cols-2 gap-4 mt-5">

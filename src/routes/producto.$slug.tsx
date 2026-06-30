@@ -55,13 +55,12 @@ function Detail() {
           <ChevronLeft className="h-4 w-4" /> Volver al catálogo
         </Link>
         <div className="grid grid-cols-1 md:grid-cols-[48%_52%] lg:grid-cols-[45%_55%] gap-8 md:gap-10 lg:gap-12">
-          <div className="card-pro p-6 md:p-6 lg:p-8 grid place-items-center aspect-square md:aspect-auto md:h-[460px] lg:h-[500px]">
+          <div className="card-pro p-6 md:p-6 lg:p-8 grid place-items-center aspect-square md:aspect-auto md:h-[460px] lg:h-[500px] overflow-hidden">
             {img ? (
               <img
                 src={img}
                 alt={p.nombre}
-                className="max-h-full max-w-full w-auto h-auto object-contain object-center"
-                style={{ maxHeight: "100%" }}
+                className="w-full h-full object-contain object-center"
               />
             ) : (
               <span className="text-muted-foreground">Sin imagen</span>
@@ -79,23 +78,22 @@ function Detail() {
               {p.destacado && <span className="chip premium-gradient !text-[#120E0E] !border-transparent">Más vendido</span>}
             </div>
 
-            <div className="mt-6 md:mt-8 flex items-center gap-3">
-              <div className="inline-flex items-center rounded-xl border border-[color:var(--color-border)] bg-white">
+            <div className="mt-6 md:mt-8 flex items-center gap-3 flex-nowrap">
+              <div className="inline-flex items-center rounded-xl border border-[color:var(--color-border)] bg-white shrink-0">
                 <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Minus className="h-4 w-4" /></button>
                 <span className="w-10 text-center text-sm font-semibold">{qty}</span>
                 <button onClick={() => setQty((q) => q + 1)} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Plus className="h-4 w-4" /></button>
               </div>
               <button
                 onClick={() => { add({ id: p.id, nombre: p.nombre, slug: p.slug, precio_venta: Number(p.precio_venta), precio_costo: p.precio_costo, imagen: p.imagen }, qty); toast.success("Agregado al carrito"); }}
-                className="btn btn-accent flex-1"
+                className="btn btn-accent flex-1 whitespace-nowrap"
               >
                 Agregar al carrito
               </button>
             </div>
 
             {p.descripcion && (
-              <div className="mt-6 md:mt-8 pt-6 border-t border-[color:var(--color-border)]">
-                <h2 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-2">Descripción</h2>
+              <div className="mt-6 md:mt-8">
                 <p className="text-sm leading-relaxed text-muted-foreground">{p.descripcion}</p>
               </div>
             )}

@@ -54,24 +54,32 @@ function Detail() {
         <Link to="/productos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
           <ChevronLeft className="h-4 w-4" /> Volver al catálogo
         </Link>
-        <div className="grid lg:grid-cols-2 gap-10">
-          <div className="card-pro p-8 grid place-items-center aspect-square">
-            {img ? <img src={img} alt={p.nombre} className="max-h-full max-w-full object-contain" /> : <span className="text-muted-foreground">Sin imagen</span>}
+        <div className="grid grid-cols-1 md:grid-cols-[48%_52%] lg:grid-cols-[45%_55%] gap-8 md:gap-10 lg:gap-12">
+          <div className="card-pro p-6 md:p-6 lg:p-8 grid place-items-center aspect-square md:aspect-auto md:h-[460px] lg:h-[500px]">
+            {img ? (
+              <img
+                src={img}
+                alt={p.nombre}
+                className="max-h-full max-w-full w-auto h-auto object-contain object-center"
+                style={{ maxHeight: "100%" }}
+              />
+            ) : (
+              <span className="text-muted-foreground">Sin imagen</span>
+            )}
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wider">
               <span>{p.categoria?.nombre ?? "—"}</span>
               <span>·</span>
               <span>{p.marca?.nombre ?? "—"}</span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl mt-2">{p.nombre}</h1>
-            <div className="mt-4 flex items-baseline gap-3">
-              <span className="price text-4xl font-bold">S/ {Number(p.precio_venta).toFixed(2)}</span>
+            <h1 className="font-display text-2xl md:text-3xl lg:text-4xl mt-2">{p.nombre}</h1>
+            <div className="mt-4 flex items-baseline gap-3 flex-wrap">
+              <span className="price text-3xl md:text-3xl lg:text-4xl font-bold">S/ {Number(p.precio_venta).toFixed(2)}</span>
               {p.destacado && <span className="chip premium-gradient !text-[#120E0E] !border-transparent">Más vendido</span>}
             </div>
-            {p.descripcion && <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{p.descripcion}</p>}
 
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-6 md:mt-8 flex items-center gap-3">
               <div className="inline-flex items-center rounded-xl border border-[color:var(--color-border)] bg-white">
                 <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Minus className="h-4 w-4" /></button>
                 <span className="w-10 text-center text-sm font-semibold">{qty}</span>
@@ -84,8 +92,16 @@ function Detail() {
                 Agregar al carrito
               </button>
             </div>
+
+            {p.descripcion && (
+              <div className="mt-6 md:mt-8 pt-6 border-t border-[color:var(--color-border)]">
+                <h2 className="text-xs uppercase tracking-wider font-semibold text-muted-foreground mb-2">Descripción</h2>
+                <p className="text-sm leading-relaxed text-muted-foreground">{p.descripcion}</p>
+              </div>
+            )}
           </div>
         </div>
+
       </main>
       <Footer />
     </div>

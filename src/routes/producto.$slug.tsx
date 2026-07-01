@@ -157,6 +157,11 @@ function Detail() {
     </div>
   );
 }
+function formatBrandTitle(value: string) {
+  return value
+    .toLocaleLowerCase("es-PE")
+    .replace(/(^|\s)(\S)/g, (_, separator: string, char: string) => `${separator}${char.toLocaleUpperCase("es-PE")}`);
+}
 function SameBrandProductsSection({
   marcaNombre,
   productos,
@@ -167,10 +172,10 @@ function SameBrandProductsSection({
   if (!marcaNombre || productos.length === 0) return null;
 
   return (
-    <section className="mt-8 md:mt-10">
-      <h2 className="font-display text-base md:text-lg">Más productos de {marcaNombre}</h2>
-      <div className="mt-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-3">
+    <section className="mt-8 min-w-0 md:mt-10">
+      <h2 className="font-display text-base leading-snug md:text-lg">Más productos de <strong>{formatBrandTitle(marcaNombre)}</strong></h2>
+      <div className="-mx-1 mt-4 overflow-x-auto px-1 pb-3 overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex snap-x snap-mandatory gap-3">
           {productos.map((producto) => (
             <SameBrandProductCard key={producto.id} producto={producto} />
           ))}
@@ -187,7 +192,7 @@ function SameBrandProductCard({ producto }: { producto: Producto }) {
     <Link
       to="/producto/$slug"
       params={{ slug: producto.slug }}
-      className="group block min-w-0 shrink-0 basis-[calc((100%-1.5rem)/3)] rounded-lg border border-[color:var(--color-border)] bg-white p-2 transition hover:-translate-y-0.5 hover:shadow-md lg:basis-[calc((100%-2.25rem)/4)]"
+      className="group block min-w-[112px] shrink-0 basis-[calc((100%_-_1.5rem)/3)] snap-start overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-white p-2 transition hover:-translate-y-0.5 hover:shadow-md lg:basis-[calc((100%_-_2.25rem)/4)]"
     >
       <div className="aspect-square rounded-md bg-[color:var(--color-background)] p-2">
         {img ? (
@@ -201,7 +206,7 @@ function SameBrandProductCard({ producto }: { producto: Producto }) {
           <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">Sin imagen</div>
         )}
       </div>
-      <span className="mt-2 block line-clamp-2 text-xs font-semibold leading-snug transition group-hover:text-[color:var(--color-accent)] md:text-sm">
+      <span className="mt-2 block min-h-[2.25rem] line-clamp-2 text-xs font-semibold leading-snug transition group-hover:text-[color:var(--color-accent)] md:min-h-[2.5rem] md:text-sm">
         {producto.nombre}
       </span>
     </Link>
@@ -211,10 +216,10 @@ function CombinedProductsSection({ productos }: { productos: Producto[] }) {
   if (productos.length === 0) return null;
 
   return (
-    <section className="mt-10 md:mt-12">
-      <h2 className="font-display text-xl md:text-2xl">Combínalo con</h2>
-      <div className="mt-5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-4">
+    <section className="mt-10 min-w-0 md:mt-12">
+      <h2 className="font-display text-xl leading-tight md:text-2xl">Combínalo con</h2>
+      <div className="-mx-1 mt-5 overflow-x-auto px-1 pb-3 overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex snap-x snap-mandatory gap-4">
           {productos.map((producto) => (
             <CombinedProductCard key={producto.id} producto={producto} />
           ))}
@@ -229,7 +234,7 @@ function CombinedProductCard({ producto }: { producto: Producto }) {
   const img = storageUrl(producto.imagen);
 
   return (
-    <div className="card-pro card-producto group flex min-w-0 shrink-0 basis-[calc((100%-2rem)/3)] flex-col lg:basis-[calc((100%-3rem)/4)]">
+    <div className="card-pro card-producto group flex min-w-[150px] shrink-0 basis-[calc((100%_-_2rem)/3)] snap-start overflow-hidden flex-col lg:basis-[calc((100%_-_3rem)/4)]">
       <Link
         to="/producto/$slug"
         params={{ slug: producto.slug }}
@@ -247,7 +252,7 @@ function CombinedProductCard({ producto }: { producto: Producto }) {
         )}
       </Link>
 
-      <div className="flex h-[58px] flex-col px-3 pt-2 md:h-[70px] md:px-4 md:pt-3">
+      <div className="flex h-[62px] flex-col px-3 pt-2 md:h-[74px] md:px-4 md:pt-3">
         <Link
           to="/producto/$slug"
           params={{ slug: producto.slug }}
@@ -266,7 +271,7 @@ function CombinedProductCard({ producto }: { producto: Producto }) {
             add({ id: producto.id, nombre: producto.nombre, slug: producto.slug, precio_venta: Number(producto.precio_venta), precio_costo: producto.precio_costo, imagen: producto.imagen });
             toast.success("Agregado al carrito");
           }}
-          className="btn btn-accent rounded-full shrink-0 h-9 w-9 !p-0 sm:h-auto sm:w-auto sm:!py-2 sm:!px-3 md:!px-4"
+          className="btn btn-accent rounded-full shrink-0 h-9 min-w-9 !p-0 sm:w-auto sm:!px-3 sm:!py-2 md:!px-4"
           aria-label={`Agregar ${producto.nombre}`}
         >
           <Plus className="h-4 w-4" />

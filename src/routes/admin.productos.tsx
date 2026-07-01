@@ -26,7 +26,20 @@ type Producto = {
   destacado: boolean;
   activo: boolean;
 };
+type RelatedProductLite = Pick<Producto, "id" | "slug" | "nombre" | "imagen" | "activo">;
 
+type ProductoRelacionRow = {
+  id: string;
+  producto_id: string;
+  producto_relacionado_id: string;
+  tipo_relacion: string;
+  orden: number;
+  activo: boolean;
+};
+
+type ProductoRelacionAdmin = ProductoRelacionRow & {
+  producto: RelatedProductLite | null;
+};
 const schema = z.object({
   nombre: z.string().trim().min(2).max(120),
   slug: z.string().trim().min(2).max(120).regex(/^[a-z0-9-]+$/, "Solo minúsculas, números y guiones"),
@@ -259,7 +272,7 @@ function ProductoForm({
   }
 
   return (
-    <Modal open onClose={onClose} title={initial ? "Editar producto" : "Nuevo producto"} size="lg">
+    <Modal open onClose={onClose} title={initial ? "Editar producto" : "Nuevo producto"} size={initial ? "xl" : "lg"}>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Nombre">
@@ -359,6 +372,8 @@ function ProductoForm({
             Activo
           </label>
         </div>
+        {initial && <RelatedProductsManager producto={initial} />}
+
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="rounded-md border border-border px-4 py-2 text-sm">
             Cancelar
@@ -376,6 +391,242 @@ function ProductoForm({
   );
 }
 
+function RelatedProductsManager({ producto }: { producto: Producto }) {
+  const qc = useQueryClient();
+  const [search, setSearch] = useState("");
+  const searchTerm = search.trim();
+
+  const relacionesKey = ["admin-productos-relacionados", producto.id];
+
+  const refreshRelations = () => {
+    qc.invalidateQueries({ queryKey: relacionesKey });
+    qc.invalidateQueries({ queryKey: ["productos", "combinacion", producto.id] });
+  };
+
+  const { data: relaciones = [], isLoading } = useQuery({
+    queryKey: relacionesKey,
+    queryFn: async (): Promise<ProductoRelacionAdmin[]> => {
+      const { data: relacionesData, error } = await supabase
+        .from("productos_relacionados")
+        .select("id,producto_id,producto_relacionado_id,tipo_relacion,orden,activo")
+        .eq("producto_id", producto.id)
+        .eq("tipo_relacion", "combinacion")
+        .order("orden", { ascending: true });
+
+      if (error) throw error;
+
+      const rows = (relacionesData ?? []) as ProductoRelacionRow[];
+      const productoIds = Array.from(new Set(rows.map((row) => row.producto_relacionado_id).filter(Boolean)));
+      const productosMap = new Map<string, RelatedProductLite>();
+
+      if (productoIds.length > 0) {
+        const { data: productosData, error: productosError } = await supabase
+          .from("productos")
+          .select("id,slug,nombre,imagen,activo")
+          .in("id", productoIds);
+
+        if (productosError) throw productosError;
+
+        for (const item of (productosData ?? []) as RelatedProductLite[]) {
+          productosMap.set(item.id, item);
+        }
+      }
+
+      return rows.map((row) => ({
+        ...row,
+        producto: productosMap.get(row.producto_relacionado_id) ?? null,
+      }));
+    },
+  });
+
+  const existingIds = new Set(relaciones.map((relacion) => relacion.producto_relacionado_id));
+
+  const { data: searchResults = [], isFetching: searching } = useQuery({
+    queryKey: ["admin-productos-buscar-relacionados", producto.id, searchTerm],
+    enabled: searchTerm.length >= 2,
+    queryFn: async (): Promise<RelatedProductLite[]> => {
+      const { data, error } = await supabase
+        .from("productos")
+        .select("id,slug,nombre,imagen,activo")
+        .ilike("nombre", `%${searchTerm}%`)
+        .neq("id", producto.id)
+        .order("nombre")
+        .limit(8);
+
+      if (error) throw error;
+      return (data ?? []) as RelatedProductLite[];
+    },
+  });
+
+  const availableResults = searchResults.filter((item) => !existingIds.has(item.id));
+
+  const addMut = useMutation({
+    mutationFn: async (relatedProduct: RelatedProductLite) => {
+      if (relatedProduct.id === producto.id) {
+        throw new Error("No puedes relacionar un producto consigo mismo.");
+      }
+      if (existingIds.has(relatedProduct.id)) {
+        throw new Error("Ese producto ya está agregado a Combínalo con.");
+      }
+
+      const nextOrder = relaciones.length > 0 ? Math.max(...relaciones.map((row) => row.orden ?? 0)) + 1 : 0;
+      const { error } = await supabase.from("productos_relacionados").insert({
+        producto_id: producto.id,
+        producto_relacionado_id: relatedProduct.id,
+        tipo_relacion: "combinacion",
+        orden: nextOrder,
+        activo: true,
+      });
+
+      if (error) throw new Error(readableRelationError(error));
+    },
+    onSuccess: () => {
+      toast.success("Producto relacionado agregado");
+      setSearch("");
+      refreshRelations();
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: async (relationId: string) => {
+      const { error } = await supabase.from("productos_relacionados").delete().eq("id", relationId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Relación eliminada");
+      refreshRelations();
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+  return (
+    <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-4">
+      <div>
+        <h3 className="font-semibold">Combínalo con</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          Gestiona productos complementarios para este producto.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm">
+          <span className="block mb-1 font-medium">Buscar producto relacionado</span>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Escribe al menos 2 letras..."
+            className="input"
+          />
+        </label>
+
+        {searchTerm.length > 0 && searchTerm.length < 2 && (
+          <p className="text-xs text-muted-foreground">Escribe al menos 2 letras para buscar.</p>
+        )}
+
+        {searchTerm.length >= 2 && (
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            {searching ? (
+              <div className="p-3 text-sm text-muted-foreground">Buscando...</div>
+            ) : availableResults.length === 0 ? (
+              <div className="p-3 text-sm text-muted-foreground">No hay productos disponibles para agregar.</div>
+            ) : (
+              <div className="divide-y divide-border max-h-60 overflow-y-auto">
+                {availableResults.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => addMut.mutate(item)}
+                    disabled={addMut.isPending}
+                    className="flex w-full items-center gap-3 p-3 text-left text-sm hover:bg-muted disabled:opacity-60"
+                  >
+                    {item.imagen ? (
+                      <img src={storageUrl(item.imagen)} alt="" className="h-10 w-10 rounded object-cover" />
+                    ) : (
+                      <div className="h-10 w-10 rounded bg-muted" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium truncate">{item.nombre}</div>
+                      <div className="text-xs text-muted-foreground truncate">{item.slug}</div>
+                    </div>
+                    <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground inline-flex items-center gap-1">
+                      <Plus className="h-3 w-3" /> Agregar
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <div className="text-sm font-medium">Productos relacionados actuales</div>
+        {isLoading ? (
+          <div className="text-sm text-muted-foreground">Cargando relacionados...</div>
+        ) : relaciones.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
+            Este producto todavía no tiene relaciones.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {relaciones.map((relacion) => (
+              <div key={relacion.id} className="rounded-lg border border-border bg-card p-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+                {relacion.producto?.imagen ? (
+                  <img src={storageUrl(relacion.producto.imagen)} alt="" className="h-12 w-12 rounded object-cover" />
+                ) : (
+                  <div className="h-12 w-12 rounded bg-muted shrink-0" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium text-sm truncate">{relacion.producto?.nombre ?? "Producto no encontrado"}</div>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    <span>Orden: {relacion.orden}</span>
+                    <span className={relacion.activo ? "text-emerald-700" : "text-muted-foreground"}>
+                      Relación {relacion.activo ? "activa" : "inactiva"}
+                    </span>
+                    {relacion.producto && (
+                      <span className={relacion.producto.activo ? "text-emerald-700" : "text-amber-700"}>
+                        Producto {relacion.producto.activo ? "activo" : "inactivo"}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const name = relacion.producto?.nombre ?? "este producto";
+                    if (window.confirm(`¿Eliminar "${name}" de Combínalo con?`)) {
+                      deleteMut.mutate(relacion.id);
+                    }
+                  }}
+                  className="self-start rounded-md border border-border px-3 py-1.5 text-xs text-destructive hover:bg-muted sm:self-auto inline-flex items-center gap-1"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Eliminar
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <ConfirmDialog
+        open={!!deletingRelation}
+        onClose={() => setDeletingRelation(null)}
+        onConfirm={() => deletingRelation && deleteMut.mutate(deletingRelation.id)}
+        title="Eliminar relación"
+        description={`¿Eliminar "${deletingRelation?.producto?.nombre ?? "este producto"}" de Combínalo con?`}
+      />
+    </section>
+  );
+}
+
+function readableRelationError(error: { code?: string; message?: string }) {
+  const message = error.message || "No se pudo guardar la relación";
+  if (error.code === "23505" || message.toLowerCase().includes("duplicate") || message.includes("productos_relacionados_unique")) {
+    return "Ese producto ya está agregado a Combínalo con.";
+  }
+  return message;
+}
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm">

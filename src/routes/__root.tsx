@@ -79,14 +79,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Puerto Rico Online · Licorería Premium" },
-      { name: "description", content: "Licorería premium online. Whisky, vinos, espumantes y más con delivery o recojo en tienda en nuestras sedes." },
-      { property: "og:title", content: "Puerto Rico Online · Licorería Premium" },
-      { property: "og:description", content: "Selección curada, entrega rápida y atención personalizada." },
+      { title: "Puerto Rico Online" },
+      { property: "og:site_name", content: "Puerto Rico Online" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "Puerto Rico Online",
+              description: "Licorería premium en Ica con delivery y recojo en tienda.",
+            },
+            {
+              "@type": "WebSite",
+              name: "Puerto Rico Online",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

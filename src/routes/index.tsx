@@ -10,11 +10,14 @@ import { categoriasQuery, destacadosQuery } from "@/lib/queries";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Puerto Rico Online · Licorería Premium" },
-      { name: "description", content: "Whisky, vinos, espumantes y más con delivery o recojo en tienda." },
-      { property: "og:title", content: "Puerto Rico Online" },
-      { property: "og:description", content: "Licorería premium online en Perú." },
+      { title: "Puerto Rico Online — Licorería Premium con Delivery en Ica" },
+      { name: "description", content: "Whisky, vinos, espumantes, ron y más. Delivery rápido y recojo en tienda en nuestras sedes de Ica." },
+      { property: "og:title", content: "Puerto Rico Online — Licorería Premium con Delivery en Ica" },
+      { property: "og:description", content: "Selección curada de licores premium. Delivery y recojo en tienda en Ica." },
+      { property: "og:url", content: "/" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   loader: ({ context }) => {
     context.queryClient.prefetchQuery(destacadosQuery);
@@ -51,6 +54,7 @@ function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
+        <h1 className="sr-only">Puerto Rico Online — Licorería premium con delivery y recojo en tienda en Ica</h1>
         <BannerCarousel />
 
         {/* Destacados */}

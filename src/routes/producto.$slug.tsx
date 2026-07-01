@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Minus, Plus, ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { productoBySlugQuery, productosMismaMarcaQuery } from "@/lib/queries";
+import { productoBySlugQuery, productosCombinacionQuery, productosMismaMarcaQuery } from "@/lib/queries";
 import { storageUrl } from "@/lib/supabase";
 import type { Producto } from "@/lib/types";
 import { useCart } from "@/lib/cart";
@@ -90,6 +90,7 @@ function Detail() {
   const { slug } = Route.useParams();
   const { data: p } = useQuery(productoBySlugQuery(slug));
   const { data: sameBrandProducts = [] } = useQuery(productosMismaMarcaQuery(p));
+  const { data: combinedProducts = [] } = useQuery(productosCombinacionQuery(p?.id));
   const [qty, setQty] = useState(1);
   const add = useCart((s) => s.add);
   if (!p) return null;
@@ -150,6 +151,7 @@ function Detail() {
           </div>
         </div>
 
+        <CombinedProductsSection productos={combinedProducts} />
       </main>
       <Footer />
     </div>
@@ -203,5 +205,74 @@ function SameBrandProductCard({ producto }: { producto: Producto }) {
         {producto.nombre}
       </span>
     </Link>
+  );
+}
+function CombinedProductsSection({ productos }: { productos: Producto[] }) {
+  if (productos.length === 0) return null;
+
+  return (
+    <section className="mt-10 md:mt-12">
+      <h2 className="font-display text-xl md:text-2xl">Combínalo con</h2>
+      <div className="mt-5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4">
+          {productos.map((producto) => (
+            <CombinedProductCard key={producto.id} producto={producto} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CombinedProductCard({ producto }: { producto: Producto }) {
+  const add = useCart((s) => s.add);
+  const img = storageUrl(producto.imagen);
+
+  return (
+    <div className="card-pro card-producto group flex min-w-0 shrink-0 basis-[calc((100%-2rem)/3)] flex-col lg:basis-[calc((100%-3rem)/4)]">
+      <Link
+        to="/producto/$slug"
+        params={{ slug: producto.slug }}
+        className="product-image-container relative block bg-[color:var(--color-background)] p-2 md:p-3"
+      >
+        {img ? (
+          <img
+            src={img}
+            alt={producto.nombre}
+            loading="lazy"
+            className="h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">Sin imagen</div>
+        )}
+      </Link>
+
+      <div className="flex h-[58px] flex-col px-3 pt-2 md:h-[70px] md:px-4 md:pt-3">
+        <Link
+          to="/producto/$slug"
+          params={{ slug: producto.slug }}
+          className="line-clamp-2 text-sm font-semibold leading-snug transition hover:text-[color:var(--color-accent)] md:text-base"
+        >
+          {producto.nombre}
+        </Link>
+      </div>
+
+      <div className="flex items-center justify-between gap-2 px-3 pb-3 md:px-4 md:pb-4">
+        <span className="text-base font-bold leading-none whitespace-nowrap md:text-lg">
+          S/ {Number(producto.precio_venta).toFixed(2)}
+        </span>
+        <button
+          onClick={() => {
+            add({ id: producto.id, nombre: producto.nombre, slug: producto.slug, precio_venta: Number(producto.precio_venta), precio_costo: producto.precio_costo, imagen: producto.imagen });
+            toast.success("Agregado al carrito");
+          }}
+          className="btn btn-accent rounded-full shrink-0 h-9 w-9 !p-0 sm:h-auto sm:w-auto sm:!py-2 sm:!px-3 md:!px-4"
+          aria-label={`Agregar ${producto.nombre}`}
+        >
+          <Plus className="h-4 w-4" />
+          <span className="hidden sm:inline text-sm">Agregar</span>
+        </button>
+      </div>
+    </div>
   );
 }

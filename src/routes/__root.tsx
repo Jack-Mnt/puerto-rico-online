@@ -79,7 +79,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Puerto Rico Online" },
+      { title: "Puerto Rico Online — Licorería Premium en Ica" },
+      { name: "description", content: "Licorería premium en Ica. Delivery rápido y recojo en tienda. Whisky, vinos, espumantes, ron y más." },
       { property: "og:site_name", content: "Puerto Rico Online" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "Puerto Rico Online — Licorería Premium en Ica" },

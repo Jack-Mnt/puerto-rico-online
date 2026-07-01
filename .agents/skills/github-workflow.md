@@ -1,4 +1,4 @@
-﻿# Skill: GitHub Workflow PuertoRico Online
+# Skill: GitHub Workflow PuertoRico Online
 
 Usa este skill cuando trabajes con GitHub, ramas, commits, revisión de cambios, sincronización con Lovable o flujo de trabajo desde VS Code.
 
@@ -82,6 +82,23 @@ Evita reestructurar todo el proyecto sin necesidad.
 
 Si Lovable hizo cambios visuales, revisa diferencias antes de sobrescribir.
 
+## Sincronización con Lovable y metadata SEO
+
+Antes de modificar archivos:
+
+1. Ejecuta `git status`.
+2. Verifica si hay cambios entrantes/remotos pendientes desde `origin/main`.
+3. Si hay cambios remotos pendientes, no modifiques archivos todavía y avisa que el proyecto debe sincronizarse primero.
+4. No sobrescribas cambios que vengan de Lovable.
+5. Si existen estas líneas en `src/routes/__root.tsx`, consérvalas exactamente como están:
+
+```ts
+{ property: "og:title", content: "Puerto Rico Online — Licorería Premium en Ica" },
+{ property: "og:description", content: "Licorería premium en Ica. Delivery rápido y recojo en tienda. Whisky, vinos, espumantes, ron y más." },
+```
+
+6. No elimines esas líneas, no las modifiques y no sobrescribas `src/routes/__root.tsx` con una versión anterior que no las tenga.
+7. Si una tarea requiere tocar `src/routes/__root.tsx`, primero explica por qué y pide confirmación.
 ## Regla general
 
 Cada cambio debe ser claro, reversible y fácil de revisar.

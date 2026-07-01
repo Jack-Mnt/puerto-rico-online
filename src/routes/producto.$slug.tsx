@@ -14,9 +14,55 @@ export const Route = createFileRoute("/producto/$slug")({
   loader: async ({ context, params }) => {
     const p = await context.queryClient.ensureQueryData(productoBySlugQuery(params.slug));
     if (!p) throw notFound();
-    return null;
+    return p;
   },
-  head: () => ({ meta: [{ title: "Producto · Puerto Rico Online" }] }),
+  head: ({ params, loaderData }) => {
+    const p = loaderData as Producto | undefined;
+    if (!p) {
+      return {
+        meta: [{ title: "Producto · Puerto Rico Online" }],
+        links: [{ rel: "canonical", href: `/producto/${params.slug}` }],
+      };
+    }
+    const nombre = p.nombre;
+    const marca = p.marca?.nombre;
+    const title = `${nombre}${marca ? ` — ${marca}` : ""} · Puerto Rico Online`;
+    const desc = (p.descripcion?.trim() || `Compra ${nombre}${marca ? ` de ${marca}` : ""} al mejor precio con delivery o recojo en tienda en Ica.`).slice(0, 160);
+    const img = p.imagen ? storageUrl(p.imagen) : undefined;
+    const url = `/producto/${params.slug}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: url },
+        ...(img ? [{ property: "og:image", content: img }] : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: nombre,
+            description: desc,
+            ...(img ? { image: img } : {}),
+            ...(marca ? { brand: { "@type": "Brand", name: marca } } : {}),
+            ...(p.categoria?.nombre ? { category: p.categoria.nombre } : {}),
+            offers: {
+              "@type": "Offer",
+              price: Number(p.precio_venta).toFixed(2),
+              priceCurrency: "PEN",
+              availability: "https://schema.org/InStock",
+            },
+          }),
+        },
+      ],
+    };
+  },
   component: Detail,
   notFoundComponent: () => (
     <div className="min-h-screen flex flex-col">
@@ -82,9 +128,9 @@ function Detail() {
 
             <div className="mt-6 md:mt-8 flex items-center gap-3 flex-nowrap">
               <div className="inline-flex items-center rounded-xl border border-[color:var(--color-border)] bg-white shrink-0">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Minus className="h-4 w-4" /></button>
-                <span className="w-10 text-center text-sm font-semibold">{qty}</span>
-                <button onClick={() => setQty((q) => q + 1)} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Plus className="h-4 w-4" /></button>
+                <button aria-label="Disminuir cantidad" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Minus className="h-4 w-4" /></button>
+                <span className="w-10 text-center text-sm font-semibold" aria-live="polite">{qty}</span>
+                <button aria-label="Aumentar cantidad" onClick={() => setQty((q) => q + 1)} className="grid h-11 w-11 place-items-center hover:bg-secondary"><Plus className="h-4 w-4" /></button>
               </div>
               <button
                 onClick={() => { add({ id: p.id, nombre: p.nombre, slug: p.slug, precio_venta: Number(p.precio_venta), precio_costo: p.precio_costo, imagen: p.imagen }, qty); toast.success("Agregado al carrito"); }}

@@ -62,11 +62,11 @@ export function BannerCarousel() {
             })}
           </div>
         </div>
-        <button onClick={() => embla?.scrollPrev()} className="absolute left-3 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/85 hover:bg-white shadow"><ChevronLeft className="h-5 w-5" /></button>
-        <button onClick={() => embla?.scrollNext()} className="absolute right-3 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/85 hover:bg-white shadow"><ChevronRight className="h-5 w-5" /></button>
+        <button aria-label="Banner anterior" onClick={() => embla?.scrollPrev()} className="absolute left-3 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/85 hover:bg-white shadow"><ChevronLeft className="h-5 w-5" /></button>
+        <button aria-label="Banner siguiente" onClick={() => embla?.scrollNext()} className="absolute right-3 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/85 hover:bg-white shadow"><ChevronRight className="h-5 w-5" /></button>
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
           {banners.map((_, i) => (
-            <button key={i} onClick={() => scrollTo(i)} className={`h-1.5 rounded-full transition-all ${i === selected ? "w-6 bg-white" : "w-1.5 bg-white/50"}`} />
+            <button key={i} aria-label={`Ir al banner ${i + 1}`} onClick={() => scrollTo(i)} className={`h-1.5 rounded-full transition-all ${i === selected ? "w-6 bg-white" : "w-1.5 bg-white/50"}`} />
           ))}
         </div>
       </div>

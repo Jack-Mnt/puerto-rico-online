@@ -5,6 +5,14 @@ import { Footer } from "@/components/Footer";
 import { MapPin, ExternalLink, MessageCircle } from "lucide-react";
 import { sedesQuery, configQuery } from "@/lib/queries";
 
+const SEDES_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Store",
+  name: "Puerto Rico Online",
+  description: "Licorería premium con sedes en Ica.",
+  address: { "@type": "PostalAddress", addressLocality: "Ica", addressCountry: "PE" },
+};
+
 export const Route = createFileRoute("/sedes")({
   head: () => ({
     meta: [
@@ -12,7 +20,10 @@ export const Route = createFileRoute("/sedes")({
       { name: "description", content: "Encuentra nuestras sedes en Ica. Visítanos en Cutervo, Huaca, Divino, Casua y Unidad." },
       { property: "og:title", content: "Nuestras Sedes — Puerto Rico Online" },
       { property: "og:description", content: "Encuentra nuestras sedes en Ica. Visítanos en Cutervo, Huaca, Divino, Casua y Unidad." },
+      { property: "og:url", content: "/sedes" },
     ],
+    links: [{ rel: "canonical", href: "/sedes" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(SEDES_JSONLD) }],
   }),
   component: SedesPage,
 });

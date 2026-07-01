@@ -4,8 +4,9 @@ import { useState } from "react";
 import { Minus, Plus, ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { productoBySlugQuery } from "@/lib/queries";
+import { productoBySlugQuery, productosMismaMarcaQuery } from "@/lib/queries";
 import { storageUrl } from "@/lib/supabase";
+import type { Producto } from "@/lib/types";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/producto/$slug")({
 function Detail() {
   const { slug } = Route.useParams();
   const { data: p } = useQuery(productoBySlugQuery(slug));
+  const { data: sameBrandProducts = [] } = useQuery(productosMismaMarcaQuery(p));
   const [qty, setQty] = useState(1);
   const add = useCart((s) => s.add);
   if (!p) return null;
@@ -97,11 +99,63 @@ function Detail() {
                 <p className="text-sm leading-relaxed text-muted-foreground">{p.descripcion}</p>
               </div>
             )}
+
+            <SameBrandProductsSection marcaNombre={p.marca?.nombre} productos={sameBrandProducts} />
           </div>
         </div>
 
       </main>
       <Footer />
     </div>
+  );
+}
+function SameBrandProductsSection({
+  marcaNombre,
+  productos,
+}: {
+  marcaNombre?: string | null;
+  productos: Producto[];
+}) {
+  if (!marcaNombre || productos.length === 0) return null;
+
+  return (
+    <section className="mt-8 md:mt-10">
+      <h2 className="font-display text-base md:text-lg">Más productos de {marcaNombre}</h2>
+      <div className="mt-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3">
+          {productos.map((producto) => (
+            <SameBrandProductCard key={producto.id} producto={producto} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SameBrandProductCard({ producto }: { producto: Producto }) {
+  const img = storageUrl(producto.imagen);
+
+  return (
+    <Link
+      to="/producto/$slug"
+      params={{ slug: producto.slug }}
+      className="group block min-w-0 shrink-0 basis-[calc((100%-1.5rem)/3)] rounded-lg border border-[color:var(--color-border)] bg-white p-2 transition hover:-translate-y-0.5 hover:shadow-md lg:basis-[calc((100%-2.25rem)/4)]"
+    >
+      <div className="aspect-square rounded-md bg-[color:var(--color-background)] p-2">
+        {img ? (
+          <img
+            src={img}
+            alt={producto.nombre}
+            loading="lazy"
+            className="h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">Sin imagen</div>
+        )}
+      </div>
+      <span className="mt-2 block line-clamp-2 text-xs font-semibold leading-snug transition group-hover:text-[color:var(--color-accent)] md:text-sm">
+        {producto.nombre}
+      </span>
+    </Link>
   );
 }

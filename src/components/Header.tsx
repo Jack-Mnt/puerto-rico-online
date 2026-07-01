@@ -15,6 +15,10 @@ export function Header() {
   const { data: config = {} } = useQuery(configQuery);
   const logoSrc = storageUrl(config.logo_light || config.logo_dark || "branding/logo-light.PNG");
   const waUrl = whatsappUrl(config.whatsapp_principal) || "#";
+  const headerActionStyle: React.CSSProperties = {
+    background: "linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 92%, white), var(--color-accent))",
+  };
+  const headerActionClass = "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-14px_var(--color-accent)]";
 
   useEffect(() => setMounted(true), []);
 
@@ -79,17 +83,17 @@ export function Header() {
         </Link>
         <div className="flex items-center gap-2">
           {/* Catálogo desktop */}
-          <Link to="/productos" className="hidden sm:inline-flex btn btn-accent">
+          <Link to="/productos" className={`hidden sm:inline-flex btn btn-accent ${headerActionClass}`} style={headerActionStyle}>
             <LayoutGrid className="h-4 w-4" />
             <span>Catálogo</span>
           </Link>
           {/* Catálogo mobile */}
-          <Link to="/productos" className="sm:hidden inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm">
+          <Link to="/productos" className={`sm:hidden inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm ${headerActionClass}`} style={headerActionStyle}>
             <LayoutGrid className="h-4 w-4" />
           </Link>
 
           {/* Carrito desktop */}
-          <Link to="/carrito" className="hidden sm:inline-flex relative btn btn-accent">
+          <Link to="/carrito" className={`hidden sm:inline-flex relative btn btn-accent ${headerActionClass}`} style={headerActionStyle}>
             <ShoppingBag className="h-4 w-4" />
             <span>Carrito</span>
             {mounted && count > 0 && (
@@ -99,7 +103,7 @@ export function Header() {
             )}
           </Link>
           {/* Carrito mobile */}
-          <Link to="/carrito" className="sm:hidden relative inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm">
+          <Link to="/carrito" className={`sm:hidden relative inline-flex h-9 w-9 items-center justify-center rounded-full btn-accent shadow-sm ${headerActionClass}`} style={headerActionStyle}>
             <ShoppingBag className="h-4 w-4" />
             {mounted && count > 0 && (
               <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[color:var(--color-accent)]">

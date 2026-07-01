@@ -14,6 +14,19 @@ export type Producto = {
   categoria?: { nombre: string; slug: string } | null;
 };
 
+export type TipoRelacionProducto = "combinacion" | (string & {});
+
+export type ProductoRelacionado = {
+  id: string;
+  producto_id: string;
+  producto_relacionado_id: string;
+  tipo_relacion: TipoRelacionProducto;
+  orden: number | null;
+  activo: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type Categoria = { id: string; nombre: string; slug: string; activo: boolean; orden?: number; grupo?: string | null };
 export type Marca = { id: string; nombre: string; activo: boolean };
 

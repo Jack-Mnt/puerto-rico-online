@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
-import type { Banner, Categoria, Marca, Producto, Sede } from "./types";
+import type { Banner, Categoria, Marca, Producto, ProductoRelacionado, Sede } from "./types";
 
 export const bannersQuery = queryOptions({
   queryKey: ["banners"],
@@ -44,6 +44,9 @@ export const marcasQuery = queryOptions({
 const PRODUCTO_SELECT =
   "id,nombre,slug,marca_id,categoria_id,precio_venta,precio_costo,imagen,descripcion,destacado,activo,marca:marcas(nombre),categoria:categorias(nombre,slug)";
 
+export type ProductoActualRelacionado = Pick<Producto, "id" | "marca_id">;
+
+type ProductoRelacionadoOrden = Pick<ProductoRelacionado, "producto_relacionado_id" | "orden">;
 export const destacadosQuery = queryOptions({
   queryKey: ["productos", "destacados"],
   queryFn: async (): Promise<Producto[]> => {
@@ -191,6 +194,69 @@ export const productoBySlugQuery = (slug: string) =>
     },
   });
 
+export const productosMismaMarcaQuery = (producto?: ProductoActualRelacionado | null) =>
+  queryOptions({
+    queryKey: ["productos", "misma-marca", producto?.id ?? null, producto?.marca_id ?? null],
+    enabled: Boolean(producto?.id && producto?.marca_id),
+    queryFn: async (): Promise<Producto[]> => {
+      if (!producto?.id || !producto.marca_id) return [];
+
+      const { data, error } = await supabase
+        .from("productos")
+        .select(PRODUCTO_SELECT)
+        .eq("activo", true)
+        .eq("marca_id", producto.marca_id)
+        .neq("id", producto.id)
+        .order("nombre");
+
+      if (error) throw error;
+      return (data ?? []) as unknown as Producto[];
+    },
+  });
+
+export const productosCombinacionQuery = (productoId?: string | null) =>
+  queryOptions({
+    queryKey: ["productos", "combinacion", productoId ?? null],
+    enabled: Boolean(productoId),
+    queryFn: async (): Promise<Producto[]> => {
+      if (!productoId) return [];
+
+      const { data: relaciones, error: relacionesError } = await supabase
+        .from("productos_relacionados")
+        .select("producto_relacionado_id,orden")
+        .eq("producto_id", productoId)
+        .eq("tipo_relacion", "combinacion")
+        .eq("activo", true)
+        .order("orden", { ascending: true });
+
+      if (relacionesError) throw relacionesError;
+
+      const productosIds: string[] = [];
+      const seen = new Set<string>();
+
+      for (const relacion of (relaciones ?? []) as ProductoRelacionadoOrden[]) {
+        const relacionadoId = relacion.producto_relacionado_id;
+        if (!relacionadoId || relacionadoId === productoId || seen.has(relacionadoId)) continue;
+        seen.add(relacionadoId);
+        productosIds.push(relacionadoId);
+      }
+
+      if (productosIds.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from("productos")
+        .select(PRODUCTO_SELECT)
+        .eq("activo", true)
+        .in("id", productosIds);
+
+      if (error) throw error;
+
+      const order = new Map(productosIds.map((id, index) => [id, index] as const));
+      return ((data ?? []) as unknown as Producto[]).sort(
+        (a, b) => (order.get(a.id) ?? 1e9) - (order.get(b.id) ?? 1e9),
+      );
+    },
+  });
 export const sedesQuery = queryOptions({
   queryKey: ["sedes"],
   queryFn: async (): Promise<Sede[]> => {

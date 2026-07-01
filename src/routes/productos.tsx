@@ -19,7 +19,7 @@ export const Route = createFileRoute("/productos")({
     marca: typeof s.marca === "string" ? s.marca : undefined,
     q: typeof s.q === "string" ? s.q : undefined,
   }),
-  head: () => ({ meta: [{ title: "Catálogo · Puerto Rico Online" }, { name: "description", content: "Explora todo nuestro catálogo de licores premium." }] }),
+  head: () => ({ meta: [{ title: "Catálogo · Puerto Rico Online" }, { name: "description", content: "Explora nuestro catálogo de licores premium: whisky, vinos, ron, vodka, pisco y más. Delivery y recojo en tienda en Ica." }] }),
   component: Catalogo,
 });
 
